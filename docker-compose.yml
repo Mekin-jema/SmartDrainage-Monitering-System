@@ -1,0 +1,22 @@
+version: "3.0"
+services:
+  valhalla:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./custom_files/:/custom_files
+    environment:
+      # Ethiopia OSM data from Geofabrik
+      - tile_urls=https://download.geofabrik.de/africa/ethiopia-latest.osm.pbf
+      # Bounding box for Ethiopia (approximate)
+      - min_x=32 # West border
+      - min_y=3 # South border
+      - max_x=48 # East border
+      - max_y=15 # North border
+      - use_tiles_ignore_pbf=True
+      - force_rebuild=False
+      - force_rebuild_elevation=False
+      - build_elevation=True
+      - build_admins=True
+      - build_time_zones=True
