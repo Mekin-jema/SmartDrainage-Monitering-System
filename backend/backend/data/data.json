@@ -1,0 +1,99 @@
+{
+    "userData": {
+      "_id": "680bdfc35a11ea1ea51bbbdd",
+      "name": "endris",
+      "password": "endris",
+      "phone": "0912345678",
+      "email": "endris@gmail.com",
+      "salary": 5000,
+      "role": "worker",
+      "status": {
+        "availability": "available",
+        "lastActive": "2025-04-26T10:00:00.000Z"
+      },
+      "assignments": [
+        {
+          "manholeId": "680deaad0f8f14f0eb30251d",
+          "task": "Inspect manhole sensor",
+          "date": "2025-04-26T09:00:00.000Z"
+        }
+      ]
+    },
+    
+    "signinData": {
+      "name": "endris",
+      "email": "endris@gmail.com",
+      "password": "endris"
+    },
+    
+    "alertData": {
+      "_id": "66302f7c15c4b18b25fb1f99",
+      "manholeId": "680deaad0f8f14f0eb30251d",
+      "sensorId": "680deafaec8d45c9f4ac8334",
+      "alertType": "gas_leak",
+      "alertLevel": "high",
+      "description": "Gas detected by sensor.",
+      "timestamp": "2025-04-26T08:30:00.000Z",
+      "status": "open",
+      "assignedWorkerId": "680bdfc35a11ea1ea51bbbdd",
+      "actions": [
+        {
+          "workerId": "680bdfc35a11ea1ea51bbbdd",
+          "action": "initial_response",
+          "notes": "Worker dispatched to the location.",
+          "timestamp": "2025-04-26T09:00:00.000Z"
+        }
+      ],
+      "resolutionNotes": ""
+    },
+    
+    "sensorData": {
+      "manholeId": "680deaad0f8f14f0eb30251d",
+      "sensors": {
+        "sewageLevel": 1.2,
+        "methaneLevel": 500,
+        "flowRate": 0.3,
+        "temperature": 25.5,
+        "humidity": 60,
+        "batteryLevel": 85
+      },
+      "thresholds": {
+        "maxDistance": 2.5,
+        "maxGas": 1000,
+        "minFlow": 0.1
+      },
+      "lastCalibration": "2023-06-15T10:00:00Z"
+    },
+    
+    "manholeData": {
+      "code": "aa12",
+      "location": {
+        "coordinates": [1.0, 2.0],
+        "address": "123 Main St",
+        "zone": "Zone A"
+      },
+      "installedDate": "2023-01-01T00:00:00Z",
+      "lastInspection": "2023-01-01T00:00:00Z",
+      "status": "active",
+      "notes": "This is a test manhole."
+    },
+    
+    "maintenanceData": {
+      "manholeId": "680deaad0f8f14f0eb30251d",
+      "userId": "680bdfc35a11ea1ea51bbbdd",
+      "type": "routine",
+      "description": "Routine checkup and cleaning",
+      "scheduledDate": "2025-05-01T10:00:00.000Z",
+      "partsReplaced": [
+        {
+          "name": "Seal Gasket",
+          "quantity": 2
+        },
+        {
+          "name": "Flow Sensor",
+          "quantity": 1
+        }
+      ]
+    }
+  }
+  

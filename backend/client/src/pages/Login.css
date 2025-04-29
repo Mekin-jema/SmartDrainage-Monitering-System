@@ -1,0 +1,15 @@
+/* Reuse the same styles from Register.css */
+@import './Register.css';
+
+/* Additional login-specific styles if needed */
+.forgot-password {
+  text-align: right;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.forgot-password a {
+  color: #6366f1;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
