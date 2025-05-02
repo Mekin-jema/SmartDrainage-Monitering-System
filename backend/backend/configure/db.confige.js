@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
+
 const db = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URL);
+  try { 
+    console.log(process.env.MONGO_URI)
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
   console.log("Mongodb connected successfully")
     return conn;
   } catch (err) {
