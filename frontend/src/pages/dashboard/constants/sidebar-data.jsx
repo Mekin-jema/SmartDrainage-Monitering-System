@@ -49,7 +49,7 @@ export const sidebarData = {
         },
         {
           title:"Map",
-          url:"dashboard/map",
+          url:"/dashboard/map",
           icon:MapPin,
         },
         {

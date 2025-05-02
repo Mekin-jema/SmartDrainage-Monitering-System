@@ -18,7 +18,7 @@ import Settings from "./pages/dashboard/system-settings/Settings";
 import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
-import { Map } from "./pages/dashboard/map/map";
+import Map  from "./pages/dashboard/map/map";
 
 const router = createBrowserRouter([
 
