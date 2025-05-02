@@ -14,6 +14,7 @@ import {
   HardHat
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import SewageSystemMap from './mpa';
 
 const Dashboard = () => {
   // Sample data - replace with API calls in a real implementation
@@ -332,13 +333,7 @@ const Dashboard = () => {
           <CardTitle>Manhole Locations</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="w-12 h-12 mx-auto text-gray-400" />
-              <p className="mt-2 text-gray-500">Interactive map visualization of all manholes</p>
-              <p className="text-sm text-gray-400">(Would show real-time status with color coding)</p>
-            </div>
-          </div>
+          <SewageSystemMap/>
         </CardContent>
       </Card>
     </div>

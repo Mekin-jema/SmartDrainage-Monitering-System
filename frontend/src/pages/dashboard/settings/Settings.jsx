@@ -24,14 +24,14 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ToastAction } from '@/components/ui/toast';
-import { useToast } from '@/components/ui/use-toast';
-import { TimePicker } from '@/components/ui/time-picker';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+// import { useToast } from '@/components/ui/use-toast';
+// import { TimePicker } from '@/components/ui/time-picker';
+import { Dialog } from '@/components/ui/dialog';
 
 
 
 const SettingsPage = () => {
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('system');
   const [systemSettings, setSystemSettings] = useState({
     systemName: 'Smart Sewage System',
@@ -82,23 +82,23 @@ const SettingsPage = () => {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: 'Settings saved successfully',
-        description: 'Your changes have been applied',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error saving settings',
-        description: 'There was a problem saving your changes',
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-    }
-  };
+  // const handleSave = async () => {
+  //   try {
+  //     // Simulated API call
+  //     await new Promise(resolve => setTimeout(resolve, 1000));
+  //     toast({
+  //       title: 'Settings saved successfully',
+  //       description: 'Your changes have been applied',
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       variant: 'destructive',
+  //       title: 'Error saving settings',
+  //       description: 'There was a problem saving your changes',
+  //       action: <ToastAction altText="Try again">Try again</ToastAction>,
+  //     });
+  //   }
+  // };
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
@@ -109,7 +109,7 @@ const SettingsPage = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline">Cancel</Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          {/* <Button onClick={handleSave}>Save Changes</Button> */}
         </div>
       </div>
 
@@ -186,7 +186,7 @@ const SettingsPage = () => {
                 />
               </div>
 
-              <ConfirmDialog
+              <Dialog
                 title="Enable Maintenance Mode?"
                 description="This will temporarily disable non-essential system functions."
                 onConfirm={() => setSystemSettings(prev => ({
@@ -197,7 +197,7 @@ const SettingsPage = () => {
                 <Button variant="destructive" className="w-full">
                   Enter Maintenance Mode
                 </Button>
-              </ConfirmDialog>
+              </Dialog>
             </div>
           </div>
         </TabsContent>
@@ -243,7 +243,7 @@ const SettingsPage = () => {
               <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Clock className="w-5 h-5" /> Quiet Hours
               </h3>
-              <div className="flex items-center gap-4">
+              {/* <div className="flex items-center gap-4">
                 <TimePicker
                   value={alertSettings.quietHours.start}
                   onChange={(val) => setAlertSettings(prev => ({
@@ -259,7 +259,7 @@ const SettingsPage = () => {
                     quietHours: { ...prev.quietHours, end: val }
                   }))}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </TabsContent>
