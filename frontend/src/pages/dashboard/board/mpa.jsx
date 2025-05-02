@@ -15,6 +15,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AlertCircle, HardHat, MapPin, Filter, Search, User, Clock, ChevronRight, ChevronDown, Settings, Route } from 'lucide-react';
 
 const SewageSystemMap = () => {
+
+    const style=import.meta.env.VITE_MAP_STYLE;
   // Refs
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
@@ -65,7 +67,7 @@ const SewageSystemMap = () => {
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://demotiles.maplibre.org/style.json', // Replace with your style
+      style: style, // Replace with your style
       center: [38.7636, 9.0054], // Initial center
       zoom: 15
     });

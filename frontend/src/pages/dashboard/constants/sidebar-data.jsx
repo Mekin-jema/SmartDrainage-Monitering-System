@@ -8,6 +8,7 @@ import {
   BookOpen,
   Settings,
   ActivitySquare,
+  MapPin,
 } from "lucide-react";
 
 export const sidebarData = {
@@ -45,6 +46,11 @@ export const sidebarData = {
           title: "Workers & Users",
           url: "/dashboard/users",
           icon: Users,
+        },
+        {
+          title:"Map",
+          url:"dashboard/map",
+          icon:MapPin,
         },
         {
           title: "Maintenance Logs",
