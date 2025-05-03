@@ -31,9 +31,10 @@ const formSchema = z.object({
   firstName: z.string().min(2).max(255),
   lastName: z.string().min(2).max(255),
   email: z.string().email(),
-  subject: z.string().min(2).max(255),
+  // subject: z.string().min(2).max(255),
   message: z.string(),
 });
+
 
 export const ContactSection = () => {
   const form = useForm
@@ -44,26 +45,26 @@ export const ContactSection = () => {
       firstName: "",
       lastName: "",
       email: "",
-      subject: "Web Development",
+      // subject: "Web Development",
       message: "",
     },
   });
 
-  // function onSubmit(values) {
-  //   const { firstName, lastName, email, subject, message } = values;
-  //   console.log(values);
+  function onSubmit(values) {
+    const { firstName, lastName, email, subject, message } = values;
+    console.log(values);
 
-  //   const mailToLink = `mailto:leomirandadev@gmail.com?subject=${subject}&body=Hello I am ${firstName} ${lastName}, my Email is ${email}. %0D%0A${message}`;
+    // const mailToLink = `mailto:leomirandadev@gmail.com?subject=${subject}&body=Hello I am ${firstName} ${lastName}, my Email is ${email}. %0D%0A${message}`;
 
-  //   window.location.href = mailToLink;
-  // }
+    // window.location.href = mailToLink;
+  }
 
   return (
-    <section id="contact" className="container py-24 sm:py-32">
+    <section id="contact" className="container py-24 sm:py-32 md:max-w-[90%] mx-auto p-3">
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <div className="mb-4">
-            <h2 className="text-lg text-primary mb-2 tracking-wider">Contact</h2>
+            <h2 className="text-lg text-primary mb-2 tracking-wider text-center">Contact</h2>
             <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
@@ -115,11 +116,11 @@ export const ContactSection = () => {
             <Form {...form}>
               {/* Using the form directly from react-hook-form */}
               <form 
-              // onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit)}
                className="grid w-full gap-4">
                 <div className="flex flex-col md:!flex-row gap-8">
                   <FormField
-                    // control={form.control}
+                    control={form.control}
                     name="firstName"
                     render={({ field }) => (
                       <FormItem className="w-full">
@@ -166,7 +167,7 @@ export const ContactSection = () => {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                {/* <div className="flex flex-col gap-1.5">
                   <FormField
                     control={form.control}
                     name="subject"
@@ -194,7 +195,7 @@ export const ContactSection = () => {
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> */}
 
                 <div className="flex flex-col gap-1.5">
                   <FormField

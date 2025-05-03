@@ -34,7 +34,7 @@ const benefitList = [
 
 export const BenefitsSection = () => {
   return (
-    <section id="benefits" className="container py-24 sm:py-32">
+    <section id="benefits" className="container py-24 sm:py-32 md:max-w-[90%] mx-auto">
       <div className="grid lg:grid-cols-2 place-items-center lg:gap-24">
         <div>
         <h2 className="text-lg text-primary mb-2 tracking-wider">Services</h2>

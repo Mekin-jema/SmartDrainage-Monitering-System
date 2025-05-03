@@ -95,15 +95,15 @@ export const TestimonialSection = () => {
         opts={{
           align: "start",
         }}
-        className="relative w-[80%] sm:w-[90%] lg:max-w-screen-xlmd: min-h-[250px] mx-auto"
+        className="relative w-[80%] sm:w-[90%] lg:max-w-screen-xl h-full   mx-auto"
       >
         <CarouselContent>
           {reviewList.map((review) => (
             <CarouselItem
               key={review.name}
-              className="md:basis-1/2 lg:basis-1/3"
+              className="md:basis-1/2 lg:basis-1/3 "
             >
-              <Card className="bg-muted/50 dark:bg-card">
+              <Card className="bg-muted/50 dark:bg-card md: min-h-[260px]">
                 <CardContent className="pt-6 pb-0">
                   <div className="flex gap-1 pb-6">
                     <Star className="size-4 fill-primary text-primary" />

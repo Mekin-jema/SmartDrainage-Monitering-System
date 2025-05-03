@@ -22,14 +22,14 @@ export const HeroSection = () => {
             <span className="mr-2 text-primary">
               <Badge>New</Badge>
             </span>
-            <span> Ambalay Maps is live! </span>
+            <span> SmartDrainX is live! </span>
           </Badge>
 
           <div className="max-w-screen-md mx-auto text-center text-4xl md:text-6xl font-bold">
             <h1>
               Explore smarter with
               <span className="text-transparent px-2 bg-gradient-to-r from-[#4A90E2] to-primary bg-clip-text">
-                Ambalay Maps
+                 SmartDrainX
               </span>
             </h1>
           </div>
@@ -72,8 +72,8 @@ export const HeroSection = () => {
             className="w-full md:w-[1200px] mx-auto rounded-lg relative leading-none flex items-center border border-t-2 border-secondary border-t-primary/30"
             src={
               theme === "light"
-                ? "/ambalay-map-light.png"
-                : "/ambalay-map-dark.png"
+                ? "/light.png"
+                : "/dark.png"
             }
             alt="Ambalay Map Dashboard"
           />

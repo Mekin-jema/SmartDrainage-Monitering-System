@@ -24,15 +24,17 @@ import {
 } from "@/components/ui/form";
 import {Link} from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { InputField } from "@/components/Auth/FormFields";
+import { InputField } from "@/components/auth/FormFields";
 import {
-  ForgotPasswordFormValues,
+  // ForgotPasswordFormValues,
   forgotPasswordSchema,
 } from "@/lib/schema/forgotPasswordSchema";
-import { authClient } from "@/lib/auth-client";
+// import { authClient } from "@/lib/auth-client";
 
 const ForgotPassword = () => {
-  const form = useForm<ForgotPasswordFormValues>({
+  const form = useForm
+  // <ForgotPasswordFormValues>
+    ({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
@@ -41,39 +43,42 @@ const ForgotPassword = () => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
 
-  // const onSubmit = async (data: ForgotPasswordFormValues) => {
-  //   setPending(true);
-  //   const { error } = await authClient.forgetPassword({
-  //     email: data.email,
-  //     redirectTo: "/reset-password",
-  //   });
-  //   if (error) {
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       variant: "destructive",
-  //     });
-  //   } else {
-  //     toast({
-  //       title: "Success",
-  //       description:
-  //         "If an account exists with this email, you will receive a password reset link",
-  //       variant: "default",
-  //     });
-  //   }
-  //   setPending(false);
-  // };
+  const onSubmit = async (data
+    // : 
+    // ForgotPasswordFormValues
+  ) => {
+    setPending(true);
+    const { error } = await authClient.forgetPassword({
+      email: data.email,
+      redirectTo: "/reset-password",
+    });
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description:
+          "If an account exists with this email, you will receive a password reset link",
+        variant: "default",
+      });
+    }
+    setPending(false);
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 md:max-w-[600px] mx-auto p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
+          <Link to="/" className="inline-block">
             <div className="flex items-center justify-center space-x-2">
               <div className="w-8 h-8 rounded-md bg-primary/90 flex items-center justify-center text-white font-bold">
-                A
+                We
               </div>
-              <h1 className="text-2xl font-bold">AffiliateX</h1>
+              <h1 className="text-2xl font-bold">SmartDrainX</h1>
             </div>
           </Link>
         </div>
@@ -121,7 +126,7 @@ const ForgotPassword = () => {
             <div className="text-center text-sm">
               Remember your password?{" "}
               <Link
-                href="/login"
+                to="/login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Log in

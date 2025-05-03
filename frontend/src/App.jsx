@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import DashboardMainPage from "./pages/dashboard/amba-dashboard";
 import NotFoundError from "./pages/error/404";
-import ForgotPassword from "./pages/auth/forgot-password/route";
+// import ForgotPassword from "./pages/auth/forgot-password/route";
 import SignIn from "./pages/auth/sign-in/route";
 import SignUp from "./pages/auth/sign-up/route";
 import Otp from "./pages/auth/otp/route";
@@ -11,11 +11,13 @@ import Manholes from "./pages/dashboard/manholes/Manholes";
 import Alerts from "./pages/dashboard/alerts/Alerts";
 import Users from "./pages/dashboard/users/Users";
 import RepairsInspection from "./pages/dashboard/repairs-inspection/RepairsInspection";
-import Settings from "./pages/dashboard/system-settings/Settings";
 import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
 import Map from "./pages/dashboard/map/map";
+import Navbar from "@/components/sections/navbar";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
 import { HeroSection } from "@/components/sections/hero";
 import { SponsorsSection } from "@/components/sections/sponsors";
 import { BenefitsSection } from "@/components/sections/benefits";
@@ -28,9 +30,7 @@ import { PricingSection } from "@/components/sections/pricing";
 import { ContactSection } from "@/components/sections/contact";
 import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
-import Navbar from "@/components/sections/navbar";
-import Login from "./components/auth/Login";
-import Signup from "./components/auth/Signup";
+import ForgotPassword from "./components/auth/Forgot-password";
 
 // Router configuration
 const router = createBrowserRouter([

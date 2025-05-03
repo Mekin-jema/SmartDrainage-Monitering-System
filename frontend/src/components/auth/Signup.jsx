@@ -30,7 +30,7 @@ import { InputField } from "@/components/auth/FormFields";
 import { 
   // SignUpFormValues, 
   signUpSchema } from "@/lib/schema/signupSchema";
-// import {authClient} from "@/lib/auth-client";
+import { authClient } from "@/lib/authClient";
 
 const Signup = () => {
   const form = useForm
@@ -48,39 +48,39 @@ const Signup = () => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
 
-  // const onSubmit = async (
-  //   // data: SignUpFormValues
-  // ) => {
-  //   form.reset()
-  //   await authClient.signUp.email({
-  //     email: data.email,
-  //     password: data.password,
-  //     name: data.name,
-  //   },
-  //     {
-  //       onRequest:()=>{
-  //         setPending(true)
-  //       },
-  //       onSuccess:()=>{
-  //         toast({
-  //           title: "Account created",
-  //           description: "your account has been created check your email for confirmation",
-  //         });
-  //       console.log("success")
-  //       },
-  //       onError: (ctx) => {
-  //         console.log("error",ctx)
-  //         toast({
-  //           variant:"destructive",
-  //           title: "something went wrong",
-  //           description: ctx.error.message??"something went wrong."
-  //         });
-  //         console.log("error",ctx.error.message)
-  //     },
+  const onSubmit = async (
+    // data: SignUpFormValues
+  ) => {
+    form.reset()
+    await authClient.signUp.email({
+      email: data.email,
+      password: data.password,
+      name: data.name,
+    },
+      {
+        onRequest:()=>{
+          setPending(true)
+        },
+        onSuccess:()=>{
+          toast({
+            title: "Account created",
+            description: "your account has been created check your email for confirmation",
+          });
+        console.log("success")
+        },
+        onError: (ctx) => {
+          console.log("error",ctx)
+          toast({
+            variant:"destructive",
+            title: "something went wrong",
+            description: ctx.error.message??"something went wrong."
+          });
+          console.log("error",ctx.error.message)
+      },
 
-  //   })
-  //   setPending(false)
-  // };
+    })
+    setPending(false)
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
