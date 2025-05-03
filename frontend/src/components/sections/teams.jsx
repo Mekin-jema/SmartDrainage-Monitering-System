@@ -9,22 +9,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-import {Link} from  "react-router-dom";
-// interface TeamProps {
-//   imageUrl: string;
-//   firstName: string;
-//   lastName: string;
-//   positions: string[];
-//   socialNetworks: SocialNetworkProps[];
-// }
-// interface SocialNetworkProps {
-//   name: string;
-//   url: string;
-// }
+import { Link } from "react-router-dom";
+
 export const TeamSection = () => {
-  const teamList
-  // : TeamProps[]
-   = [
+  const teamList = [
     {
       imageUrl: "https://i.pravatar.cc/250?img=58",
       firstName: "Leo",
@@ -153,7 +141,7 @@ export const TeamSection = () => {
     },
     {
       imageUrl:
-        "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dhttps://images.unsplash.com/photo-1573497019236-17f8177b81e8?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       firstName: "Pam",
       lastName: "Taylor",
       positions: ["Fullstack Developer", "UX Researcher"],
@@ -165,9 +153,8 @@ export const TeamSection = () => {
       ],
     },
   ];
-  const socialIcon = (socialName
-    // : string
-  ) => {
+
+  const socialIcon = (socialName) => {
     switch (socialName) {
       case "LinkedIn":
         return <LinkedInIcon />;
@@ -175,6 +162,8 @@ export const TeamSection = () => {
         return <GithubIcon />;
       case "X":
         return <XIcon />;
+      default:
+        return null;
     }
   };
 
