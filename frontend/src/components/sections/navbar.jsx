@@ -98,11 +98,9 @@ const Navbar = () => {
                     variant="ghost"
                     className="justify-start text-base"
                   >
-                    <NavigationMenuLink asChild>
-                      <a href={href} className="text-base w-full text-left">
-                        {label}
-                      </a>
-                    </NavigationMenuLink>
+                    <a href={href} className="w-full text-left">
+                      {label}
+                    </a>
                   </Button>
                 ))}
               </div>
@@ -115,6 +113,7 @@ const Navbar = () => {
           </SheetContent>
         </Sheet>
       </div>
+
 
       {/* Desktop Navigation */}
       <NavigationMenu className="hidden lg:block mx-auto">
