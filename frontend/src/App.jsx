@@ -19,6 +19,19 @@ import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
 import Map  from "./pages/dashboard/map/map";
+import { HeroSection } from "./sections/hero";
+import { SponsorsSection } from "./sections/sponsors";
+import { BenefitsSection } from "./sections/benefits";
+import { FeaturesSection } from "./sections/features";
+import { ServicesSection } from "./sections/services";
+import { TestimonialSection } from "./sections/testimonial";
+import { TeamSection } from "./sections/teams";
+import { CommunitySection } from "./sections/community";
+import { PricingSection } from "./sections/pricing";
+import { ContactSection } from "./sections/contact";
+import { FAQSection } from "./sections/faq";
+import { FooterSection } from "./sections/footer";
+import { Navbar } from "./sections/navbar";
 
 const router = createBrowserRouter([
 
@@ -95,7 +108,24 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={router} >
+    <div>
+      <Navbar/>
+      <HeroSection />
+      <SponsorsSection />
+      <BenefitsSection />
+      <FeaturesSection />
+      <ServicesSection />
+      <TestimonialSection />
+      <TeamSection />
+      <CommunitySection />
+      <PricingSection />
+      <ContactSection />
+      <FAQSection />
+      <FooterSection />
+    </div>
+
+  </RouterProvider>;
 }
 
 export default App;
