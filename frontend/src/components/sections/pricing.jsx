@@ -9,66 +9,57 @@ import {
 } from "@/components/ui/card";
 import { Check } from "lucide-react";
 
-const PopularPlan ={
-  NO : 0,
-  YES : 1,
-}
+const PopularPlan = {
+  NO: 0,
+  YES: 1,
+};
 
-// interface PlanProps {
-//   title: string;
-//   popular: PopularPlan;
-//   price: number;
-//   description: string;
-//   buttonText: string;
-//   benefitList: string[];
-// }
-
-const plans
-// : PlanProps[] 
-= [
+const plans = [
   {
-    title: "Free",
+    title: "Basic",
     popular: 0,
     price: 0,
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Start Free Trial",
+      "Get started with basic monitoring and notifications for your sewage system.",
+    buttonText: "Start for Free",
     benefitList: [
-      "1 team member",
-      "1 GB storage",
-      "Upto 2 pages",
+      "1 monitoring station",
+      "Basic alert system",
+      "Mobile notifications",
       "Community support",
-      "AI assistance",
+      "Basic analytics",
     ],
   },
   {
-    title: "Premium",
+    title: "Advanced",
     popular: 1,
-    price: 45,
+    price: 49,
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Get starterd",
+      "Access advanced features including real-time data tracking and more detailed insights.",
+    buttonText: "Get Started",
     benefitList: [
-      "4 team member",
-      "8 GB storage",
-      "Upto 6 pages",
+      "5 monitoring stations",
+      "Advanced alert system",
+      "Web and mobile dashboard",
       "Priority support",
-      "AI assistance",
+      "Detailed analytics & reports",
+      "Integration with third-party sensors",
     ],
   },
   {
     title: "Enterprise",
     popular: 0,
-    price: 120,
+    price: 150,
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Contact US",
+      "For large-scale operations with multiple monitoring stations and full integration support.",
+    buttonText: "Contact Us",
     benefitList: [
-      "10 team member",
-      "20 GB storage",
-      "Upto 10 pages",
-      "Phone & email support",
-      "AI assistance",
+      "Unlimited monitoring stations",
+      "Customizable alerts and reports",
+      "24/7 dedicated support",
+      "Custom integration & API access",
+      "Full analytics dashboard",
+      "Data export capabilities",
     ],
   },
 ];
@@ -81,11 +72,11 @@ export const PricingSection = () => {
       </h2>
 
       <h2 className="text-3xl md:text-4xl text-center font-bold mb-4">
-        Get unlimitted access
+        Choose the plan that fits your needs
       </h2>
 
       <h3 className="md:w-1/2 mx-auto text-xl text-center text-muted-foreground pb-14">
-        Lorem ipsum dolor sit amet consectetur adipisicing reiciendis.
+        Monitor and manage your sewage system efficiently with SmartDrainageX.
       </h3>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-4">
@@ -94,7 +85,7 @@ export const PricingSection = () => {
             <Card
               key={title}
               className={
-                popular === PopularPlan?.YES
+                popular === PopularPlan.YES
                   ? "drop-shadow-xl shadow-black/10 dark:shadow-white/10 border-[1.5px] border-primary lg:scale-[1.1]"
                   : ""
               }
@@ -125,9 +116,7 @@ export const PricingSection = () => {
 
               <CardFooter>
                 <Button
-                  variant={
-                    popular === PopularPlan?.YES ? "default" : "secondary"
-                  }
+                  variant={popular === PopularPlan.YES ? "default" : "secondary"}
                   className="w-full"
                 >
                   {buttonText}
