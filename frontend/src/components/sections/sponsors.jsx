@@ -6,16 +6,10 @@ import "@devnomic/marquee/dist/index.css";
 import { icons } from "lucide-react";
 import { useTheme } from "next-themes";
 
-// interface sponsorsProps {
-//   icon: string;
-//   name: string;
-// }
-
-const sponsors
-// : sponsorsProps[] 
-= [
+// Defining the list of sponsors with their icons and names
+const sponsors = [
   {
-    icon: "Map",
+    icon: "MapPin",
     name: "Ethiomap Technologies",
   },
   {
@@ -65,10 +59,7 @@ export const SponsorsSection = () => {
               className="flex items-center text-xl md:text-2xl font-medium"
             >
               <Icon
-                name={
-                  icon
-                  //  as keyof typeof icons
-                }
+                name={icon} // Type casting to match the Lucide icon names
                 size={32}
                 className="mr-2"
                 color={`${theme === "light" ? "#4A90E2" : "#fff"}`}
