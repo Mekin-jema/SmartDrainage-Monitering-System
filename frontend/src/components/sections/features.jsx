@@ -10,42 +10,42 @@ import { icons } from "lucide-react";
 
 const featureList
 // : FeaturesProps[] 
-= [
+=  [
   {
-    icon: "TabletSmartphone",
-    title: "Mobile Friendly",
+    icon: "SatelliteDish",
+    title: "Real-Time Monitoring",
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam, consectetur.",
+      "Continuously tracks sewage levels and gas concentrations in manholes using IoT sensors to prevent overflows and health hazards.",
   },
   {
-    icon: "BadgeCheck",
-    title: "Social Proof",
+    icon: "MapPin",
+    title: "Location-Based Alerts",
     description:
-      "Lorem ipsum dolor sit amet consectetur. Natus consectetur, odio ea accusamus aperiam.",
+      "Automatically assigns tasks to nearby sewage workers based on GPS data and the severity of the detected issue.",
   },
   {
-    icon: "Goal",
-    title: "Targeted Content",
+    icon: "QrCode",
+    title: "QR-Based Feedback System",
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. odio ea accusamus aperiam.",
+      "Each manhole includes a QR code enabling citizens to easily report issues, helping authorities prioritize maintenance.",
   },
   {
-    icon: "PictureInPicture",
-    title: "Strong Visuals",
+    icon: "BellRing",
+    title: "Automated Alerts",
     description:
-      "Lorem elit. A odio velit cum aliquam. Natus consectetur dolores, odio ea accusamus aperiam.",
+      "Instant notifications are sent to responsible personnel when dangerous gas levels or overflows are detected.",
   },
   {
-    icon: "MousePointerClick",
-    title: "Clear CTA",
+    icon: "BrainCircuit",
+    title: "AI-Powered Insights",
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing. odio ea accusamus consectetur.",
+      "Machine learning algorithms predict overflow risks and filter out irrelevant or spam feedback automatically.",
   },
   {
-    icon: "Newspaper",
-    title: "Clear Headline",
+    icon: "LayoutDashboard",
+    title: "Central Dashboard",
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam. Natus consectetur.",
+      "A responsive admin dashboard provides live sensor data, feedback management, worker coordination, and performance reports.",
   },
 ];
 
