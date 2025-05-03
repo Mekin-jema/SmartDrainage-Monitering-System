@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 // import { z } from "zod";

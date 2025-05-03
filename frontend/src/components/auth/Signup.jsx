@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState } from "react";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 // import { z } from "zod";
@@ -33,7 +33,8 @@ import {
 // import {authClient} from "@/lib/auth-client";
 
 const Signup = () => {
-  const form = useForm<
+  const form = useForm
+  // <
   // SignUpFormValues>
   ({
     resolver: zodResolver(signUpSchema),
@@ -177,7 +178,7 @@ const Signup = () => {
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
-                href="/auth/login"
+                to="/login"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 Log in
