@@ -1,4 +1,3 @@
-// Navbar.tsx
 import React from "react";
 import { ChevronsDown, Github, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -99,7 +98,11 @@ const Navbar = () => {
                     variant="ghost"
                     className="justify-start text-base"
                   >
-                    <Link to={href}>{label}</Link>
+                    <NavigationMenuLink asChild>
+                      <a href={href} className="text-base w-full text-left">
+                        {label}
+                      </a>
+                    </NavigationMenuLink>
                   </Button>
                 ))}
               </div>
@@ -144,9 +147,9 @@ const Navbar = () => {
           {routeList.map(({ href, label }) => (
             <NavigationMenuItem key={href}>
               <NavigationMenuLink asChild>
-                <Link to={href} className="text-base px-2">
+                <a href={href} className="text-base px-2">
                   {label}
-                </Link>
+                </a>
               </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
