@@ -41,26 +41,27 @@ export const HeroSection = () => {
             Cleaner cities start here—with precision, scalability, and customization at your fingertips.`}
           </p>
 
-          <div className="space-y-4 md:space-y-0 md:space-x-4 flex flex-col md:flex-row justify-center">
-            <Button className="w-5/6 md:w-1/4 font-bold group/arrow">
-              Try It Now
-              <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
-            </Button>
+          <div className="flex   justify-center items-center gap-4">
+  <Button className="w-5/6 md:w-1/4 font-bold group/arrow">
+    Try It Now
+    <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
+  </Button>
 
-            <Button
-              asChild
-              variant="secondary"
-              className="w-5/6 md:w-1/4 font-bold"
-            >
-              <a
-                href="https://github.com/your-github/ambalay-maps"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub Repository
-              </a>
-            </Button>
-          </div>
+  <Button
+    asChild
+    variant="secondary"
+    className="w-5/6 md:w-1/4 font-bold"
+  >
+    <a
+      href="https://github.com/your-github/ambalay-maps"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      GitHub Repository
+    </a>
+  </Button>
+</div>
+
         </div>
 
         <div className="relative group mt-14">
