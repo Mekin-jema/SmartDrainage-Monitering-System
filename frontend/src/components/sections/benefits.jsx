@@ -1,52 +1,47 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
-import { icons } from "lucide-react";
-
-
 
 const benefitList = [
   {
-    icon: "Map",
-    title: "Map Visualization",
-    description:
-      "Interactively zoom, pan, and search with customizable layers for traffic, weather, and user-defined data.",
-  },
-  {
-    icon: "MapPin",
-    title: "Geocoding & Reverse Geocoding",
-    description:
-      "Search and convert addresses to coordinates or vice versa with auto-suggestions and accurate mapping.",
-  },
-  {
-    icon: "Route",
-    title: "Routing & Directions",
-    description:
-      "Plan routes with turn-by-turn navigation and real-time traffic updates to ensure optimal travel time.",
-  },
-  {
     icon: "Activity",
-    title: "Route Optimization",
+    title: "Real-Time Monitoring",
     description:
-      "Solve complex delivery routing problems visually and efficiently, considering capacity and time constraints.",
+      "Continuously track manhole status across the city using level and gas sensors for instant insights.",
+  },
+  {
+    icon: "AlertTriangle",
+    title: "Toxic Gas & Overflow Alerts",
+    description:
+      "Automatically detect hazardous gas concentrations or overflow levels and trigger immediate warnings.",
+  },
+  {
+    icon: "Users",
+    title: "Smart Worker Assignment",
+    description:
+      "Assign the nearest available worker based on GPS and task priority to resolve issues efficiently.",
+  },
+  {
+    icon: "BarChart3",
+    title: "Analytics & Reporting",
+    description:
+      "Visualize trends, generate reports, and support data-driven planning for improved sanitation systems.",
   },
 ];
-
 
 export const BenefitsSection = () => {
   return (
     <section id="benefits" className="container py-24 sm:py-32 md:max-w-[90%] mx-auto">
       <div className="grid lg:grid-cols-2 place-items-center lg:gap-24">
         <div>
-        <h2 className="text-lg text-primary mb-2 tracking-wider">Services</h2>
+          <h2 className="text-lg text-primary mb-2 tracking-wider">Key Features</h2>
 
-<h2 className="text-3xl md:text-4xl font-bold mb-4">
-  Empowering Smarter Navigation
-</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Empowering Smarter Urban Drainage
+          </h2>
 
-<p className="text-xl text-muted-foreground mb-8">
-  From interactive maps to advanced route optimization, Ambalay Maps provides essential geospatial tools to streamline logistics, urban planning, and real-time decision-making across Ethiopia.
-</p>
-
+          <p className="text-xl text-muted-foreground mb-8">
+            SmartDrainX transforms drainage management with IoT-powered sensors, automated alerts, and intelligent worker coordination — enabling municipalities to build cleaner, safer, and more responsive urban environments.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 w-full">
@@ -58,7 +53,7 @@ export const BenefitsSection = () => {
               <CardHeader>
                 <div className="flex justify-between">
                   <Icon
-                    name={icon }
+                    name={icon}
                     size={32}
                     color="hsl(var(--primary))"
                     className="mb-6 text-primary"
