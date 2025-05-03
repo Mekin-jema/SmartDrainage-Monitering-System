@@ -6,38 +6,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const ProService= {
-  YES :1,
-  NO :0,
-}
-// interface ServiceProps {
-//   title: string;
-//   pro: ProService;
-//   description: string;
-// }
-const serviceList
-// : ServiceProps[] 
-= [
+const ProService = {
+  YES: 1,
+  NO: 0,
+};
+
+const serviceList = [
   {
-    title: "Custom Domain Integration",
+    title: "Real-Time Sewage Monitoring",
     description:
-      "Lorem ipsum dolor sit, amet consectetur adipisicing elit adipisicing.",
+      "Monitor the health of your sewage system in real-time with up-to-date data, ensuring early detection of potential issues.",
     pro: 0,
   },
   {
-    title: "Social Media Integrations",
+    title: "Data Analytics & Reporting",
     description:
-      "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae, dicta.",
+      "Gain valuable insights with our powerful analytics tool that tracks sewage system performance and provides actionable reports.",
     pro: 0,
   },
   {
-    title: "Email Marketing Integrations",
-    description: "Lorem dolor sit amet adipisicing.",
-    pro: 0,
+    title: "Custom Alerts & Notifications",
+    description:
+      "Set up customized alerts for overflow or toxic gas levels to ensure quick responses to critical issues.",
+    pro: 1,
   },
   {
-    title: "SEO Optimization",
-    description: "Lorem ipsum dolor sit amet consectetur.",
+    title: "Advanced Sensor Integration",
+    description:
+      "Integrate a variety of sensors (e.g., pH, gas, and level) to collect comprehensive data across your sewage infrastructure.",
     pro: 1,
   },
 ];
@@ -50,14 +46,11 @@ export const ServicesSection = () => {
       </h2>
 
       <h2 className="text-3xl md:text-4xl text-center font-bold mb-4">
-        Grow Your Business
+        Manage Your Sewage System with Ease
       </h2>
       <h3 className="md:w-1/2 mx-auto text-xl text-center text-muted-foreground mb-8">
-        From marketing and sales to operations and strategy, we have the
-        expertise to help you achieve your goals.
+        From real-time monitoring to advanced analytics, our services ensure a streamlined and efficient sewage management experience.
       </h3>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full lg:w-[60%] mx-auto">
         {serviceList.map(({ title, description, pro }) => (
           <Card
