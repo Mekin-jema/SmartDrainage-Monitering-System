@@ -1,8 +1,5 @@
-// import { AmbaBoard } from "./components";
-import { Navigate, Route, Routes, BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import DashboardMainPage from "./pages/dashboard/amba-dashboard";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
 import NotFoundError from "./pages/error/404";
 import ForgotPassword from "./pages/auth/forgot-password/route";
 import SignIn from "./pages/auth/sign-in/route";
@@ -18,7 +15,7 @@ import Settings from "./pages/dashboard/system-settings/Settings";
 import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
-import Map  from "./pages/dashboard/map/map";
+import Map from "./pages/dashboard/map/map";
 import { HeroSection } from "@/components/sections/hero";
 import { SponsorsSection } from "@/components/sections/sponsors";
 import { BenefitsSection } from "@/components/sections/benefits";
@@ -31,101 +28,88 @@ import { PricingSection } from "@/components/sections/pricing";
 import { ContactSection } from "@/components/sections/contact";
 import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
-import { Navbar } from "@/components/sections/navbar";
+import Navbar from "@/components/sections/navbar";
 
+// Router configuration
 const router = createBrowserRouter([
+  // Home route
+  {
+    path: "/",
+    element: (
+      <div>
+        <Navbar />
+        <HeroSection />
+        <SponsorsSection />
+        <BenefitsSection />
+        <FeaturesSection />
+        <ServicesSection />
+        <TestimonialSection />
+        <TeamSection />
+        <CommunitySection />
+        <PricingSection />
+        {/* <ContactSection /> */}
+        <FAQSection />
+        <FooterSection />
+      </div>
+    ),
+  },
 
-
-  { path: "/404", element: <NotFoundError /> },
-
+  // Dashboard routes
   {
     path: "/dashboard",
-    element: <DashboardwMainPage />,
+    element: <DashboardMainPage />,
     children: [
-      { index: true, element: <Dashboard  /> },
-
-      ,
-
-      {
-        path: "sensor-readings",
-        element: <SensorsData />,
-
-      },
+      { index: true, element: <Dashboard /> },
+      { path: "sensor-readings", element: <SensorsData /> },
       { path: "manholes", element: <Manholes /> },
       { path: "alerts", element: <Alerts /> },
       { path: "users", element: <Users /> },
-      // { path: "map", element: <Map /> },
-      , {
-        path: "maintenance"
-        , element: <MaintenanceLogs />
-      },
+      { path: "maintenance", element: <MaintenanceLogs /> },
       { path: "repairs", element: <RepairsInspection /> },
-      ,{
-        path: "settings", element:<SettingsPage/>
-      }
-      ,{
-        path:"docs",element:<Docs/>
-      }
-      ,{
-        path:"map",element:<Map/>
-      }
-     
-      
-      // {
-      //   path: "users",
-      //   element: <Users />,
-      //   loader: usersLoader,
-      //   children:[
-      //     { path: "invite", element: <UserInvite /> },
-      //     { path: "add", element: <UserAdd /> },
-      //     {path:"delete",element:<UserDelete/>}
-      //   ]
-
-      // }
-      // ... other nested routes
+      { path: "settings", element: <SettingsPage /> },
+      { path: "docs", element: <Docs /> },
+      { path: "map", element: <Map /> },
     ],
   },
+
+  // Authentication routes
   {
     path: "/signin",
-    element: <SignIn />
+    element: <SignIn />,
   },
   {
     path: "/otp",
-    element: <Otp />
+    element: <Otp />,
   },
   {
     path: "/signup",
+    element: <SignUp />, // Add component for SignUp if needed
   },
   {
     path: "/forgot-password",
-    element: <ForgotPassword />
+    element: <ForgotPassword />,
   },
 
+  // Error handling route
   {
-    path: "*", element: <Navigate to="/404" replace />,
+    path: "/404",
+    element: <NotFoundError />,
   },
 
+  // Fallback route
+  {
+    path: "*",
+    element: <Navigate to="/404" replace />,
+  },
 ]);
 
+// App Component
 function App() {
-  return <RouterProvider router={router} >
-    <div>
-      <Navbar/>
-      <HeroSection />
-      <SponsorsSection />
-      <BenefitsSection />
-      <FeaturesSection />
-      <ServicesSection />
-      <TestimonialSection />
-      <TeamSection />
-      <CommunitySection />
-      <PricingSection />
-      <ContactSection />
-      <FAQSection />
-      <FooterSection />
-    </div>
-
-  </RouterProvider>;
+  return (
+    <RouterProvider router={router}>
+      {/* The content is routed and displayed by the Router */}
+    </RouterProvider>
+  );
 }
 
 export default App;

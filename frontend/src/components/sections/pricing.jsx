@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Check } from "lucide-react";
 
-// enum PopularPlan {
-//   NO = 0,
-//   YES = 1,
-// }
+const PopularPlan ={
+  NO : 0,
+  YES : 1,
+}
 
 // interface PlanProps {
 //   title: string;

@@ -6,10 +6,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// enum ProService {
-//   YES = 1,
-//   NO = 0,
-// }
+const ProService= {
+  YES :1,
+  NO :0,
+}
 // interface ServiceProps {
 //   title: string;
 //   pro: ProService;

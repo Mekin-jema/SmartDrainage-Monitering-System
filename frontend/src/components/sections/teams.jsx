@@ -8,8 +8,8 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import Image from "next/image";
-import Link from "next/link";
+
+import {Link} from  "react-router-dom";
 // interface TeamProps {
 //   imageUrl: string;
 //   firstName: string;
@@ -202,7 +202,7 @@ export const TeamSection = () => {
             >
               <CardHeader className="p-0 gap-0">
                 <div className="h-full overflow-hidden">
-                  <Image
+                  <img
                     src={imageUrl}
                     alt=""
                     width={300}

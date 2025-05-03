@@ -1,4 +1,3 @@
-"use client";
 import {
   Card,
   CardContent,
@@ -48,10 +47,7 @@ export const ContactSection = () => {
     },
   });
 
-  function onSubmit(
-    values
-    // : z.infer<typeof formSchema>
-  ) {
+  function onSubmit(values) {
     const { firstName, lastName, email, subject, message } = values;
     console.log(values);
 
@@ -65,10 +61,7 @@ export const ContactSection = () => {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <div className="mb-4">
-            <h2 className="text-lg text-primary mb-2 tracking-wider">
-              Contact
-            </h2>
-
+            <h2 className="text-lg text-primary mb-2 tracking-wider">Contact</h2>
             <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
@@ -82,7 +75,6 @@ export const ContactSection = () => {
                 <Building2 />
                 <div className="font-bold">Find us</div>
               </div>
-
               <div>742 Evergreen Terrace, Springfield, IL 62704</div>
             </div>
 
@@ -91,7 +83,6 @@ export const ContactSection = () => {
                 <Phone />
                 <div className="font-bold">Call us</div>
               </div>
-
               <div>+1 (619) 123-4567</div>
             </div>
 
@@ -100,7 +91,6 @@ export const ContactSection = () => {
                 <Mail />
                 <div className="font-bold">Mail US</div>
               </div>
-
               <div>leomirandadev@gmail.com</div>
             </div>
 
@@ -109,7 +99,6 @@ export const ContactSection = () => {
                 <Clock />
                 <div className="font-bold">Visit us</div>
               </div>
-
               <div>
                 <div>Monday - Friday</div>
                 <div>8AM - 4PM</div>
@@ -119,16 +108,16 @@ export const ContactSection = () => {
         </div>
 
         <Card className="bg-muted/60 dark:bg-card">
-          <CardHeader className="text-primary text-2xl"> </CardHeader>
+          <CardHeader className="text-primary text-2xl"></CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="grid w-full gap-4"
-              >
+              {/* Using the form directly from react-hook-form */}
+              <form 
+              // onSubmit={form.handleSubmit(onSubmit)}
+               className="grid w-full gap-4">
                 <div className="flex flex-col md:!flex-row gap-8">
                   <FormField
-                    control={form.control}
+                    // control={form.control}
                     name="firstName"
                     render={({ field }) => (
                       <FormItem className="w-full">
@@ -192,19 +181,11 @@ export const ContactSection = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Web Development">
-                              Web Development
-                            </SelectItem>
-                            <SelectItem value="Mobile Development">
-                              Mobile Development
-                            </SelectItem>
-                            <SelectItem value="Figma Design">
-                              Figma Design
-                            </SelectItem>
+                            <SelectItem value="Web Development">Web Development</SelectItem>
+                            <SelectItem value="Mobile Development">Mobile Development</SelectItem>
+                            <SelectItem value="Figma Design">Figma Design</SelectItem>
                             <SelectItem value="REST API">REST API</SelectItem>
-                            <SelectItem value="FullStack Project">
-                              FullStack Project
-                            </SelectItem>
+                            <SelectItem value="FullStack Project">FullStack Project</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -228,7 +209,6 @@ export const ContactSection = () => {
                             {...field}
                           />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -239,7 +219,6 @@ export const ContactSection = () => {
               </form>
             </Form>
           </CardContent>
-
           <CardFooter></CardFooter>
         </Card>
       </section>

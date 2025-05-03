@@ -1,7 +1,7 @@
-"use client";
-
-import { ChevronsDown, Github, Menu } from "lucide-react";
+// Navbar.tsx
 import React from "react";
+import { ChevronsDown, Github, Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -20,55 +20,20 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
 import { DarkModeToggle } from "@/pages/dashboard/navbar/toggle-theme";
 
-// interface RouteProps {
-//   href: string;
-//   label: string;
-// }
-
-// 
-
-
-const routeList
-// : RouteProps[]
- = [
-  {
-    href: "#testimonials",
-    label: "Home",
-  },
-  {
-    href: "#team",
-    label: "About",
-  },
-  {
-    href: "#",
-    label: "Shop",
-  },
-
-  {
-    href: "#contact",
-    label: "Documentation",
-  },
-  {
-    href: "#contact",
-    label: "Training",
-  },
-  
-
-  {
-    href: "#faq",
-    label: "FAQ",
-  },
+const routeList = [
+  { href: "#testimonials", label: "Home" },
+  { href: "#team", label: "About" },
+  { href: "#", label: "Shop" },
+  { href: "#contact", label: "Documentation" },
+  { href: "#contact", label: "Training" },
+  { href: "#faq", label: "FAQ" },
 ];
 
-const featureList
-// : FeatureProps[] 
-= [
+const featureList = [
   {
-    title: "Showcase Your Value ",
+    title: "Showcase Your Value",
     description: "Highlight how your product solves user problems.",
   },
   {
@@ -81,19 +46,23 @@ const featureList
     description:
       "Make your lead capture form visually appealing and strategically.",
   },
-  
 ];
 
-export const Navbar = () => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
-  return (
-    <header className=" shadow-inner bg-opacity-15 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-2xl flex justify-between items-center p-2 bg-card">
-      <Link href="/" className="font-bold text-lg flex items-center">
-      {/* <img src="./logo.svg" className=" border-secondary rounded-lg w-9 h-9 mr-2 border " /> */}
 
-      Ambalay Maps
+  return (
+    <header className="shadow-inner bg-opacity-15 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-2xl flex justify-between items-center p-2 bg-card">
+      <Link to="/" className="font-bold text-lg flex items-center">
+        <img
+          src="/logo.svg"
+          alt="Logo"
+          className="border-secondary rounded-lg w-9 h-9 mr-2 border"
+        />
+        Ambalay Maps
       </Link>
-      {/* <!-- Mobile --> */}
+
+      {/* Mobile Menu */}
       <div className="flex items-center lg:hidden">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -110,8 +79,12 @@ export const Navbar = () => {
             <div>
               <SheetHeader className="mb-4 ml-4">
                 <SheetTitle className="flex items-center">
-                  <Link href="/" className="flex items-center">
-                    <img src="./logo.svg" className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
+                  <Link to="/" className="flex items-center">
+                    <img
+                      src="/logo.svg"
+                      alt="Logo"
+                      className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white"
+                    />
                     Ambalay Maps
                   </Link>
                 </SheetTitle>
@@ -126,7 +99,7 @@ export const Navbar = () => {
                     variant="ghost"
                     className="justify-start text-base"
                   >
-                    <Link href={href}>{label}</Link>
+                    <Link to={href}>{label}</Link>
                   </Button>
                 ))}
               </div>
@@ -134,29 +107,21 @@ export const Navbar = () => {
 
             <SheetFooter className="flex-col sm:flex-col justify-start items-start">
               <Separator className="mb-2" />
-
               <DarkModeToggle />
             </SheetFooter>
           </SheetContent>
         </Sheet>
       </div>
 
-      {/* <!-- Desktop --> */}
+      {/* Desktop Navigation */}
       <NavigationMenu className="hidden lg:block mx-auto">
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger className="bg-card text-base">
               Features
             </NavigationMenuTrigger>
-            <NavigationMenuContent >
-              <div className="grid w-[600PX] grid-cols-2 gap-5 p-4">
-                {/* <Image
-                  src="./logo.svg"
-                  alt="RadixLogo"
-                  className="h-full w-full rounded-md object-contain"
-                  width={600}
-                  height={600}
-                /> */}
+            <NavigationMenuContent>
+              <div className="grid w-[600px] grid-cols-2 gap-5 p-4">
                 <ul className="flex flex-col gap-2">
                   {featureList.map(({ title, description }) => (
                     <li
@@ -176,31 +141,33 @@ export const Navbar = () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
 
-          <NavigationMenuItem>
-            {routeList.map(({ href, label }) => (
-              <NavigationMenuLink key={href} asChild>
-                <Link href={href} className="text-base px-2">
+          {routeList.map(({ href, label }) => (
+            <NavigationMenuItem key={href}>
+              <NavigationMenuLink asChild>
+                <Link to={href} className="text-base px-2">
                   {label}
                 </Link>
               </NavigationMenuLink>
-            ))}
-          </NavigationMenuItem>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
 
+      {/* Right Actions */}
       <div className="hidden lg:flex">
-        <ToggleTheme />
-
+        <DarkModeToggle />
         <Button asChild size="sm" variant="ghost" aria-label="View on GitHub">
-          <Link
-            aria-label="View on GitHub"
+          <a
             href="https://github.com/nobruf/shadcn-landing-page.git"
             target="_blank"
+            rel="noopener noreferrer"
           >
             <Github className="size-5" />
-          </Link>
+          </a>
         </Button>
       </div>
     </header>
   );
 };
+
+export default Navbar;
