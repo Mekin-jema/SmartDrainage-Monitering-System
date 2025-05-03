@@ -19,19 +19,19 @@ import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
 import Map  from "./pages/dashboard/map/map";
-import { HeroSection } from "./sections/hero";
-import { SponsorsSection } from "./sections/sponsors";
-import { BenefitsSection } from "./sections/benefits";
-import { FeaturesSection } from "./sections/features";
-import { ServicesSection } from "./sections/services";
-import { TestimonialSection } from "./sections/testimonial";
-import { TeamSection } from "./sections/teams";
-import { CommunitySection } from "./sections/community";
-import { PricingSection } from "./sections/pricing";
-import { ContactSection } from "./sections/contact";
-import { FAQSection } from "./sections/faq";
-import { FooterSection } from "./sections/footer";
-import { Navbar } from "./sections/navbar";
+import { HeroSection } from "@/components/sections/hero";
+import { SponsorsSection } from "@/components/sections/sponsors";
+import { BenefitsSection } from "@/components/sections/benefits";
+import { FeaturesSection } from "@/components/sections/features";
+import { ServicesSection } from "@/components/sections/services";
+import { TestimonialSection } from "@/components/sections/testimonial";
+import { TeamSection } from "@/components/sections/teams";
+import { CommunitySection } from "@/components/sections/community";
+import { PricingSection } from "@/components/sections/pricing";
+import { ContactSection } from "@/components/sections/contact";
+import { FAQSection } from "@/components/sections/faq";
+import { FooterSection } from "@/components/sections/footer";
+import { Navbar } from "@/components/sections/navbar";
 
 const router = createBrowserRouter([
 
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
 
   {
     path: "/dashboard",
-    element: <DashboardMainPage />,
+    element: <DashboardwMainPage />,
     children: [
       { index: true, element: <Dashboard  /> },
 

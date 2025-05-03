@@ -6,16 +6,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-enum ProService {
-  YES = 1,
-  NO = 0,
-}
-interface ServiceProps {
-  title: string;
-  pro: ProService;
-  description: string;
-}
-const serviceList: ServiceProps[] = [
+// enum ProService {
+//   YES = 1,
+//   NO = 0,
+// }
+// interface ServiceProps {
+//   title: string;
+//   pro: ProService;
+//   description: string;
+// }
+const serviceList
+// : ServiceProps[] 
+= [
   {
     title: "Custom Domain Integration",
     description:
