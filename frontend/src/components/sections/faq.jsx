@@ -11,39 +11,39 @@ import {
 //   value: string;
 // }
 
-const FAQList
-// : FAQProps[] 
-= [
+const FAQList = [
   {
-    question: "Is this template free?",
-    answer: "Yes. It is a free NextJS Shadcn template.",
+    question: "What is the Smart Sewage Monitoring System?",
+    answer:
+      "It is an IoT-based solution that monitors sewage manholes using sensors to detect overflow levels, toxic gas concentrations, and enables real-time alerts and analytics through a web dashboard.",
     value: "item-1",
   },
   {
-    question: "Duis aute irure dolor in reprehenderit in voluptate velit?",
+    question: "Which sensors are used in this system?",
     answer:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint labore quidem quam consectetur sapiente, iste rerum reiciendis animi nihil nostrum sit quo, modi quod.",
+      "The system primarily uses ultrasonic sensors for level detection and MQ-series gas sensors to detect hazardous gases like methane or hydrogen sulfide in manholes.",
     value: "item-2",
   },
   {
-    question:
-      "Lorem ipsum dolor sit amet Consectetur natus dolor minus quibusdam?",
+    question: "How does the system notify workers about issues?",
     answer:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Labore qui nostrum reiciendis veritatis.",
+      "When overflow or dangerous gas levels are detected, the system sends alerts to assigned sewage workers based on their proximity, using the shortest path routing logic.",
     value: "item-3",
   },
   {
-    question: "Excepteur sint occaecat cupidata non proident sunt?",
-    answer: "Lorem ipsum dolor sit amet consectetur, adipisicing elit.",
+    question: "Can citizens report issues manually?",
+    answer:
+      "Yes. Each manhole has a QR code that redirects to a feedback form where users can report issues, which are then reviewed and prioritized in the dashboard.",
     value: "item-4",
   },
   {
-    question:
-      "Enim ad minim veniam, quis nostrud exercitation ullamco laboris?",
-    answer: "consectetur adipisicing elit. Sint labore.",
+    question: "Is machine learning used in this project?",
+    answer:
+      "Yes. The system uses machine learning models to predict overflow risks and detect spam or irrelevant feedback submitted by users.",
     value: "item-5",
   },
 ];
+
 
 export const FAQSection = () => {
   return (
