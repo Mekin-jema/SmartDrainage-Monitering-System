@@ -22,16 +22,20 @@ import {
   // FormLabel,
   // FormMessage,
 } from "@/components/ui/form";
-import Link from "next/link";
+import {Link} from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 // import { GoogleIcon } from "@/components/ui/google-icon";
-import { GoogleAuthButton } from "@/components/Auth/GoogleAuthButton";
-import { InputField } from "@/components/Auth/FormFields";
-import { SignUpFormValues, signUpSchema } from "@/lib/schema/signupSchema";
-import {authClient} from "@/lib/auth-client";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { InputField } from "@/components/auth/FormFields";
+import { 
+  // SignUpFormValues, 
+  signUpSchema } from "@/lib/schema/signupSchema";
+// import {authClient} from "@/lib/auth-client";
 
 const Signup = () => {
-  const form = useForm<SignUpFormValues>({
+  const form = useForm<
+  // SignUpFormValues>
+  ({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
@@ -43,37 +47,39 @@ const Signup = () => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
 
-  const onSubmit = async (data: SignUpFormValues) => {
-    form.reset()
-    await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-    },
-      {
-        onRequest:()=>{
-          setPending(true)
-        },
-        onSuccess:()=>{
-          toast({
-            title: "Account created",
-            description: "your account has been created check your email for confirmation",
-          });
-        console.log("success")
-        },
-        onError: (ctx) => {
-          console.log("error",ctx)
-          toast({
-            variant:"destructive",
-            title: "something went wrong",
-            description: ctx.error.message??"something went wrong."
-          });
-          console.log("error",ctx.error.message)
-      },
+  // const onSubmit = async (
+  //   // data: SignUpFormValues
+  // ) => {
+  //   form.reset()
+  //   await authClient.signUp.email({
+  //     email: data.email,
+  //     password: data.password,
+  //     name: data.name,
+  //   },
+  //     {
+  //       onRequest:()=>{
+  //         setPending(true)
+  //       },
+  //       onSuccess:()=>{
+  //         toast({
+  //           title: "Account created",
+  //           description: "your account has been created check your email for confirmation",
+  //         });
+  //       console.log("success")
+  //       },
+  //       onError: (ctx) => {
+  //         console.log("error",ctx)
+  //         toast({
+  //           variant:"destructive",
+  //           title: "something went wrong",
+  //           description: ctx.error.message??"something went wrong."
+  //         });
+  //         console.log("error",ctx.error.message)
+  //     },
 
-    })
-    setPending(false)
-  };
+  //   })
+  //   setPending(false)
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
@@ -92,7 +98,7 @@ const Signup = () => {
           <CardContent>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                // onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
                 <InputField

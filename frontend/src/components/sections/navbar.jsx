@@ -168,6 +168,11 @@ const Navbar = () => {
           </a>
         </Button>
       </div>
+      <Link to="/login">
+      <Button>
+       Login
+      </Button>
+      </Link>
     </header>
   );
 };

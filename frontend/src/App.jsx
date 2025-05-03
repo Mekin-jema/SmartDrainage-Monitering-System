@@ -29,6 +29,8 @@ import { ContactSection } from "@/components/sections/contact";
 import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
 import Navbar from "@/components/sections/navbar";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
 
 // Router configuration
 const router = createBrowserRouter([
@@ -55,6 +57,9 @@ const router = createBrowserRouter([
   },
 
   // Dashboard routes
+
+  {path:"/login",element:<Login/>},
+  {path:"/signup",element:<Signup/>},
   {
     path: "/dashboard",
     element: <DashboardMainPage />,

@@ -22,7 +22,7 @@ import {
   // FormLabel,
   // FormMessage,
 } from "@/components/ui/form";
-import Link from "next/link";
+import {Link} from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { InputField } from "@/components/Auth/FormFields";
 import {
