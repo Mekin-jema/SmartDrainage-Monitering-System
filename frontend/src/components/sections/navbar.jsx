@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronsDown, Github, Menu } from "lucide-react";
+import {  Github, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Sheet,
