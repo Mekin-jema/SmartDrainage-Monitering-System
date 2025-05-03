@@ -38,7 +38,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div>
+      <div className="md:max-w-full mx-auto">
         <Navbar />
         <HeroSection />
         <SponsorsSection />
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         <TeamSection />
         <CommunitySection />
         <PricingSection />
-        {/* <ContactSection /> */}
+        <ContactSection />
         <FAQSection />
         <FooterSection />
       </div>

@@ -36,7 +36,9 @@ const formSchema = z.object({
 });
 
 export const ContactSection = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm
+  // <z.infer<typeof formSchema>
+    ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
@@ -47,14 +49,14 @@ export const ContactSection = () => {
     },
   });
 
-  function onSubmit(values) {
-    const { firstName, lastName, email, subject, message } = values;
-    console.log(values);
+  // function onSubmit(values) {
+  //   const { firstName, lastName, email, subject, message } = values;
+  //   console.log(values);
 
-    const mailToLink = `mailto:leomirandadev@gmail.com?subject=${subject}&body=Hello I am ${firstName} ${lastName}, my Email is ${email}. %0D%0A${message}`;
+  //   const mailToLink = `mailto:leomirandadev@gmail.com?subject=${subject}&body=Hello I am ${firstName} ${lastName}, my Email is ${email}. %0D%0A${message}`;
 
-    window.location.href = mailToLink;
-  }
+  //   window.location.href = mailToLink;
+  // }
 
   return (
     <section id="contact" className="container py-24 sm:py-32">
