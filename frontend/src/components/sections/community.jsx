@@ -10,7 +10,7 @@ import {
 
 export const CommunitySection = () => {
   return (
-    <section id="community" className="py-12 ">
+    <section id="community" className="py-12">
       <hr className="border-secondary" />
       <div className="container py-20 sm:py-20">
         <div className="lg:w-[60%] mx-auto">
@@ -19,22 +19,22 @@ export const CommunitySection = () => {
               <CardTitle className="text-4xl md:text-5xl font-bold flex flex-col items-center">
                 <DiscordIcon />
                 <div>
-                  Ready to join this
-                  <span className="text-transparent pl-2 bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text">
-                    Community?
+                  Be Part of the
+                  <span className="text-transparent pl-2 bg-gradient-to-r from-[#2DD4BF] to-primary bg-clip-text">
+                    SmartDrainX Movement
                   </span>
                 </div>
               </CardTitle>
             </CardHeader>
+
             <CardContent className="lg:w-[80%] text-xl text-muted-foreground">
-              Join our vibrant Discord community! Connect, share, and grow with
-              like-minded enthusiasts. Click to dive in! 🚀
+              Connect with developers, urban planners, and IoT innovators tackling real-world drainage issues across Ethiopia. Collaborate, learn, and build smarter cities — together.
             </CardContent>
 
             <CardFooter>
               <Button asChild>
-                <a href="https://discord.com/" target="_blank">
-                  Join Discord
+                <a href="https://discord.com/" target="_blank" rel="noopener noreferrer">
+                  Join the Community
                 </a>
               </Button>
             </CardFooter>
