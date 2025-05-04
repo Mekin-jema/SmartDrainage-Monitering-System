@@ -107,10 +107,10 @@ html {
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 224 71.2% 4.1%;
     --foreground: 60 9.1% 97.8%;
 
-    --card: 24 9.8% 8%;
+    --card: 224 71.2% 4.1%;
     --card-foreground: 0 0% 95%;
 
     --popover: 20 14.3% 4.1%;
