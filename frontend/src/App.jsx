@@ -41,16 +41,16 @@ const router = createBrowserRouter([
       <div className="md:max-w-full mx-auto">
         <Navbar />
         <HeroSection />
-        <SponsorsSection />
-        <BenefitsSection />
         <FeaturesSection />
+        <BenefitsSection />
         <ServicesSection />
+        <PricingSection />
         <TestimonialSection />
         <TeamSection />
         <CommunitySection />
-        <PricingSection />
-        <ContactSection />
+        <SponsorsSection />
         <FAQSection />
+        <ContactSection />
         <FooterSection />
       </div>
     ),

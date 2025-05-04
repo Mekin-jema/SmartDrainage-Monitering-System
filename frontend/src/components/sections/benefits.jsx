@@ -10,7 +10,7 @@ const benefitList = [
       "Continuously track manhole status across the city using level and gas sensors for instant insights.",
   },
   {
-    icon: "AlertTriangle",
+    icon: "TriangleAlert",
     title: "Toxic Gas & Overflow Alerts",
     description:
       "Automatically detect hazardous gas concentrations or overflow levels and trigger immediate warnings.",
@@ -22,7 +22,7 @@ const benefitList = [
       "Assign the nearest available worker based on GPS and task priority to resolve issues efficiently.",
   },
   {
-    icon: "BarChart3",
+    icon: "ChartNoAxesColumnIncreasing",
     title: "Analytics & Reporting",
     description:
       "Visualize trends, generate reports, and support data-driven planning for improved sanitation systems.",

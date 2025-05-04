@@ -22,12 +22,11 @@ import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/pages/dashboard/navbar/toggle-theme";
 
 const routeList = [
-  { href: "#testimonials", label: "Testimonials" },
-  { href: "#team", label: "About" },
   { href: "#features", label: "Features" },
+  { href: "#team", label: "About" },
   { href: "#pricing", label: "Pricing" },
+  { href: "#testimonials", label: "Testimonials" },
   { href: "#contact", label: "Contact" },
-
   { href: "#faq", label: "FAQ" },
 ];
 
