@@ -1,3 +1,4 @@
+// app/components/BenefitsSection.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 

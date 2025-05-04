@@ -1,9 +1,6 @@
-"use client";
-
 import { Icon } from "@/components/ui/icon";
 import { Marquee } from "@devnomic/marquee";
 import "@devnomic/marquee/dist/index.css";
-import { icons } from "lucide-react";
 import { useTheme } from "next-themes";
 
 // Defining the list of sponsors with their icons and names
