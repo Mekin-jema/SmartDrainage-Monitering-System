@@ -1,6 +1,7 @@
 import React from "react";
-import {  Github, Menu } from "lucide-react";
+import { Github, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion"; // Import framer-motion
 import {
   Sheet,
   SheetContent,
@@ -23,69 +24,29 @@ import { DarkModeToggle } from "@/pages/dashboard/navbar/toggle-theme";
 
 const routeList = [
   { href: "#features", label: "Features" },
-  { href: "#team", label: "About" },
   { href: "#pricing", label: "Pricing" },
   { href: "#testimonials", label: "Testimonials" },
-  { href: "#contact", label: "Contact" },
+  { href: "#team", label: "About" },
   { href: "#faq", label: "FAQ" },
+  { href: "#contact", label: "Contact" },
 ];
 
 const featureList = [
-  {
-    title: "Showcase Your Value",
-    description: "Highlight how your product solves user problems.",
-  },
-  {
-    title: "Build Trust",
-    description:
-      "Leverages social proof elements to establish trust and credibility.",
-  },
-  {
-    title: "Capture Leads",
-    description:
-      "Make your lead capture form visually appealing and strategically.",
-  },
+  { title: "Showcase Your Value", description: "Highlight how your product solves user problems." },
+  { title: "Build Trust", description: "Leverages social proof elements to establish trust and credibility." },
+  { title: "Capture Leads", description: "Make your lead capture form visually appealing and strategically." },
 ];
 
 const components = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
+  { title: "Alert Dialog", href: "/docs/primitives/alert-dialog", description: "A modal dialog that interrupts the user." },
+  { title: "Hover Card", href: "/docs/primitives/hover-card", description: "Preview content behind a link." },
+  { title: "Progress", href: "/docs/primitives/progress", description: "Completion progress indicator." },
+  { title: "Scroll-area", href: "/docs/primitives/scroll-area", description: "Visually or semantically separates content." },
+  { title: "Tabs", href: "/docs/primitives/tabs", description: "A set of layered sections of content." },
+  { title: "Tooltip", href: "/docs/primitives/tooltip", description: "Popup displays info on hover or focus." },
+];
 
-// Add this inside the same file (or import it if it's moved elsewhere)
+// ListItem Component (already defined)
 const ListItem = ({ title, href, children }) => {
   return (
     <li>
@@ -100,29 +61,20 @@ const ListItem = ({ title, href, children }) => {
   );
 };
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <header className="shadow-inner bg-opacity-15 w-[90%] md:w-[70%] lg:w-[80%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-2xl flex justify-between items-center p-2 bg-card">
-      <Link to="/" className="font-bold text-lg flex items-center">
-        {/* <img
-          src="/logo.svg"
-          alt="Logo"
-          className="border-secondary rounded-lg w-9 h-9 mr-2 border"
-        /> */}
-          SmartDrainX
+    <header className="shadow-inner pl-8 bg-opacity-15 w-[90%] md:w-[70%] lg:w-[90%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-md flex justify-between items-center p-2 bg-card">
+      <Link to="/" className="font-bold text-lg flex items-center text-transparent px-2 bg-gradient-to-r from-[#4A90E2] to-primary bg-clip-text">
+        SmartDrainX
       </Link>
 
       {/* Mobile Menu */}
       <div className="flex items-center lg:hidden">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Menu
-              onClick={() => setIsOpen(!isOpen)}
-              className="cursor-pointer lg:hidden"
-            />
+            <Menu onClick={() => setIsOpen(!isOpen)} className="cursor-pointer lg:hidden" />
           </SheetTrigger>
 
           <SheetContent
@@ -138,7 +90,7 @@ const Navbar = () => {
                       alt="Logo"
                       className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white"
                     />
-                    Ambalay Maps
+                    SmartDrainX
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -152,9 +104,7 @@ const Navbar = () => {
                     variant="ghost"
                     className="justify-start text-base"
                   >
-                    <a href={href} className="w-full text-left">
-                      {label}
-                    </a>
+                    <a href={href} className="w-full text-left">{label}</a>
                   </Button>
                 ))}
               </div>
@@ -168,51 +118,54 @@ const Navbar = () => {
         </Sheet>
       </div>
 
-
       {/* Desktop Navigation */}
-      <NavigationMenu className="hidden lg:block mx-auto">
+      <NavigationMenu className="relative hidden lg:block mx-auto">
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger className="bg-card text-base">
               Features
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[1000px]">
-                <ul className="flex flex-col gap-2">
-                  {featureList.map(({ title, description }) => (
-                    <li
-                      key={title}
-                      className="rounded-md p-3 text-sm hover:bg-muted"
-                    >
-                      <p className="mb-1 font-semibold leading-none text-foreground">
-                        {title}
-                      </p>
-                      <p className="line-clamp-2 text-muted-foreground">
-                        {description}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <motion.ul
+                className="fixed left-[65px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1185px] bg-card top-[75px] rounded-b-md"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {featureList.map(({ title, description }) => (
+                  <motion.li
+                    key={title}
+                    className="rounded-md p-3 text-sm hover:bg-muted"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="mb-1 font-semibold leading-none text-foreground">{title}</p>
+                    <p className="line-clamp-2 text-muted-foreground">{description}</p>
+                  </motion.li>
+                ))}
+              </motion.ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
+
           <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[1000px] ">
-              {components.map((component) => (
-                <ListItem
-                
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+            <NavigationMenuTrigger className="bg-card text-base">Components</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <motion.ul
+                className="fixed left-[65px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1185px] bg-card top-[75px] rounded-b-md"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {components.map((component) => (
+                  <ListItem key={component.title} title={component.title} href={component.href}>
+                    {component.description}
+                  </ListItem>
+                ))}
+              </motion.ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
 
           {routeList.map(({ href, label }) => (
             <NavigationMenuItem key={href}>
@@ -229,7 +182,7 @@ const Navbar = () => {
       {/* Right Actions */}
       <div className="hidden lg:flex">
         <DarkModeToggle />
-        <Button asChild size="sm" variant="ghost" aria-label="View on GitHub" className="mx-2" >
+        <Button asChild size="sm" variant="ghost" aria-label="View on GitHub" className="mx-2">
           <a
             href="https://github.com/nobruf/shadcn-landing-page.git"
             target="_blank"
@@ -240,16 +193,10 @@ const Navbar = () => {
         </Button>
       </div>
       <Button className="hidden md:block mx-10">
-      <Link to="/login">
-       Login
-      </Link>
-      </Button> 
+        <Link to="/login">Login</Link>
+      </Button>
     </header>
   );
 };
 
 export default Navbar;
-
-
-
-
