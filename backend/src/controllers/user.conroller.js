@@ -48,14 +48,16 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    console.log(email, password)
+    const user = await User.findOne({ email }).select("+password");
+    console.log(user)
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "Incorrect email or password"
       });
     }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = bcrypt.compareSync(password, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({
         success: false,
@@ -75,7 +77,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal server error" })
+    return res.status(500).json({ message: "Internal server error" , error: error.message })
   }
 }
 export const verifyEmail = async (req, res) => {
