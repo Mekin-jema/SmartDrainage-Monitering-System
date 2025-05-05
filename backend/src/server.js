@@ -46,7 +46,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use('/api', router);
+app.use('/api/v1', router);
 
 // Start server
 (async () => {

@@ -11,6 +11,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
             html: htmlContent.replace("{verificationToken}", verificationToken),
             category: 'Email Verification'
         });
+        return res;
     } catch (error) {
         console.log(error);
         throw new Error("Failed to send email verification");

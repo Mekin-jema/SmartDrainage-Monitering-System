@@ -8,7 +8,9 @@ import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, s
 
 export const signup = async (req, res) => {
   try {
-    const { fullname, email, password, phone } = req.body;
+    // await User.collection.dropIndex("username_1");
+    
+    const { fullname, email, password } = req.body;
 
     let user = await User.findOne({ email });
     if (user) {
@@ -24,7 +26,7 @@ export const signup = async (req, res) => {
       fullname,
       email,
       password: hashedPassword,
-      phone: Number(phone),
+      // phone: Number(phone),
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
     })
