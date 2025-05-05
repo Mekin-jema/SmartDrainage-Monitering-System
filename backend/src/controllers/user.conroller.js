@@ -33,6 +33,7 @@ const signup = async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
+    const verificationToken =  generateVerificationCode();
     
     // Create new user
     const newUser = new User({
