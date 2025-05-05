@@ -1,7 +1,7 @@
 import  User  from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto"; 
-import cloudinary from "../utils/cloudinary.js";
+// import cloudinary from "../utils/cloudinary.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateToken } from "../utils/generateToken.js";
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email.js";
@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
       fullname,
       email,
       password: hashedPassword,
-      phone: Number(contact),
+      phone: Number(phone),
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
     })
@@ -197,24 +197,24 @@ export const checkAuth = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-export const updateProfile = async (req, res) => {
-  try {
-    const userId = req.id;
-    const { fullname, email, address, city, country, profilePicture } = req.body;
-    // upload image on cloudinary
-    let cloudResponse;
-    cloudResponse = await cloudinary.uploader.upload(profilePicture);
-    const updatedData = {fullname, email, address, city, country, profilePicture};
+// export const updateProfile = async (req, res) => {
+//   try {
+//     const userId = req.id;
+//     const { fullname, email, address, city, country, profilePicture } = req.body;
+//     // upload image on cloudinary
+//     let cloudResponse;
+//     cloudResponse = await cloudinary.uploader.upload(profilePicture);
+//     const updatedData = {fullname, email, address, city, country, profilePicture};
 
-    const user = await User.findByIdAndUpdate(userId, updatedData,{new:true}).select("-password");
+//     const user = await User.findByIdAndUpdate(userId, updatedData,{new:true}).select("-password");
 
-    return res.status(200).json({
-      success:true,
-      user,
-      message:"Profile updated successfully"
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-}
+//     return res.status(200).json({
+//       success:true,
+//       user,
+//       message:"Profile updated successfully"
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// }

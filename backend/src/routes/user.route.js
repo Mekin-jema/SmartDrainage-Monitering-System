@@ -1,5 +1,7 @@
 import express from "express";
-import { checkAuth, forgotPassword, login, logout, resetPassword, signup, updateProfile, verifyEmail } from "../controllers/user.conroller.js";
+import { checkAuth, forgotPassword, login, logout, resetPassword, signup,
+    //  updateProfile
+     verifyEmail } from "../controllers/user.conroller.js";
 import { isAuthenticated } from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
@@ -11,6 +13,6 @@ router.route("/logout").post(logout);
 router.route("/verify-email").post(verifyEmail);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
-router.route("/profile/update").put(isAuthenticated,updateProfile);
+// router.route("/profile/update").put(isAuthenticated,updateProfile);
 
 export default router;
