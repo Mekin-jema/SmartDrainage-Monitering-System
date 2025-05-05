@@ -4,6 +4,7 @@ import db from './configure/db.confige.js';
 import Sensor from './models/sensor.model.js'; // Fixed from SensorReading to Sensor
 import router from './routes/index.js';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 const app = express();
 const port = 3000;
 
@@ -39,6 +40,7 @@ client.on('message', async (topic, message) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 // Enable CORS for all routes
 app.use(cors({
   origin: '*',

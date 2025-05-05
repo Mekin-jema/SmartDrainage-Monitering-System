@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateToken } from "../utils/generateToken.js";
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email.js";
+import mongoose from "mongoose";
 
 export const signup = async (req, res) => {
   try {
@@ -110,7 +111,7 @@ export const verifyEmail = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" })
   }
 }
-export const logout = async (_, res) => {
+export const logout = async (req, res) => {
   try {
     return res.clearCookie("token").status(200).json({
       success: true,
@@ -141,7 +142,7 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // send email
-    await sendPasswordResetEmail(user.email, `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`);
+    await sendPasswordResetEmail(user.email, `${process.env.FRONTEND_URL}/otp/${resetToken}`);
 
     return res.status(200).json({
       success: true,
@@ -184,6 +185,7 @@ export const resetPassword = async (req, res) => {
 }
 export const checkAuth = async (req, res) => {
   try {
+    
     const userId = req.id;
     const user = await User.findById(userId).select("-password");
     if (!user) {
