@@ -46,6 +46,13 @@ const ProtectedRoutes = ({ children }) => {
   }
   return children;
 };
+const AuthenticatedUser = ({ children }) => {
+  const { isAuthenticated, user } = useUserStore();
+  if(isAuthenticated && user?.isVerified){
+    return <Navigate to="/" replace/>
+  }
+  return children;
+};
 // Router configuration
 const router = createBrowserRouter([
   // Home route
