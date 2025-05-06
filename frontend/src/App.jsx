@@ -53,6 +53,18 @@ const AuthenticatedUser = ({ children }) => {
   }
   return children;
 };
+
+const AdminRoute = ({children}) => {
+  const {user, isAuthenticated} = useUserStore();
+  if(!isAuthenticated){
+    return <Navigate to="/login" replace/>
+  }
+  if(!user?.admin){
+    return <Navigate to="/" replace/>
+  }
+
+  return children;
+}
 // Router configuration
 const router = createBrowserRouter([
   // Home route
