@@ -31,7 +31,21 @@ import { ContactSection } from "@/components/sections/contact";
 import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
 import ForgotPassword from "./components/auth/Forgot-password";
+import { useUserStore } from "./Redux/useUserStore";
 
+
+
+const ProtectedRoutes = ({ children }) => {
+  const { isAuthenticated, user } = useUserStore();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user?.isVerified) {
+    return <Navigate to="/verify-email" replace />;
+  }
+  return children;
+};
 // Router configuration
 const router = createBrowserRouter([
   // Home route
@@ -107,6 +121,8 @@ const router = createBrowserRouter([
     element: <Navigate to="/404" replace />,
   },
 ]);
+
+
 
 // App Component
 function App() {
