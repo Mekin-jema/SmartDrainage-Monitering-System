@@ -11,6 +11,7 @@ export const signup = async (req, res) => {
     // await User.collection.dropIndex("username_1");
     
     const { fullname, email, password } = req.body;
+    console.log(fullname, email, password)
 
     let user = await User.findOne({ email });
     if (user) {

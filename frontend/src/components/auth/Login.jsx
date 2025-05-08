@@ -20,10 +20,12 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField, CheckboxField } from "@/components/auth/FormFields";
 import {  loginSchema } from "@/lib/schema/loginSchema";
+import { useUserStore } from "@/store/useUserStore";
 // import { authClient } from "@/lib/auth-client";
 const Login = () => {
   const [pending, setPending] = useState(false);
   const { toast } = useToast();
+  const {login,loading} = useUserStore();
   // const router = useRouter();
   const form = useForm
   // <LoginFormValues>
@@ -35,36 +37,15 @@ const Login = () => {
       rememberMe: false,
     },
   });
-
-  // const onSubmit = async (data
-  //   // : LoginFormValues
-  // ) => {
-  //   form.reset();
-  //   await authClient.signIn.email(
-  //     {
-  //       email: data.email,
-  //       password: data.password,
-  //       rememberMe: data.rememberMe,
-  //     },
-  //     {
-  //       onRequest: () => {
-  //         setPending(true);
-  //       },
-  //       onSuccess: () => {
-  //         router.push("/dashboard");
-  //       },
-  //       onError: (ctx) => {
-  //         console.log("error", ctx);
-  //         toast({
-  //           variant: "destructive",
-  //           title: "something went wrong",
-  //           description: ctx.error.message ?? "something went wrong",
-  //         });
-  //       },
-  //     },
-  //   );
-  //   setPending(false);
-  // };
+  const onSubmit = async (data) => {
+    try {
+      await login(data);
+      form.reset();
+      navigate("/dashbaord");
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
@@ -83,7 +64,7 @@ const Login = () => {
           <CardContent>
             <Form {...form}>
               <form
-                // onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
                 <InputField

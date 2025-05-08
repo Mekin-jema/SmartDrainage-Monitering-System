@@ -34,6 +34,7 @@ import ForgotPassword from "./components/auth/Forgot-password";
 import { useUserStore } from "./store/useUserStore";
 import Loading from "./components/sections/Loader";
 import { useEffect } from "react";
+import EmailVerified from "./components/auth/Email-verified";
 
 
 
@@ -94,14 +95,21 @@ const router = createBrowserRouter([
   // Dashboard routes
 
   {path:"/login",element:
-    <AuthenticatedUser>
+    // <AuthenticatedUser>
 
       <Login/>
-    </AuthenticatedUser>},
+    // </AuthenticatedUser>
+  },
   {path:"/signup",element:
-    <AuthenticatedUser>
+    // <AuthenticatedUser>
       <Signup/>
-    </AuthenticatedUser>},
+    // </AuthenticatedUser>
+    },
+    {path:"/verify-email",element:
+      <AuthenticatedUser>
+        <EmailVerified/>
+      </AuthenticatedUser>
+    },
   // Authentication routes
   // {
   //   path: "/signin",

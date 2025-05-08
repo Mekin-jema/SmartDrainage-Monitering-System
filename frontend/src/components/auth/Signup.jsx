@@ -14,19 +14,19 @@ import {
 import { Form } from "@/components/ui/form";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField } from "@/components/auth/FormFields";
-// import { signUpSchema, SignUpFormValues } from "@/lib/schema/signupSchema";
+import { signUpSchema, } from "@/lib/schema/signupSchema";
 import { useUserStore } from "@/store/useUserStore";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const { signup, loading } = useUserStore();
+  const { signup,loading } = useUserStore();
   console.log("loading", loading);
   const navigate = useNavigate(); // ✅ FIXED: added missing hook
 
   const form = useForm({
-    resolver: zodResolver(),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
-      name: "",
+      fullname: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -60,7 +60,7 @@ const Signup = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <InputField
                   control={form.control}
-                  name="name"
+                  name="fullname"
                   label="Full name"
                   placeholder="John Doe"
                   type="text"

@@ -10,12 +10,18 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Basic Middleware
-app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",    // ← must match your Vite dev origin
+    credentials: true                   // ← allows Set‑Cookie and Cookie headers
+  })
+);
 // API Routes
-app.use('/api', router);
+app.use('/api/v1', router);
 
 // Health Check Endpoint
 app.get('/', (req, res) => {
