@@ -65,7 +65,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <header className="shadow-inner pl-8 bg-opacity-15 w-[90%] md:w-[70%] lg:w-[90%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-md flex justify-between items-center p-2 bg-card">
+    <header className="shadow-inner pl-8 bg-opacity-15 w-[90%] md:w-[70%] lg:w-[90%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-md hover:rounded-none hover:border-none flex justify-between items-center p-2 bg-card">
       <Link to="/" className="font-bold text-lg flex items-center text-transparent px-2 bg-gradient-to-r from-[#4A90E2] to-primary bg-clip-text">
         SmartDrainX
       </Link>
@@ -119,15 +119,15 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Navigation */}
-      <NavigationMenu className="relative hidden lg:block mx-auto">
+      <NavigationMenu className="relative hidden lg:block mx-auto ">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-card text-base">
+            <NavigationMenuTrigger className="bg-card hover:bg-card text-base">
               Features
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <motion.ul
-                className="fixed left-[65px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1185px] bg-card top-[75px] rounded-b-md"
+                className="fixed left-[66.5px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1215px] bg-card top-[71.5px] rounded-b-md"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -152,7 +152,7 @@ const Navbar = () => {
             <NavigationMenuTrigger className="bg-card text-base">Components</NavigationMenuTrigger>
             <NavigationMenuContent>
               <motion.ul
-                className="fixed left-[65px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1185px] bg-card top-[75px] rounded-b-md"
+                className="fixed left-[66.5px] grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 lg:w-[1215px] bg-card top-[74.5px] rounded-b-md"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}

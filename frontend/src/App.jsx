@@ -32,6 +32,8 @@ import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
 import ForgotPassword from "./components/auth/Forgot-password";
 import { useUserStore } from "./Redux/useUserStore";
+import Loading from "./components/sections/Loader";
+import { useEffect } from "react";
 
 
 
@@ -91,11 +93,44 @@ const router = createBrowserRouter([
 
   // Dashboard routes
 
-  {path:"/login",element:<Login/>},
-  {path:"/signup",element:<Signup/>},
+  {path:"/login",element:
+    <AuthenticatedUser>
+
+      <Login/>
+    </AuthenticatedUser>},
+  {path:"/signup",element:
+    <AuthenticatedUser>
+      <Signup/>
+    </AuthenticatedUser>},
+  // Authentication routes
+  // {
+  //   path: "/signin",
+  //   element: <SignIn />,
+  // },
+  // {
+  //   path: "/otp",
+  //   element: <Otp />,
+  // },
+  // {
+  //   path: "/signup",
+  //   element: <SignUp />, // Add component for SignUp if needed
+  // },
+  {
+    path: "/forgot-password",
+    element:<AuthenticatedUser>
+
+      <ForgotPassword />,
+    </AuthenticatedUser>
+  },
+
   {
     path: "/dashboard",
-    element: <DashboardMainPage />,
+    element:(
+       <AdminRoute> 
+        <DashboardMainPage />
+      </AdminRoute>),
+
+
     children: [
       { index: true, element: <Dashboard /> },
       { path: "sensor-readings", element: <SensorsData /> },
@@ -110,23 +145,6 @@ const router = createBrowserRouter([
     ],
   },
 
-  // Authentication routes
-  {
-    path: "/signin",
-    element: <SignIn />,
-  },
-  {
-    path: "/otp",
-    element: <Otp />,
-  },
-  {
-    path: "/signup",
-    element: <SignUp />, // Add component for SignUp if needed
-  },
-  {
-    path: "/forgot-password",
-    element: <ForgotPassword />,
-  },
 
   // Error handling route
   {
@@ -145,6 +163,12 @@ const router = createBrowserRouter([
 
 // App Component
 function App() {
+  const {checkAuthentication, isCheckingAuth} = useUserStore();
+  // checking auth every time when page is loaded
+  useEffect(()=>{
+    checkAuthentication();
+  },[checkAuthentication])
+  if(isCheckingAuth) return <Loading/>
   return (
     <RouterProvider router={router}>
       {/* The content is routed and displayed by the Router */}
