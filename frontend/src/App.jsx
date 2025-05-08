@@ -136,8 +136,9 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element:(
-      //  <AdminRoute> 
+       <AdminRoute> 
         <DashboardMainPage />
+        </AdminRoute>
 
       ),
 
