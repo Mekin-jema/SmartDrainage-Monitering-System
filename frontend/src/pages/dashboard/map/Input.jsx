@@ -17,7 +17,7 @@
 import React, { useState, useEffect } from "react"; // React hooks
 import { X } from "lucide-react"; // Icon for clearing input
 import { useSelector, useDispatch } from "react-redux"; // Redux hooks
-import { setOpen, setWaypoints } from "../../../Redux/MapSlice"; // Redux actions
+import { setOpen, setWaypoints } from "../../../store/MapSlice"; // Redux actions
 import start from "../../../assets/POI/start.svg"; // Icon for start point
 import end from "../../../assets/POI/end.svg"; // Icon for end point
 import { getOptimizedRouteWithStops, getPlaces } from "./api";

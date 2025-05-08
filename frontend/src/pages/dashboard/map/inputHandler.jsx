@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setWaypoints } from "../../../Redux/MapSlice";
+import { setWaypoints } from "../../../store/MapSlice";
 import AddressInput from "./Input";
 import RenderDirectionDetail from "./drectionDetail";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";

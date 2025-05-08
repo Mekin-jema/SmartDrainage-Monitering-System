@@ -1,4 +1,4 @@
-import { setWaypoints } from "@/Redux/MapSlice";
+import { setWaypoints } from "@/store/MapSlice";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { getPlaceNameFromCoordinates } from "../api";

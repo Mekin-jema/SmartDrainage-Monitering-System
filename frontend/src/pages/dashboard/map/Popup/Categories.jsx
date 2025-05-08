@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getShortestRoute } from "../api/getShortestRoute";
-import { setWaypoints } from "../../../../Redux/MapSlice";
+import { setWaypoints } from "../../../../store/MapSlice";
 import { useDispatch } from "react-redux";
 import { addRouteLayer } from "../utils/addRoutelayer";
 import maplibregl from "maplibre-gl";

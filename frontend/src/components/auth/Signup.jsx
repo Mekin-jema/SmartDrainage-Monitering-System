@@ -15,7 +15,7 @@ import { Form } from "@/components/ui/form";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField } from "@/components/auth/FormFields";
 // import { signUpSchema, SignUpFormValues } from "@/lib/schema/signupSchema";
-import { useUserStore } from "@/Redux/useUserStore";
+import { useUserStore } from "@/store/useUserStore";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {

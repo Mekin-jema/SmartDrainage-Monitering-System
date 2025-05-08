@@ -32,7 +32,7 @@ axios.defaults.withCredentials = true;
 //     forgotPassword: (emai) => Promise<void>; 
 //     resetPassword: (toke, newPasswor) => Promise<void>; 
 //     updateProfile: (inpu) => Promise<void>; 
-// }
+// }s
 
 export const useUserStore = create()(persist((set) => ({
     user: null,
@@ -152,7 +152,7 @@ export const useUserStore = create()(persist((set) => ({
                 toast.success(response.data.message);
                 set({user:response.data.user, isAuthenticated:true});
             }
-        } catch (erro) { 
+        } catch (error) { 
             toast.error(error.response.data.message);
         }
     }

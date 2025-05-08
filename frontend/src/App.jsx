@@ -31,7 +31,7 @@ import { ContactSection } from "@/components/sections/contact";
 import { FAQSection } from "@/components/sections/faq";
 import { FooterSection } from "@/components/sections/footer";
 import ForgotPassword from "./components/auth/Forgot-password";
-import { useUserStore } from "./Redux/useUserStore";
+import { useUserStore } from "./store/useUserStore";
 import Loading from "./components/sections/Loader";
 import { useEffect } from "react";
 
