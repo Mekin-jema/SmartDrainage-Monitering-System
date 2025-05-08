@@ -43,7 +43,7 @@ const VerifyEmail = () => {
     const code = otp.join("");
     try {
       await verifyEmail(code);
-      navigate("/");
+      navigate("/dashboard"); // Redirect to dashboard after successful verification
     } catch (err) {
       console.error(err);
     }
