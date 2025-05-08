@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 // import { useRouter } from "react-router-dom";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
@@ -24,6 +24,7 @@ import { useUserStore } from "@/store/useUserStore";
 // import { authClient } from "@/lib/auth-client";
 const Login = () => {
   const [pending, setPending] = useState(false);
+  const navigate=useNavigate()
   const { toast } = useToast();
   const {login,loading} = useUserStore();
   // const router = useRouter();
@@ -41,7 +42,7 @@ const Login = () => {
     try {
       await login(data);
       form.reset();
-      navigate("/dashbaord");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Signup error:", error);
     }

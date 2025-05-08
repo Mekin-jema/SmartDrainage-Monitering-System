@@ -52,6 +52,7 @@ const ProtectedRoutes = ({ children }) => {
 };
 const AuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useUserStore();
+  console.log("user", user);
   if(isAuthenticated && user?.isVerified){
     return <Navigate to="/" replace/>
   }
@@ -135,9 +136,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element:(
-       <AdminRoute> 
+      //  <AdminRoute> 
         <DashboardMainPage />
-      </AdminRoute>),
+
+      ),
 
 
     children: [
