@@ -35,6 +35,7 @@ import { useUserStore } from "./store/useUserStore";
 import Loading from "./components/sections/Loader";
 import { useEffect } from "react";
 import EmailVerified from "./components/auth/Email-verified";
+import VerifyEmail from "./components/auth/VerifyEmail";
 
 
 
@@ -107,7 +108,7 @@ const router = createBrowserRouter([
     },
     {path:"/verify-email",element:
       <AuthenticatedUser>
-        <EmailVerified/>
+        <VerifyEmail/>
       </AuthenticatedUser>
     },
   // Authentication routes
