@@ -16,7 +16,7 @@ export function AppSidebar({ ...props }) {
     <Sidebar
       collapsible="icon"
       {...props}
-      className=" text-white mx-3 mt-3   rounded-xl border-gray-400 border-2"
+      className=" mx-3 mt-3 bg-[#0A141F] text-white  rounded-xl border-gray-400 border-2"
     >
       {/* Conditionally render logo only when sidebar is expanded */}
       {state !== "collapsed" ? (

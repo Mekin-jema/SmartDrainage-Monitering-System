@@ -16,7 +16,7 @@ export function NavMain({ items }) {
               to={item.url}
               end
               className={({ isActive }) =>
-                `block transition-colors duration-200 rounded-lg mx-2 hover:bg-primary/10 dark:hover:bg-primary/20 ${
+                `block transition-colors duration-200 rounded-lg mx-2 text-white hover:bg-primary/10 dark:hover:bg-primary/20 ${
                   isActive
                     ? "bg-primary/10 dark:bg-primary/20 text-primary font-medium border-l-4 border-primary"
                     : "text-gray-600 dark:text-gray-400"
