@@ -14,9 +14,12 @@ router.post('/', createMaintenanceLog);
 router.get('/', getMaintenanceLogs);
 
 // PATCH /api/maintenance-logs/:logId/status - Update maintenance status
-router.patch('/:logId/status', updateMaintenanceStatus);
+router.put('/status/:logId', updateMaintenanceStatus);
 
 // PATCH /api/maintenance-logs/:logId/parts - Add parts to a maintenance log
-router.patch('/:logId/parts', addMaintenanceParts);
+router.patch('/parts/:logId', addMaintenanceParts);
 
 export default router;
+
+
+// all routes are tested and working fine (except the last one)
