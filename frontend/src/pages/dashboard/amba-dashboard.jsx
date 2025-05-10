@@ -37,7 +37,7 @@ export default function DashboardMainPage() {
           {/* <Header /> */}
 
           {/* <newHeader /> */}
-          <div className=" rounded-xl mt-2 dark:border-gray-700 border-2 ">
+          <div className=" rounded-xl mt-2 dark:border-gray-700 border-2 sticky ">
             <Header />
             <Outlet />
           </div>
