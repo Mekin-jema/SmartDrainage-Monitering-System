@@ -2,9 +2,9 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import DashboardMainPage from "./pages/dashboard/amba-dashboard";
 import NotFoundError from "./pages/error/404";
 // import ForgotPassword from "./pages/auth/forgot-password/route";
-import SignIn from "./pages/auth/sign-in/route";
-import SignUp from "./pages/auth/sign-up/route";
-import Otp from "./pages/auth/otp/route";
+// import SignIn from "./pages/auth/sign-in/route";
+// import SignUp from "./pages/auth/sign-up/route";
+// import Otp from "./pages/auth/otp/route";
 import Dashboard from "./pages/dashboard/board/Dashboard";
 import SensorsData from "./pages/dashboard/sensor-data/SensorsData";
 import Manholes from "./pages/dashboard/manholes/Manholes";
@@ -36,6 +36,7 @@ import Loading from "./components/sections/Loader";
 import { useEffect } from "react";
 import EmailVerified from "./components/auth/Email-verified";
 import VerifyEmail from "./components/auth/VerifyEmail";
+import ResetPassword from "./components/auth/Reset-password";
 
 
 
@@ -95,11 +96,10 @@ const router = createBrowserRouter([
   },
 
   // Dashboard routes
+{path:"/reset-password",element:<ResetPassword/>},
 
-  {path:"/login",element:
-    // <AuthenticatedUser>
-
-      <Login/>
+  {path:"/login",element:// <AuthenticatedUser>
+     <Login/>
     // </AuthenticatedUser>
   },
   {path:"/signup",element:
@@ -107,7 +107,7 @@ const router = createBrowserRouter([
       <Signup/>
     // </AuthenticatedUser>
     },
-    {path:"/verify-email",element:
+    {path:"/veri>fy-email",element:
       <AuthenticatedUser>
         <VerifyEmail/>
       </AuthenticatedUser>
