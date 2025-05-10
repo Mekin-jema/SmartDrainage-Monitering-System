@@ -1,22 +1,53 @@
-import React, { useState, useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import React, { useState, useEffect, useRef } from "react";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { AlertCircle, HardHat, MapPin, Filter, Search, User, Clock, ChevronRight, ChevronDown, Settings, Route } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  AlertCircle,
+  HardHat,
+  MapPin,
+  Filter,
+  Search,
+  User,
+  Clock,
+  ChevronRight,
+  ChevronDown,
+  Settings,
+  Route,
+} from "lucide-react";
 
 const SewageSystemMap = () => {
-
-    const style=import.meta.env.VITE_MAP_STYLE;
+  const style = import.meta.env.VITE_MAP_STYLE;
   // Refs
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
@@ -30,9 +61,9 @@ const SewageSystemMap = () => {
   const [readings, setReadings] = useState([]);
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
-    status: 'all',
-    alertLevel: 'all',
-    zone: 'all'
+    status: "all",
+    alertLevel: "all",
+    zone: "all",
   });
   const [showCriticalOnly, setShowCriticalOnly] = useState(false);
   const [route, setRoute] = useState(null);
@@ -41,19 +72,62 @@ const SewageSystemMap = () => {
   useEffect(() => {
     // Mock data - replace with actual API calls
     const mockManholes = [
-      { id: '1', code: 'MH-001', location: [38.7636, 9.0054], status: 'functional', zone: 'A', lastInspection: '2023-05-15' },
-      { id: '2', code: 'MH-002', location: [38.7645, 9.0062], status: 'damaged', zone: 'A', lastInspection: '2023-04-20' },
-      { id: '3', code: 'MH-003', location: [38.7653, 9.0048], status: 'overflowing', zone: 'B', lastInspection: '2023-06-01' }
+      {
+        id: "1",
+        code: "MH-001",
+        location: [38.7636, 9.0054],
+        status: "functional",
+        zone: "A",
+        lastInspection: "2023-05-15",
+      },
+      {
+        id: "2",
+        code: "MH-002",
+        location: [38.7645, 9.0062],
+        status: "damaged",
+        zone: "A",
+        lastInspection: "2023-04-20",
+      },
+      {
+        id: "3",
+        code: "MH-003",
+        location: [38.7653, 9.0048],
+        status: "overflowing",
+        zone: "B",
+        lastInspection: "2023-06-01",
+      },
     ];
 
     const mockAlerts = [
-      { id: 'A1', manholeId: '2', alertType: 'structural_damage', alertLevel: 'critical', timestamp: '2023-06-10T08:30:00' },
-      { id: 'A2', manholeId: '3', alertType: 'overflow', alertLevel: 'warning', timestamp: '2023-06-11T14:15:00' }
+      {
+        id: "A1",
+        manholeId: "2",
+        alertType: "structural_damage",
+        alertLevel: "critical",
+        timestamp: "2023-06-10T08:30:00",
+      },
+      {
+        id: "A2",
+        manholeId: "3",
+        alertType: "overflow",
+        alertLevel: "warning",
+        timestamp: "2023-06-11T14:15:00",
+      },
     ];
 
     const mockWorkers = [
-      { id: 'W1', name: 'John Doe', status: 'available', location: [38.7640, 9.0070] },
-      { id: 'W2', name: 'Jane Smith', status: 'available', location: [38.7630, 9.0030] }
+      {
+        id: "W1",
+        name: "John Doe",
+        status: "available",
+        location: [38.764, 9.007],
+      },
+      {
+        id: "W2",
+        name: "Jane Smith",
+        status: "available",
+        location: [38.763, 9.003],
+      },
     ];
 
     setManholes(mockManholes);
@@ -69,7 +143,7 @@ const SewageSystemMap = () => {
       container: mapContainer.current,
       style: style, // Replace with your style
       center: [38.7636, 9.0054], // Initial center
-      zoom: 15
+      zoom: 15,
     });
 
     mapRef.current = map;
@@ -87,52 +161,48 @@ const SewageSystemMap = () => {
     const map = mapRef.current;
 
     // Add manhole markers
-    manholes.forEach(manhole => {
+    manholes.forEach((manhole) => {
       const color = {
-        functional: '#4ade80',
-        damaged: '#f87171',
-        overflowing: '#60a5fa'
+        functional: "#4ade80",
+        damaged: "#f87171",
+        overflowing: "#60a5fa",
       }[manhole.status];
 
-      const el = document.createElement('div');
-      el.className = 'manhole-marker';
+      const el = document.createElement("div");
+      el.className = "manhole-marker";
       el.style.backgroundColor = color;
-      el.style.width = '20px';
-      el.style.height = '20px';
-      el.style.borderRadius = '50%';
-      el.style.border = '2px solid white';
+      el.style.width = "20px";
+      el.style.height = "20px";
+      el.style.borderRadius = "50%";
+      el.style.border = "2px solid white";
 
       // Add click handler
-      el.addEventListener('click', () => handleManholeClick(manhole));
+      el.addEventListener("click", () => handleManholeClick(manhole));
 
-      new maplibregl.Marker(el)
-        .setLngLat(manhole.location)
-        .addTo(map);
+      new maplibregl.Marker(el).setLngLat(manhole.location).addTo(map);
     });
 
     // Add alert markers
-    alerts.forEach(alert => {
+    alerts.forEach((alert) => {
       if (alert.resolved) return;
 
-      const manhole = manholes.find(m => m.id === alert.manholeId);
+      const manhole = manholes.find((m) => m.id === alert.manholeId);
       if (!manhole) return;
 
-      const el = document.createElement('div');
-      el.className = 'alert-marker';
-      el.innerHTML = alert.alertLevel === 'critical' ? '⚠️' : '🔔';
-      el.style.fontSize = '24px';
-      el.style.cursor = 'pointer';
+      const el = document.createElement("div");
+      el.className = "alert-marker";
+      el.innerHTML = alert.alertLevel === "critical" ? "⚠️" : "🔔";
+      el.style.fontSize = "24px";
+      el.style.cursor = "pointer";
 
       // Add pulsing animation for critical alerts
-      if (alert.alertLevel === 'critical') {
-        el.style.animation = 'pulse 1.5s infinite';
+      if (alert.alertLevel === "critical") {
+        el.style.animation = "pulse 1.5s infinite";
       }
 
-      el.addEventListener('click', () => handleAlertClick(alert));
+      el.addEventListener("click", () => handleAlertClick(alert));
 
-      new maplibregl.Marker(el)
-        .setLngLat(manhole.location)
-        .addTo(map);
+      new maplibregl.Marker(el).setLngLat(manhole.location).addTo(map);
     });
   }, [manholes, alerts]);
 
@@ -141,22 +211,47 @@ const SewageSystemMap = () => {
     setSelectedManhole(manhole);
     // Fetch readings and logs for this manhole
     const mockReadings = [
-      { timestamp: '2023-06-01T10:00', waterLevel: 30, methaneLevel: 5, temperature: 25 },
-      { timestamp: '2023-06-01T12:00', waterLevel: 45, methaneLevel: 7, temperature: 26 },
-      { timestamp: '2023-06-01T14:00', waterLevel: 60, methaneLevel: 8, temperature: 27 }
+      {
+        timestamp: "2023-06-01T10:00",
+        waterLevel: 30,
+        methaneLevel: 5,
+        temperature: 25,
+      },
+      {
+        timestamp: "2023-06-01T12:00",
+        waterLevel: 45,
+        methaneLevel: 7,
+        temperature: 26,
+      },
+      {
+        timestamp: "2023-06-01T14:00",
+        waterLevel: 60,
+        methaneLevel: 8,
+        temperature: 27,
+      },
     ];
     setReadings(mockReadings);
 
     const mockLogs = [
-      { timestamp: '2023-05-15T09:30', workerId: 'W1', action: 'routine_inspection', notes: 'No issues found' },
-      { timestamp: '2023-04-20T11:15', workerId: 'W2', action: 'repair', notes: 'Replaced damaged cover' }
+      {
+        timestamp: "2023-05-15T09:30",
+        workerId: "W1",
+        action: "routine_inspection",
+        notes: "No issues found",
+      },
+      {
+        timestamp: "2023-04-20T11:15",
+        workerId: "W2",
+        action: "repair",
+        notes: "Replaced damaged cover",
+      },
     ];
     setLogs(mockLogs);
   };
 
   // Handle alert click
   const handleAlertClick = (alert) => {
-    const manhole = manholes.find(m => m.id === alert.manholeId);
+    const manhole = manholes.find((m) => m.id === alert.manholeId);
     if (manhole) {
       handleManholeClick(manhole);
     }
@@ -164,12 +259,16 @@ const SewageSystemMap = () => {
 
   // Assign worker to alert
   const assignWorker = (alertId, workerId) => {
-    setAlerts(alerts.map(alert => 
-      alert.id === alertId ? { ...alert, assignedWorker: workerId } : alert
-    ));
-    setWorkers(workers.map(worker =>
-      worker.id === workerId ? { ...worker, status: 'assigned' } : worker
-    ));
+    setAlerts(
+      alerts.map((alert) =>
+        alert.id === alertId ? { ...alert, assignedWorker: workerId } : alert
+      )
+    );
+    setWorkers(
+      workers.map((worker) =>
+        worker.id === workerId ? { ...worker, status: "assigned" } : worker
+      )
+    );
   };
 
   // Generate optimal route
@@ -179,60 +278,62 @@ const SewageSystemMap = () => {
       coordinates: [
         [38.7636, 9.0054],
         [38.7645, 9.0062],
-        [38.7653, 9.0048]
+        [38.7653, 9.0048],
       ],
-      distance: '2.5 km',
-      duration: '15 min'
+      distance: "2.5 km",
+      duration: "15 min",
     };
     setRoute(mockRoute);
 
     // Draw route on map
     if (mapRef.current) {
       const map = mapRef.current;
-      if (map.getSource('route')) {
-        map.removeLayer('route');
-        map.removeSource('route');
+      if (map.getSource("route")) {
+        map.removeLayer("route");
+        map.removeSource("route");
       }
 
-      map.addSource('route', {
-        type: 'geojson',
+      map.addSource("route", {
+        type: "geojson",
         data: {
-          type: 'Feature',
+          type: "Feature",
           properties: {},
           geometry: {
-            type: 'LineString',
-            coordinates: mockRoute.coordinates
-          }
-        }
+            type: "LineString",
+            coordinates: mockRoute.coordinates,
+          },
+        },
       });
 
       map.addLayer({
-        id: 'route',
-        type: 'line',
-        source: 'route',
+        id: "route",
+        type: "line",
+        source: "route",
         layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
+          "line-join": "round",
+          "line-cap": "round",
         },
         paint: {
-          'line-color': '#3b82f6',
-          'line-width': 4
-        }
+          "line-color": "#3b82f6",
+          "line-width": 4,
+        },
       });
     }
   };
 
   // Filter manholes
-  const filteredManholes = manholes.filter(manhole => {
-    if (filters.status !== 'all' && manhole.status !== filters.status) return false;
-    if (filters.zone !== 'all' && manhole.zone !== filters.zone) return false;
+  const filteredManholes = manholes.filter((manhole) => {
+    if (filters.status !== "all" && manhole.status !== filters.status)
+      return false;
+    if (filters.zone !== "all" && manhole.zone !== filters.zone) return false;
     return true;
   });
 
   // Filter alerts
-  const filteredAlerts = alerts.filter(alert => {
-    if (showCriticalOnly && alert.alertLevel !== 'critical') return false;
-    if (filters.alertLevel !== 'all' && alert.alertLevel !== filters.alertLevel) return false;
+  const filteredAlerts = alerts.filter((alert) => {
+    if (showCriticalOnly && alert.alertLevel !== "critical") return false;
+    if (filters.alertLevel !== "all" && alert.alertLevel !== filters.alertLevel)
+      return false;
     return !alert.resolved;
   });
 
@@ -268,7 +369,12 @@ const SewageSystemMap = () => {
             <div className="space-y-2 mb-4">
               <Label>Filters</Label>
               <div className="flex gap-2">
-                <Select value={filters.status} onValueChange={val => setFilters({...filters, status: val})}>
+                <Select
+                  value={filters.status}
+                  onValueChange={(val) =>
+                    setFilters({ ...filters, status: val })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -280,7 +386,10 @@ const SewageSystemMap = () => {
                   </SelectContent>
                 </Select>
 
-                <Select value={filters.zone} onValueChange={val => setFilters({...filters, zone: val})}>
+                <Select
+                  value={filters.zone}
+                  onValueChange={(val) => setFilters({ ...filters, zone: val })}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Zone" />
                   </SelectTrigger>
@@ -294,12 +403,26 @@ const SewageSystemMap = () => {
             </div>
 
             <div className="space-y-2">
-              {filteredManholes.map(manhole => (
-                <Card key={manhole.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleManholeClick(manhole)}>
+              {filteredManholes.map((manhole) => (
+                <Card
+                  key={manhole.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleManholeClick(manhole)}
+                >
                   <CardHeader className="p-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">{manhole.code}</CardTitle>
-                      <Badge variant={manhole.status === 'functional' ? 'success' : manhole.status === 'damaged' ? 'destructive' : 'default'}>
+                      <CardTitle className="text-sm font-medium">
+                        {manhole.code}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          manhole.status === "functional"
+                            ? "success"
+                            : manhole.status === "damaged"
+                            ? "destructive"
+                            : "default"
+                        }
+                      >
                         {manhole.status}
                       </Badge>
                     </div>
@@ -313,8 +436,14 @@ const SewageSystemMap = () => {
           <TabsContent value="alerts" className="p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
-                <Switch id="critical-only" checked={showCriticalOnly} onCheckedChange={setShowCriticalOnly} />
-                <Label htmlFor="critical-only" className="ml-2">Critical Only</Label>
+                <Switch
+                  id="critical-only"
+                  checked={showCriticalOnly}
+                  onCheckedChange={setShowCriticalOnly}
+                />
+                <Label htmlFor="critical-only" className="ml-2">
+                  Critical Only
+                </Label>
               </div>
               <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" /> Filter
@@ -322,16 +451,26 @@ const SewageSystemMap = () => {
             </div>
 
             <div className="space-y-2">
-              {filteredAlerts.map(alert => {
-                const manhole = manholes.find(m => m.id === alert.manholeId);
+              {filteredAlerts.map((alert) => {
+                const manhole = manholes.find((m) => m.id === alert.manholeId);
                 return (
-                  <Card key={alert.id} className="cursor-pointer hover:bg-gray-50" onClick={() => handleAlertClick(alert)}>
+                  <Card
+                    key={alert.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                    onClick={() => handleAlertClick(alert)}
+                  >
                     <CardHeader className="p-3">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium">
-                          {manhole?.code || 'Unknown'} - {alert.alertType}
+                          {manhole?.code || "Unknown"} - {alert.alertType}
                         </CardTitle>
-                        <Badge variant={alert.alertLevel === 'critical' ? 'destructive' : 'warning'}>
+                        <Badge
+                          variant={
+                            alert.alertLevel === "critical"
+                              ? "destructive"
+                              : "warning"
+                          }
+                        >
                           {alert.alertLevel}
                         </Badge>
                       </div>
@@ -353,12 +492,22 @@ const SewageSystemMap = () => {
           {/* Workers tab */}
           <TabsContent value="workers" className="p-4">
             <div className="space-y-2">
-              {workers.map(worker => (
+              {workers.map((worker) => (
                 <Card key={worker.id}>
                   <CardHeader className="p-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">{worker.name}</CardTitle>
-                      <Badge variant={worker.status === 'available' ? 'success' : worker.status === 'assigned' ? 'warning' : 'destructive'}>
+                      <CardTitle className="text-sm font-medium">
+                        {worker.name}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          worker.status === "available"
+                            ? "success"
+                            : worker.status === "assigned"
+                            ? "warning"
+                            : "destructive"
+                        }
+                      >
                         {worker.status}
                       </Badge>
                     </div>
@@ -379,7 +528,11 @@ const SewageSystemMap = () => {
           <div className="border-t p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold">{selectedManhole.code}</h3>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedManhole(null)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedManhole(null)}
+              >
                 Close
               </Button>
             </div>
@@ -409,7 +562,11 @@ const SewageSystemMap = () => {
                       <XAxis dataKey="timestamp" />
                       <YAxis />
                       <Tooltip />
-                      <Line type="monotone" dataKey="waterLevel" stroke="#3b82f6" />
+                      <Line
+                        type="monotone"
+                        dataKey="waterLevel"
+                        stroke="#3b82f6"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -425,7 +582,7 @@ const SewageSystemMap = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {logs.map(log => (
+                    {logs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell>{log.timestamp}</TableCell>
                         <TableCell>{log.action}</TableCell>
@@ -464,7 +621,7 @@ const SewageSystemMap = () => {
                 <h4 className="font-medium mb-2">Stops:</h4>
                 <ol className="list-decimal pl-5 space-y-1">
                   {route.coordinates.map((coord, i) => (
-                    <li key={i}>Manhole {i+1}</li>
+                    <li key={i}>Manhole {i + 1}</li>
                   ))}
                 </ol>
               </div>
