@@ -1,5 +1,5 @@
 import  User  from "../models/user.model.js";
-import bcrypt from "bcryptjs";
+import bcryptb from "bcryptjs";
 import crypto from "crypto"; 
 // import cloudinary from "../utils/cloudinary.js";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
