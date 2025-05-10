@@ -1,3 +1,4 @@
+import Alert  from '../models/alert.model.js';
 // 2. Assign Worker to Alert (Automatic or Manual)
 const assignWorkerToAlert = async (alertId, workerId = null) => {
   try {
