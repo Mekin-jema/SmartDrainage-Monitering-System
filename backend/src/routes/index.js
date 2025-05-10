@@ -14,7 +14,5 @@ router.use('/sensors', sensorRoutes);
 router.use('/manholes',manholeRouter)
 router.use('/maintenances',maintenanceRouter);
 router.use('/alerts', alertRouter);
-// router.use('/maintenance', maintenanceRoutes);
-// router.use('/alerts', alertRoutes);
 export default router;
 

@@ -23,16 +23,15 @@ import {
 } from "@/components/ui/form";
 import {Link} from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter, useSearchParams } from "react-router-dom";
-import { InputField } from "@/components/Auth/FormFields";
+// import { useRouter, useSearchParams } from "react-router-dom";
+import { InputField } from "@/components/auth/FormFields";
 import {
-  ResetPasswordFormValues,
   resetPasswordSchema,
 } from "@/lib/schema/resetPasswordSchema";
 // import { authClient } from "@/lib/auth-client";
 
 const ResetPassword = () => {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const token = searchParams.get("token");
   if (!token) {
     return (
@@ -54,7 +53,7 @@ const ResetPassword = () => {
       </div>
     );
   }
-  const form = useForm<ResetPasswordFormValues>({
+  const form = useForm({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       password: "",
@@ -63,7 +62,7 @@ const ResetPassword = () => {
   });
 
   const [pending, setPending] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
   const { toast } = useToast();
 
   // const onSubmit = async (data

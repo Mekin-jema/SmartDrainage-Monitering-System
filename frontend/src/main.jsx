@@ -3,9 +3,10 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { Provider } from "react-redux";
-import { persistor, store } from "./Redux/Store.js";
+import { persistor, store } from "./store/Store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import { ThemeProvider } from "@/pages/dashboard/theme-provider";
+import { Toaster } from "./components/ui/toaster";
 // import MapComponent from "./pages/demo";
 
 createRoot(document.getElementById("root")).render(
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")).render(
         <ThemeProvider  storageKey="vite-ui-theme">
           <App />
           {/* <MapComponent/> */}
+          <Toaster/>
         </ThemeProvider>
       </PersistGate>
     </Provider>

@@ -2,7 +2,12 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSidebar } from "../../../components/ui/sidebar";
 
-const CategoryScroll = ({ categories, activeCategory, handleCategoryClick, loading }) => {
+const CategoryScroll = ({
+  categories,
+  activeCategory,
+  handleCategoryClick,
+  loading,
+}) => {
   const scrollRef = useRef(null);
   const containerRef = useRef(null);
   const [showLeft, setShowLeft] = useState(false);
@@ -38,7 +43,7 @@ const CategoryScroll = ({ categories, activeCategory, handleCategoryClick, loadi
   useEffect(() => {
     if (!scrollRef.current) return;
     checkScroll();
-    
+
     const ref = scrollRef.current;
     ref.addEventListener("scroll", checkScroll);
     return () => ref.removeEventListener("scroll", checkScroll);
@@ -49,14 +54,22 @@ const CategoryScroll = ({ categories, activeCategory, handleCategoryClick, loadi
       const { scrollLeft, clientWidth } = scrollRef.current;
       const scrollAmount = clientWidth * 0.5;
       scrollRef.current.scrollTo({
-        left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+        left:
+          direction === "left"
+            ? scrollLeft - scrollAmount
+            : scrollLeft + scrollAmount,
         behavior: "smooth",
       });
     }
   };
 
   return (
-    <div className={`fixed ${state === "collapsed" ? "  md:w-[800px]" : "md:w-[580px]"} right-3 lg:top-4 top-16 w-full `} ref={containerRef}>
+    <div
+      className={`fixed ${
+        state === "collapsed" ? "  md:w-[800px]" : "md:w-[580px]"
+      } right-3 lg:top-28 w-full `}
+      ref={containerRef}
+    >
       {showLeft && (
         <button
           onClick={() => scroll("left")}
@@ -77,7 +90,9 @@ const CategoryScroll = ({ categories, activeCategory, handleCategoryClick, loadi
             key={category.name}
             onClick={() => handleCategoryClick(category)}
             className={`flex-shrink-0 flex items-center px-3 py-1 border border-[#00432F] space-x-2 rounded-full ${
-              activeCategory === category.name ? "bg-[#00432F] text-white" : "bg-white text-black"
+              activeCategory === category.name
+                ? "bg-[#00432F] text-white"
+                : "bg-white text-black"
             }`}
             disabled={loading}
           >

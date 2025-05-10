@@ -21,3 +21,5 @@ router.get('/critical', getCriticalReadings);
 router.get('/analytics', getSensorAnalytics);
 
 export default router;
+
+// all the routes are tested and working fine.

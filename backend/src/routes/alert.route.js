@@ -16,13 +16,13 @@ router.post('/', createAlert);
 // @desc    Get alerts with optional filters
 router.get('/', getAlerts);
 
-// @route   PATCH /api/alerts/:alertId/status
+// @route   PATCH /api/alets/:alertId/status
 // @desc    Update alert status
-router.put('/:alertId/status', updateAlertStatus);
+router.put('/status/:alertId', updateAlertStatus);
 
 // @route   PATCH /api/alerts/:alertId/notes
 // @desc    Add resolution notes to an alert
-router.put('/:alertId/notes', addResolutionNotes);
+router.put('/notes/:alertId', addResolutionNotes);
 
 // Note: assignWorkerToAlert(alertId) is called internally during createAlert() for critical alerts,
 // so you don't need to expose it separately unless you want a manual assignment route.

@@ -1,11 +1,8 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
-// import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -14,79 +11,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  // FormControl,
-  // FormField,
-  // FormItem,
-  // FormLabel,
-  // FormMessage,
-} from "@/components/ui/form";
-import {Link} from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-// import { GoogleIcon } from "@/components/ui/google-icon";
+import { Form } from "@/components/ui/form";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField } from "@/components/auth/FormFields";
-import { 
-  // SignUpFormValues, 
-  signUpSchema } from "@/lib/schema/signupSchema";
-import { authClient } from "@/lib/authClient";
+import { signUpSchema, } from "@/lib/schema/signupSchema";
+import { useUserStore } from "@/store/useUserStore";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const form = useForm
-  // <
-  // SignUpFormValues>
-  ({
+  const { signup,loading } = useUserStore();
+  console.log("loading", loading);
+  const navigate = useNavigate(); // ✅ FIXED: added missing hook
+
+  const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      name: "",
+      fullname: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
-  const [pending, setPending] = useState(false);
-  const { toast } = useToast();
 
-  const onSubmit = async (
-    // data: SignUpFormValues
-  ) => {
-    form.reset()
-    await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-    },
-      {
-        onRequest:()=>{
-          setPending(true)
-        },
-        onSuccess:()=>{
-          toast({
-            title: "Account created",
-            description: "your account has been created check your email for confirmation",
-          });
-        console.log("success")
-        },
-        onError: (ctx) => {
-          console.log("error",ctx)
-          toast({
-            variant:"destructive",
-            title: "something went wrong",
-            description: ctx.error.message??"something went wrong."
-          });
-          console.log("error",ctx.error.message)
-      },
-
-    })
-    setPending(false)
+  const onSubmit = async (data) => {
+    try {
+      await signup(data);
+      form.reset();
+      navigate("/verify-email");
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
       <div className="w-full max-w-md">
-
-
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
@@ -98,19 +57,15 @@ const Signup = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                // onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <InputField
                   control={form.control}
-                  name="name"
+                  name="fullname"
                   label="Full name"
-                  placeholder="john doe"
+                  placeholder="John Doe"
                   type="text"
                   icon={<User className="h-5 w-5 text-muted-foreground" />}
                 />
-
                 <InputField
                   control={form.control}
                   name="email"
@@ -119,7 +74,6 @@ const Signup = () => {
                   type="email"
                   icon={<Mail className="h-5 w-5 text-muted-foreground" />}
                 />
-
                 <InputField
                   control={form.control}
                   name="password"
@@ -127,9 +81,8 @@ const Signup = () => {
                   placeholder="••••••••"
                   type="password"
                   icon={<Lock className="h-5 w-5 text-muted-foreground" />}
-                  showPasswordToggle={true}
+                  showPasswordToggle
                 />
-
                 <InputField
                   control={form.control}
                   name="confirmPassword"
@@ -137,18 +90,17 @@ const Signup = () => {
                   placeholder="••••••••"
                   type="password"
                   icon={<Lock className="h-5 w-5 text-muted-foreground" />}
-                  showPasswordToggle={true}
+                  showPasswordToggle
                 />
-
-                <Button type="submit" className="w-full" disabled={pending}>
-                  {pending ? (
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       Please wait...
                     </>
                   ) : (
                     <>
-                      Sign up <ArrowRight className="h-4 w-4" />
+                      Sign up <ArrowRight className="h-4 w-4 ml-2" />
                     </>
                   )}
                 </Button>
@@ -156,31 +108,22 @@ const Signup = () => {
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="relative">
+            <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
               </div>
             </div>
-
-            <div className="flex gap-4 ">
-              <GoogleAuthButton
-                action="signup"
-                buttonText="Sign up with Google"
-                redirectTo="/dashboard"
-              />
-            </div>
-
+            <GoogleAuthButton
+              action="signup"
+              buttonText="Sign up with Google"
+              redirectTo="/dashboard"
+            />
             <div className="text-center text-sm">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-primary underline-offset-4 hover:underline"
-              >
+              <Link to="/login" className="font-medium text-primary underline-offset-4 hover:underline">
                 Log in
               </Link>
             </div>
