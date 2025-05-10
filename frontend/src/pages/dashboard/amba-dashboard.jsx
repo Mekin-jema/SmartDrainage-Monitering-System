@@ -2,6 +2,8 @@ import { AppSidebar } from "@/pages/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SearchProvider } from "@/context/search-context";
 import { Outlet, useLocation } from "react-router-dom";
+import { DarkModeToggle } from "./navbar/toggle-theme";
+import Header from "./Header";
 
 // const topNav = [
 //   {
@@ -28,19 +30,19 @@ import { Outlet, useLocation } from "react-router-dom";
 
 export default function DashboardMainPage() {
   return (
-    <SidebarProvider className="dark:bg-[#16423C] p-3 dark:pt-1 font-sora ">
-        <SearchProvider className>
-        <AppSidebar  />
+    <SidebarProvider className=" p-3 dark:pt-1 font-sora ">
+      <SearchProvider className>
+        <AppSidebar />
         <SidebarInset className="ml-3  ">
           {/* <Header /> */}
-     
-          {/* <newHeader /> */}
-          <div className=" dark:bg-[#021815] rounded-xl">
 
-          <Outlet />
+          {/* <newHeader /> */}
+          <div className=" rounded-xl mt-2 dark:border-gray-700 ">
+            <Header />
+            <Outlet />
           </div>
         </SidebarInset>
-    </SearchProvider>
-      </SidebarProvider>
+      </SearchProvider>
+    </SidebarProvider>
   );
 }

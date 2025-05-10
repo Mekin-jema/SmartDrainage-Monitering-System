@@ -13,16 +13,22 @@ import { useSidebar } from "@/components/ui/sidebar"; // Ensure this path is cor
 export function AppSidebar({ ...props }) {
   const { state } = useSidebar(); // Get sidebar state (expanded or collapsed)
   return (
-    <Sidebar collapsible="icon" {...props}  className="dark:bg-[#021815] bg-[#16423C] text-white mx-3 mt-3  rounded-xl">
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className=" text-white mx-3 mt-3  rounded-xl"
+    >
       {/* Conditionally render logo only when sidebar is expanded */}
       {state !== "collapsed" ? (
         <div className="flex justify-center items-center">
-          <img src={logo} alt="logo image" className="mt-2 w-[98.3px] h-[50.05px]" />
+          <img
+            src={logo}
+            alt="logo image"
+            className="mt-2 w-[98.3px] h-[50.05px]"
+          />
         </div>
-      ):(
-        <span className="h-[86px]">
-
-        </span>
+      ) : (
+        <span className="h-[86px]"></span>
       )}
 
       <SidebarContent>
