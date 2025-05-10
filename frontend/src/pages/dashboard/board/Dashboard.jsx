@@ -187,7 +187,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-        Smart Sewage System Dashboard
+        Smart Drainage System Dashboard
       </h1>
 
       {/* System Overview Cards */}
