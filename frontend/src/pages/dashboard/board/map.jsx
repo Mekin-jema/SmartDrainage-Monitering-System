@@ -42,6 +42,9 @@ import {
 
   Route,
   Upload,
+  XCircle,
+  AlertTriangle,
+  CheckCircle,
 } from "lucide-react";
 
 // SVG Icons for manholes
@@ -1006,6 +1009,21 @@ const mockAlerts = [
             </div>
           </div>
         )}
+    <div className="w-1/4 p-4 absolute left-0 bottom-10 dark:text-black shadow-lg bg-cyan-600 z-50">
+      <h3 className="text-lg font-bold">Legend</h3>
+
+      <div className="flex items-center my-2">
+        <XCircle color="red" className="text-white  mr-2" size={20} /> Overflow
+      </div>
+
+      <div className="flex items-center my-2">
+        <AlertTriangle  color="yellow"  className="bg- text-white mr-2" size={20} /> Risk of Overflow
+      </div>
+
+      <div className="flex items-center my-2">
+        <CheckCircle  color="green" className=" text-white  mr-2" size={20} /> All Good
+      </div>
+    </div>
       </div>
     </div>
   );
