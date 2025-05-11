@@ -45,47 +45,10 @@ import {
 } from "lucide-react";
 
 // SVG Icons for manholes
-const ManholeIcons = {
-  "green-check": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#10B981" />
-      <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-  "yellow-check": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#F59E0B" />
-      <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-  "red-check": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#EF4444" />
-      <path d="M8 12L11 15L16 9" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-  "green-cross": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#10B981" />
-      <path d="M8 8L16 16M16 8L8 16" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-  "yellow-cross": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#F59E0B" />
-      <path d="M8 8L16 16M16 8L8 16" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-  "red-cross": (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="#EF4444" />
-      <path d="M8 8L16 16M16 8L8 16" stroke="white" strokeWidth="2" />
-    </svg>
-  ),
-};
+
 
 const SewageSystemMap = () => {
-  const style ="https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=0d3e5c9668f242409228bfa012c04031"
+  const style ="https://maps.geoapify.com/v1/styles/osm-carto/style.json?apiKey=0d3e5c9668f242409228bfa012c04031"
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -112,121 +75,33 @@ const SewageSystemMap = () => {
 
   // Load initial data
   useEffect(() => {
-  const mockManholes = [
-  {
-    id: "1",
-    code: "MH-001",
-    location: [38.7636, 9.0054],
-    status: "functional",
-    zone: "A",
-    lastInspection: "2023-05-15",
-    cover_status: "closed",
-    overflow_level: "good",
-    connections: ["2"],
-  },
-  {
-    id: "2",
-    code: "MH-002",
-    location: [38.7645, 9.0062],
-    status: "damaged",
-    zone: "A",
-    lastInspection: "2023-04-20",
-    cover_status: "open",
-    overflow_level: "risk",
-    connections: ["1", "3"],
-  },
-  {
-    id: "3",
-    code: "MH-003",
-    location: [38.7653, 9.0048],
-    status: "overflowing",
-    zone: "B",
-    lastInspection: "2023-06-01",
-    cover_status: "closed",
-    overflow_level: "overflow",
-    connections: ["2", "4"],
-  },
-  {
-    id: "4",
-    code: "MH-004",
-    location: [38.7660, 9.0035],
-    status: "functional",
-    zone: "B",
-    lastInspection: "2023-05-25",
-    cover_status: "closed",
-    overflow_level: "good",
-    connections: ["3", "5"],
-  },
-  {
-    id: "5",
-    code: "MH-005",
-    location: [38.7672, 9.0021],
-    status: "under_maintenance",
-    zone: "C",
-    lastInspection: "2023-06-05",
-    cover_status: "open",
-    overflow_level: "moderate",
-    connections: ["4", "6"],
-  },
-  {
-    id: "6",
-    code: "MH-006",
-    location: [38.7680, 9.0010],
-    status: "functional",
-    zone: "C",
-    lastInspection: "2023-06-07",
-    cover_status: "closed",
-    overflow_level: "good",
-    connections: ["5", "7"],
-  },
-  {
-    id: "7",
-    code: "MH-007",
-    location: [38.7685, 9.0002],
-    status: "damaged",
-    zone: "C",
-    lastInspection: "2023-05-10",
-    cover_status: "open",
-    overflow_level: "risk",
-    connections: ["6", "8"],
-  },
-  {
-    id: "8",
-    code: "MH-008",
-    location: [38.7693, 8.9990],
-    status: "functional",
-    zone: "D",
-    lastInspection: "2023-06-03",
-    cover_status: "closed",
-    overflow_level: "good",
-    connections: ["7", "9"],
-  },
-  {
-    id: "9",
-    code: "MH-009",
-    location: [38.7701, 8.9980],
-    status: "overflowing",
-    zone: "D",
-    lastInspection: "2023-06-01",
-    cover_status: "open",
-    overflow_level: "overflow",
-    connections: ["8", "10"],
-  },
-  {
-    id: "10",
-    code: "MH-010",
-    location: [38.7710, 8.9970],
-    status: "functional",
-    zone: "D",
-    lastInspection: "2023-06-08",
-    cover_status: "closed",
-    overflow_level: "good",
-    connections: ["9"],
-  },
+const mockManholes = [
+  // Mainline (MH-001 to MH-010)
+  { id: "1", code: "MH-001", location: [38.7636, 9.0054], status: "functional", zone: "A", lastInspection: "2023-05-15", cover_status: "closed", overflow_level: "good", connections: ["2"] },
+  { id: "2", code: "MH-002", location: [38.7645, 9.0062], status: "damaged", zone: "A", lastInspection: "2023-04-20", cover_status: "open", overflow_level: "risk", connections: ["1", "3"] },
+  { id: "3", code: "MH-003", location: [38.7653, 9.0048], status: "overflowing", zone: "B", lastInspection: "2023-06-01", cover_status: "closed", overflow_level: "overflow", connections: ["2", "4"] },
+  { id: "4", code: "MH-004", location: [38.7660, 9.0035], status: "functional", zone: "B", lastInspection: "2023-05-25", cover_status: "closed", overflow_level: "good", connections: ["3", "5"] },
+  { id: "5", code: "MH-005", location: [38.7672, 9.0021], status: "under_maintenance", zone: "C", lastInspection: "2023-06-05", cover_status: "open", overflow_level: "moderate", connections: ["4", "6"] },
+  { id: "6", code: "MH-006", location: [38.7680, 9.0010], status: "functional", zone: "C", lastInspection: "2023-06-07", cover_status: "closed", overflow_level: "good", connections: ["5", "7"] },
+  { id: "7", code: "MH-007", location: [38.7685, 9.0002], status: "damaged", zone: "C", lastInspection: "2023-05-10", cover_status: "open", overflow_level: "risk", connections: ["6", "8"] },
+  { id: "8", code: "MH-008", location: [38.7693, 8.9990], status: "functional", zone: "D", lastInspection: "2023-06-03", cover_status: "closed", overflow_level: "good", connections: ["7", "9"] },
+  { id: "9", code: "MH-009", location: [38.7701, 8.9980], status: "overflowing", zone: "D", lastInspection: "2023-06-01", cover_status: "open", overflow_level: "overflow", connections: ["8", "10"] },
+  { id: "10", code: "MH-010", location: [38.7710, 8.9970], status: "functional", zone: "D", lastInspection: "2023-06-08", cover_status: "closed", overflow_level: "good", connections: ["9"] },
+
+  // Branch A
+  { id: "11", code: "MH-011", location: [38.7658, 9.0065], status: "functional", zone: "A", lastInspection: "2023-06-10", cover_status: "closed", overflow_level: "good", connections: ["2", "12"] },
+  { id: "12", code: "MH-012", location: [38.7665, 9.0075], status: "damaged", zone: "B", lastInspection: "2023-05-15", cover_status: "open", overflow_level: "risk", connections: ["11"] },
+
+  // Branch B
+  { id: "13", code: "MH-013", location: [38.7665, 9.0028], status: "under_maintenance", zone: "C", lastInspection: "2023-06-02", cover_status: "open", overflow_level: "moderate", connections: ["4", "14"] },
+  { id: "14", code: "MH-014", location: [38.7670, 9.0036], status: "functional", zone: "C", lastInspection: "2023-06-03", cover_status: "closed", overflow_level: "good", connections: ["13"] },
+
+  // Branch C
+  { id: "15", code: "MH-015", location: [38.7682, 9.0009], status: "overflowing", zone: "C", lastInspection: "2023-06-06", cover_status: "open", overflow_level: "overflow", connections: ["6"] },
 ];
 
 
-   const mockPipes = [
+const mockPipes = [
   { id: "p1", start: "1", end: "2", blockage: false },
   { id: "p2", start: "2", end: "3", blockage: true },
   { id: "p3", start: "3", end: "4", blockage: false },
@@ -236,7 +111,14 @@ const SewageSystemMap = () => {
   { id: "p7", start: "7", end: "8", blockage: false },
   { id: "p8", start: "8", end: "9", blockage: false },
   { id: "p9", start: "9", end: "10", blockage: false },
+  // Branches
+  { id: "p10", start: "2", end: "11", blockage: false },
+  { id: "p11", start: "11", end: "12", blockage: true },
+  { id: "p12", start: "4", end: "13", blockage: false },
+  { id: "p13", start: "13", end: "14", blockage: false },
+  { id: "p14", start: "6", end: "15", blockage: true },
 ];
+
 
 const mockAlerts = [
   {
