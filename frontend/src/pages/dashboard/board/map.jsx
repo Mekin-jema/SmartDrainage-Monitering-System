@@ -89,7 +89,7 @@ const mockManholes = [
   { id: "7", code: "MH-007", location: [38.7685, 9.0002], status: "damaged", zone: "C", lastInspection: "2023-05-10", cover_status: "open", overflow_level: "risk", connections: ["6", "8"] },
   { id: "8", code: "MH-008", location: [38.7693, 8.9990], status: "functional", zone: "D", lastInspection: "2023-06-03", cover_status: "closed", overflow_level: "good", connections: ["7", "9"] },
   { id: "9", code: "MH-009", location: [38.7701, 8.9980], status: "overflowing", zone: "D", lastInspection: "2023-06-01", cover_status: "open", overflow_level: "overflow", connections: ["8", "10"] },
-  { id: "10", code: "MH-010", location: [38.7710, 8.9970], status: "functional", zone: "D", lastInspection: "2023-06-08", cover_status: "closed", overflow_level: "good", connections: ["9"] },
+  { id: "10", code: "MH-010",location: [38.7710, 8.9970], status: "functional", zone: "D", lastInspection: "2023-06-08", cover_status: "closed", overflow_level: "good", connections: ["9"] },
 
   // Branch A
   { id: "11", code: "MH-011", location: [38.7658, 9.0065], status: "functional", zone: "A", lastInspection: "2023-06-10", cover_status: "closed", overflow_level: "good", connections: ["2", "12"] },
@@ -187,7 +187,8 @@ const mockAlerts = [
       zoom: 15,
     });
 
-    map.addControl(new maplibregl.NavigationControl());
+    map.addControl(new maplibregl.NavigationControl(),"top-left");
+    map.addControl(new maplibregl.FullscreenControl(), "top-left");
     mapRef.current = map;
 
     // Handle map clicks for drawing mode
@@ -575,457 +576,316 @@ const mockAlerts = [
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Map container */}
-      <div ref={mapContainer} className="flex-1 relative">
-        {/* Drawing mode controls */}
-        {drawingMode && (
-          <div className="absolute top-4 left-4 bg-white p-4 rounded-md shadow-md z-10">
-            <h3 className="font-bold mb-2">Drawing Mode</h3>
-            {!newManholeLocation ? (
-              <p>Click on the map to place a new manhole</p>
-            ) : !connectingManhole ? (
-              <div>
-                <p>Click on an existing manhole to connect</p>
-                <Button onClick={addNewManhole} className="mt-2">
-                  Add Manhole Without Connections
-                </Button>
-              </div>
-            ) : (
-              <p>Click on another manhole to create a connection</p>
-            )}
-            <Button variant="destructive" onClick={cancelDrawing} className="mt-2">
-              Cancel
+<div className="flex h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  {/* Map container */}
+  <div ref={mapContainer} className="flex-1 relative">
+    {/* Drawing mode controls */}
+    {drawingMode && (
+      <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow-md z-10">
+        <h3 className="font-bold mb-2">Drawing Mode</h3>
+        {!newManholeLocation ? (
+          <p>Click on the map to place a new manhole</p>
+        ) : !connectingManhole ? (
+          <div>
+            <p>Click on an existing manhole to connect</p>
+            <Button onClick={addNewManhole} className="mt-2">
+              Add Manhole Without Connections
             </Button>
           </div>
+        ) : (
+          <p>Click on another manhole to create a connection</p>
         )}
+        <Button variant="destructive" onClick={cancelDrawing} className="mt-2">
+          Cancel
+        </Button>
       </div>
+    )}
+  </div>
 
-      {/* Side panel */}
-      <div className="w-96 bg-white border-l overflow-y-auto">
-        <Tabs defaultValue="manholes">
-          <TabsList className="grid grid-cols-3">
-            <TabsTrigger value="manholes">
-              <MapPin className="w-4 h-4 mr-2" /> Manholes
-            </TabsTrigger>
-            <TabsTrigger value="alerts">
-              <AlertCircle className="w-4 h-4 mr-2" /> Alerts
-            </TabsTrigger>
-            <TabsTrigger value="workers">
-              <HardHat className="w-4 h-4 mr-2" /> Workers
-            </TabsTrigger>
-          </TabsList>
+  {/* Side panel */}
+  <div className="w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto">
+    <Tabs defaultValue="manholes">
+      <TabsList className="grid grid-cols-3 bg-gray-100 dark:bg-gray-700">
+        <TabsTrigger value="manholes">
+          <MapPin className="w-4 h-4 mr-2" /> Manholes
+        </TabsTrigger>
+        <TabsTrigger value="alerts">
+          <AlertCircle className="w-4 h-4 mr-2" /> Alerts
+        </TabsTrigger>
+        <TabsTrigger value="workers">
+          <HardHat className="w-4 h-4 mr-2" /> Workers
+        </TabsTrigger>
+      </TabsList>
 
-          {/* Manholes tab */}
-          <TabsContent value="manholes" className="p-4">
-            <div className="flex items-center mb-4">
-              <Input placeholder="Search manholes..." className="flex-1" />
-              <Button variant="outline" className="ml-2">
-                <Search className="w-4 h-4" />
-              </Button>
-            </div>
+      {/* Manholes tab */}
+      <TabsContent value="manholes" className="p-4">
+        <div className="flex items-center mb-4">
+          <Input placeholder="Search manholes..." className="flex-1 dark:bg-gray-700 dark:border-gray-600" />
+          <Button variant="outline" className="ml-2">
+            <Search className="w-4 h-4" />
+          </Button>
+        </div>
 
-            <div className="flex gap-2 mb-4">
-              <Button onClick={() => setDrawingMode(true)}>
-                <MapPin className="w-4 h-4 mr-2" /> Add Manhole
-              </Button>
-              <Button variant="outline" onClick={() => fileInputRef.current.click()}>
-                <Upload className="w-4 h-4 mr-2" /> Import
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                accept=".geojson,.json"
-                className="hidden"
-              />
-            </div>
+        <div className="flex gap-2 mb-4">
+          <Button onClick={() => setDrawingMode(true)}>
+            <MapPin className="w-4 h-4 mr-2" /> Add Manhole
+          </Button>
+          <Button variant="outline" onClick={() => fileInputRef.current.click()}>
+            <Upload className="w-4 h-4 mr-2" /> Import
+          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".geojson,.json"
+            className="hidden"
+          />
+        </div>
 
-            <div className="space-y-2 mb-4">
-              <Label>Filters</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={filters.status}
-                  onValueChange={(val) => setFilters({ ...filters, status: val })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="functional">Functional</SelectItem>
-                    <SelectItem value="damaged">Damaged</SelectItem>
-                    <SelectItem value="overflowing">Overflowing</SelectItem>
-                  </SelectContent>
-                </Select>
+        <div className="space-y-2 mb-4">
+          <Label className="dark:text-gray-300">Filters</Label>
+          <div className="flex gap-2">
+            <Select
+              value={filters.status}
+              onValueChange={(val) => setFilters({ ...filters, status: val })}
+            >
+              <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-gray-700">
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="functional">Functional</SelectItem>
+                <SelectItem value="damaged">Damaged</SelectItem>
+                <SelectItem value="overflowing">Overflowing</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <Select
-                  value={filters.zone}
-                  onValueChange={(val) => setFilters({ ...filters, zone: val })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Zone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Zones</SelectItem>
-                    <SelectItem value="A">Zone A</SelectItem>
-                    <SelectItem value="B">Zone B</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <Select
+              value={filters.zone}
+              onValueChange={(val) => setFilters({ ...filters, zone: val })}
+            >
+              <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600">
+                <SelectValue placeholder="Zone" />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-gray-700">
+                <SelectItem value="all">All Zones</SelectItem>
+                <SelectItem value="A">Zone A</SelectItem>
+                <SelectItem value="B">Zone B</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-            <div className="space-y-2">
-              {filteredManholes.map((manhole) => (
-                <Card
-                  key={manhole.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleManholeClick(manhole)}
-                >
-                  <CardHeader className="p-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">
-                        {manhole.code}
-                      </CardTitle>
-                      <Badge
-                        variant={
-                          manhole.status === "functional"
-                            ? "success"
-                            : manhole.status === "damaged"
-                            ? "destructive"
-                            : "default"
-                        }
-                      >
-                        {manhole.status}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <span className="inline-flex items-center mr-3">
-                        {manhole.cover_status === "open" ? (
-                          <span className="text-red-500">✕ Open</span>
-                        ) : (
-                          <span className="text-green-500">✓ Closed</span>
-                        )}
-                      </span>
-                      <span>
-                        {manhole.overflow_level === "good" ? (
-                          <span className="text-green-500">Good</span>
-                        ) : manhole.overflow_level === "risk" ? (
-                          <span className="text-yellow-500">Risk</span>
-                        ) : (
-                          <span className="text-red-500">Overflow</span>
-                        )}
-                      </span>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Alerts tab */}
-          <TabsContent value="alerts" className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Switch
-                  id="critical-only"
-                  checked={showCriticalOnly}
-                  onCheckedChange={setShowCriticalOnly}
-                />
-                <Label htmlFor="critical-only" className="ml-2">
-                  Critical Only
-                </Label>
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" /> Filter
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              {filteredAlerts.map((alert) => {
-                const manhole = manholes.find((m) => m.id === alert.manholeId);
-                return (
-                  <Card
-                    key={alert.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => handleAlertClick(alert)}
+        <div className="space-y-2">
+          {filteredManholes.map((manhole) => (
+            <Card
+              key={manhole.id}
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={() => handleManholeClick(manhole)}
+            >
+              <CardHeader className="p-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">
+                    {manhole.code}
+                  </CardTitle>
+                  <Badge
+                    variant={
+                      manhole.status === "functional"
+                        ? "success"
+                        : manhole.status === "damaged"
+                        ? "destructive"
+                        : "default"
+                    }
                   >
-                    <CardHeader className="p-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium">
-                          {manhole?.code || "Unknown"} - {alert.alertType}
-                        </CardTitle>
-                        <Badge
-                          variant={
-                            alert.alertLevel === "critical"
-                              ? "destructive"
-                              : "warning"
-                          }
-                        >
-                          {alert.alertLevel}
-                        </Badge>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {new Date(alert.timestamp).toLocaleString()}
-                      </div>
-                      {alert.assignedWorker && (
-                        <div className="text-xs mt-1 flex items-center">
-                          <User className="w-3 h-3 mr-1" /> Assigned
-                        </div>
-                      )}
-                    </CardHeader>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          {/* Workers tab */}
-          <TabsContent value="workers" className="p-4">
-            <div className="space-y-2">
-              {workers.map((worker) => (
-                <Card key={worker.id}>
-                  <CardHeader className="p-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">
-                        {worker.name}
-                      </CardTitle>
-                      <Badge
-                        variant={
-                          worker.status === "available"
-                            ? "success"
-                            : worker.status === "assigned"
-                            ? "warning"
-                            : "destructive"
-                        }
-                      >
-                        {worker.status}
-                      </Badge>
-                    </div>
-                    {worker.currentAssignment && (
-                      <div className="text-xs mt-1">
-                        Assigned to: {worker.currentAssignment}
-                      </div>
-                    )}
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Selected manhole details */}
-        {selectedManhole && (
-          <div className="border-t p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold">{selectedManhole.code}</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedManhole(null)}
-              >
-                Close
-              </Button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label>Status</Label>
-                  <div>{selectedManhole.status}</div>
+                    {manhole.status}
+                  </Badge>
                 </div>
-                <div>
-                  <Label>Last Inspection</Label>
-                  <div>{selectedManhole.lastInspection}</div>
-                </div>
-                <div>
-                  <Label>Zone</Label>
-                  <div>{selectedManhole.zone}</div>
-                </div>
-                <div>
-                  <Label>Cover</Label>
-                  <div>
-                    {selectedManhole.cover_status === "open" ? (
-                      <span className="text-red-500">Open ✕</span>
+                <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="inline-flex items-center mr-3">
+                    {manhole.cover_status === "open" ? (
+                      <span className="text-red-500">✕ Open</span>
                     ) : (
-                      <span className="text-green-500">Closed ✓</span>
+                      <span className="text-green-500">✓ Closed</span>
                     )}
-                  </div>
-                </div>
-                <div>
-                  <Label>Overflow Level</Label>
-                  <div>
-                    {selectedManhole.overflow_level === "good" ? (
+                  </span>
+                  <span>
+                    {manhole.overflow_level === "good" ? (
                       <span className="text-green-500">Good</span>
-                    ) : selectedManhole.overflow_level === "risk" ? (
+                    ) : manhole.overflow_level === "risk" ? (
                       <span className="text-yellow-500">Risk</span>
                     ) : (
                       <span className="text-red-500">Overflow</span>
                     )}
-                  </div>
+                  </span>
                 </div>
-              </div>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
 
-              <div>
-                <Label>Connected Manholes</Label>
-                <div className="mt-2 space-y-1">
-                  {selectedManhole.connections.map(connId => {
-                    const connManhole = manholes.find(m => m.id === connId);
-                    return connManhole ? (
-                      <div key={connId} className="flex items-center text-sm p-2 bg-gray-50 rounded">
-                        <span className="font-medium">{connManhole.code}</span>
-                        <span className="mx-2">→</span>
-                        <span>
-                          {pipes.find(p => 
-                            (p.start === selectedManhole.id && p.end === connId) || 
-                            (p.start === connId && p.end === selectedManhole.id)
-                          )?.blockage ? (
-                            <span className="text-red-500">Blocked Pipe</span>
-                          ) : (
-                            <span className="text-green-500">Clear Pipe</span>
-                          )}
-                        </span>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <Label>Sensor Readings</Label>
-                <div className="h-40 mt-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={readings}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="timestamp" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line
-                        type="monotone"
-                        dataKey="waterLevel"
-                        stroke="#3b82f6"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div>
-                <Label>Maintenance History</Label>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {logs.map((log) => (
-                      <TableRow key={log.timestamp}>
-                        <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                        <TableCell>{log.action}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              <Button className="w-full" onClick={generateRoute}>
-                <Route className="w-4 h-4 mr-2" /> Generate Optimal Route
-              </Button>
-            </div>
+      {/* Alerts tab */}
+      <TabsContent value="alerts" className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Switch
+              id="critical-only"
+              checked={showCriticalOnly}
+              onCheckedChange={setShowCriticalOnly}
+            />
+            <Label htmlFor="critical-only" className="ml-2 dark:text-gray-300">
+              Critical Only
+            </Label>
           </div>
-        )}
+          <Button variant="outline" size="sm">
+            <Filter className="w-4 h-4 mr-2" /> Filter
+          </Button>
+        </div>
 
-        {/* Selected pipe details */}
-        {selectedPipe && (
-          <div className="border-t p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-bold">Pipe Details</h3>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedPipe(null)}>
-                Close
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>From:</span>
-                <span>MH-{selectedPipe.start}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>To:</span>
-                <span>MH-{selectedPipe.end}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Status:</span>
-                <span>
-                  {selectedPipe.blockage ? (
-                    <span className="text-red-500">Blocked</span>
-                  ) : (
-                    <span className="text-green-500">Clear</span>
-                  )}
-                </span>
-              </div>
-              <Button 
-                variant="outline" 
-                className="w-full mt-4"
-                onClick={() => {
-                  setPipes(pipes.map(p => 
-                    p.id === selectedPipe.id ? {...p, blockage: !p.blockage} : p
-                  ));
-                }}
+        <div className="space-y-2">
+          {filteredAlerts.map((alert) => {
+            const manhole = manholes.find((m) => m.id === alert.manholeId);
+            return (
+              <Card
+                key={alert.id}
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => handleAlertClick(alert)}
               >
-                {selectedPipe.blockage ? "Mark as Clear" : "Mark as Blocked"}
-              </Button>
+                <CardHeader className="p-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium">
+                      {manhole?.code || "Unknown"} - {alert.alertType}
+                    </CardTitle>
+                    <Badge
+                      variant={
+                        alert.alertLevel === "critical"
+                          ? "destructive"
+                          : "warning"
+                      }
+                    >
+                      {alert.alertLevel}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {new Date(alert.timestamp).toLocaleString()}
+                  </div>
+                  {alert.assignedWorker && (
+                    <div className="text-xs mt-1 flex items-center">
+                      <User className="w-3 h-3 mr-1" /> Assigned
+                    </div>
+                  )}
+                </CardHeader>
+              </Card>
+            );
+          })}
+        </div>
+      </TabsContent>
+
+      {/* Workers tab */}
+      <TabsContent value="workers" className="p-4">
+        <div className="space-y-2">
+          {workers.map((worker) => (
+            <Card key={worker.id}>
+              <CardHeader className="p-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">
+                    {worker.name}
+                  </CardTitle>
+                  <Badge
+                    variant={
+                      worker.status === "available"
+                        ? "success"
+                        : worker.status === "assigned"
+                        ? "warning"
+                        : "destructive"
+                    }
+                  >
+                    {worker.status}
+                  </Badge>
+                </div>
+                {worker.currentAssignment && (
+                  <div className="text-xs mt-1">
+                    Assigned to: {worker.currentAssignment}
+                  </div>
+                )}
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
+    </Tabs>
+
+    {/* Selected manhole details */}
+    {selectedManhole && (
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold">{selectedManhole.code}</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedManhole(null)}
+          >
+            Close
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label>Status</Label>
+              <div>{selectedManhole.status}</div>
+            </div>
+            <div>
+              <Label>Last Inspection</Label>
+              <div>{selectedManhole.lastInspection}</div>
+            </div>
+            <div>
+              <Label>Zone</Label>
+              <div>{selectedManhole.zone}</div>
+            </div>
+            <div>
+              <Label>Cover</Label>
+              <div>
+                {selectedManhole.cover_status === "open" ? (
+                  <span className="text-red-500">Open ✕</span>
+                ) : (
+                  <span className="text-green-500">Closed ✓</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label>Overflow Level</Label>
+              <div>
+                {selectedManhole.overflow_level === "good" ? (
+                  <span className="text-green-500">Good</span>
+                ) : selectedManhole.overflow_level === "risk" ? (
+                  <span className="text-yellow-500">Risk</span>
+                ) : (
+                  <span className="text-red-500">Overflow</span>
+                )}
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Route details */}
-        {route && (
-          <div className="border-t p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-bold">Optimal Route</h3>
-              <Button variant="ghost" size="sm" onClick={() => setRoute(null)}>
-                Close
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Distance:</span>
-                <span>{route.distance}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Duration:</span>
-                <span>{route.duration}</span>
-              </div>
-              <div className="mt-4">
-                <h4 className="font-medium mb-2">Stops:</h4>
-                <ol className="list-decimal pl-5 space-y-1">
-                  {route.coordinates.map((coord, i) => (
-                    <li key={i}>Manhole {i + 1}</li>
-                  ))}
-                </ol>
-              </div>
+          <div>
+            <Label>Connected Manholes</Label>
+            <div className="mt-2 space-y-1">
+              {selectedManhole.connections.map((connId) => {
+                const connManhole = manholes.find((m) => m.id === connId);
+                return (
+                  <div key={connId} className="text-sm">
+                    • {connManhole?.code || "Unknown"}
+                  </div>
+                );
+              })}
             </div>
           </div>
-        )}
-    <div className="w-1/4 p-4 absolute left-0 bottom-10 dark:text-black shadow-lg bg-cyan-600 z-50">
-      <h3 className="text-lg font-bold">Legend</h3>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
 
-      <div className="flex items-center my-2">
-        <XCircle color="red" className="text-white  mr-2" size={20} /> Overflow
-      </div>
-
-      <div className="flex items-center my-2">
-        <AlertTriangle  color="yellow"  className="bg- text-white mr-2" size={20} /> Risk of Overflow
-      </div>
-
-      <div className="flex items-center my-2">
-        <CheckCircle  color="green" className=" text-white  mr-2" size={20} /> All Good
-      </div>
-    </div>
-      </div>
-    </div>
   );
 };
 
