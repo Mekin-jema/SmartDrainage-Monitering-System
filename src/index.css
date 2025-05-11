@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* *=========== Enhanced Blue-Orange Theme =========== */
+@layer base {
+  :root {
+    /* Light Mode - Clean with orange accents */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 200 100% 8%; /* Deep blue text */
+
+    --card: 0 0% 98%; /* Slightly off-white */
+    --card-foreground: 200 100% 8%;
+
+    --popover: 0 0% 98%;
+    --popover-foreground: 200 100% 8%;
+
+    --primary: 200 100% 8%; /* Deep blue */
+    --primary-foreground: 0 0% 98%; /* Off-white */
+
+    --secondary: 30 70% 55%; /* Vibrant orange */
+    --secondary-foreground: 0 0% 100%; /* White */
+
+    --muted: 200 20% 96%; /* Very light blue-gray */
+    --muted-foreground: 200 15% 40%;
+
+    --accent: 30 70% 55%; /* Orange accent */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%; /* Bright red */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 200 15% 90%; /* Very light blue border */
+    --input: 200 15% 95%; /* Light input background */
+    --ring: 200 100% 50%; /* Blue focus ring */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark Mode - Cool blue with orange accents */
+    --background: 210 50% 8%; /* Dark blue */
+    --foreground: 0 0% 98%; /* Off-white text */
+
+    --card: 210 45% 10%; /* Slightly lighter blue card */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 210 45% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 210 80% 60%; /* Bright blue */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 70% 55%; /* Same orange as light mode */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 30% 20%; /* Dark blue-gray */
+    --muted-foreground: 210 20% 70%;
+
+    --accent: 30 70% 50%; /* Slightly darker orange */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 50%; /* Darker red */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 25% 25%; /* Blue border */
+    --input: 210 30% 20%; /* Dark input */
+    --ring: 210 100% 70%; /* Bright blue focus ring */
+  }
+}
+
+.shadow-light {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08), inset 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-dark {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25),
+    inset 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
