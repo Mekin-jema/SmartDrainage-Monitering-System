@@ -34,7 +34,7 @@ export const HeroSection = () => {
           <p className="max-w-screen-sm mx-auto text-xl text-muted-foreground">
             Monitor manholes in real time, detect toxic gas or overflow, and
             assign workers efficiently — all from a smart dashboard powered by
-            IoT and AI. Build cleaner, safer cities with data-driven drainage
+            IoT . Build cleaner, safer cities with data-driven drainage
             management.
           </p>
 
@@ -66,7 +66,7 @@ export const HeroSection = () => {
             width={1200}
             height={1200}
             className="w-full md:w-[1200px] mx-auto rounded-lg relative border border-t-2 border-secondary border-t-primary/30"
-            src={theme === "light" ? "/light.png" : "/dark.png"}
+            src={theme === "light" ? "./light.png" : "./dark.png"}
             alt="SmartDrainX Dashboard"
           />
           <div className="absolute bottom-0 left-0 w-full h-20 md:h-28 bg-gradient-to-b from-background/0 via-background/50 to-background rounded-lg"></div>
