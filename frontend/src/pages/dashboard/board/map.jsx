@@ -1012,16 +1012,16 @@ const mockAlerts = [
     )}
     
     {/* Legend */}
-    <div className="w-1/4 p-4 absolute left-0 bottom-10 shadow-lg bg-primary text-primary-foreground z-50 rounded-r-md">
+    <div className="w-[200px] border border-white p-4 absolute left-0 bottom-10 shadow-lg  z-50 rounded-md bg-background">
       <h3 className="text-lg font-bold">Legend</h3>
       <div className="flex items-center my-2">
-        <XCircle className="mr-2" size={20} /> Overflow
+        <XCircle className="mr-2" size={20} color="red" /> Overflow
       </div>
       <div className="flex items-center my-2">
-        <AlertTriangle className="mr-2" size={20} /> Risk of Overflow
+        <AlertTriangle className="mr-2" size={20} color="yellow" /> Risk of Overflow
       </div>
       <div className="flex items-center my-2">
-        <CheckCircle className="mr-2" size={20} /> All Good
+        <CheckCircle className="mr-2" size={20} color="green" /> All Good
       </div>
     </div>
   </div>

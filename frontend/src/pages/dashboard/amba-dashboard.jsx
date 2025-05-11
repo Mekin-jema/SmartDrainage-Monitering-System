@@ -2,7 +2,6 @@ import { AppSidebar } from "@/pages/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SearchProvider } from "@/context/search-context";
 import { Outlet, useLocation } from "react-router-dom";
-import { DarkModeToggle } from "./navbar/toggle-theme";
 import Header from "./Header";
 
 // const topNav = [
