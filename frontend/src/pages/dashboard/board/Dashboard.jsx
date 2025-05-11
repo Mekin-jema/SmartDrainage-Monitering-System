@@ -15,6 +15,7 @@ import {
   Battery,
   Fuel,
   WavesIcon,
+  Info,
 } from "lucide-react";
 import {
   BarChart,
@@ -32,6 +33,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import SewageSystemMap from "./map";
+import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 
 const Dashboard = () => {
   // Sample data structure that matches your schema with multiple manholes
@@ -66,7 +68,7 @@ const Dashboard = () => {
         lastCalibration: "2025-04-15T00:00:00Z",
         batteryLevel: 78,
         status: "critical",
-        alertTypes: ["sewage_high"],
+        alertTypes: ["sewage_high", "low_battery", "bloackage"],
         createdAt: "2025-01-15T00:00:00Z",
         updatedAt: "2025-04-30T08:15:00Z"
       },
@@ -81,6 +83,7 @@ const Dashboard = () => {
           methaneLevel: 1200, // Above threshold
           flowRate: 12.1,
           batteryLevel: 65,
+          temperature: 22.0,
         },
         thresholds: {
           maxDistance: 95,
@@ -196,8 +199,9 @@ const Dashboard = () => {
       waterLevel: { normal: 0, warning: 0, critical: 0 },
       gasLevel: { normal: 0, warning: 0, critical: 0 },
       flowRate: { normal: 0, warning: 0, critical: 0 },
-      batteryLevel: { normal: 0, warning: 0, critical: 0 }
+      temperature: { normal: 0, warning: 0, critical: 0 } // Added temperature stats
     };
+
 
     dashboardData.manholes.forEach(manhole => {
       // Water level analysis
@@ -240,14 +244,25 @@ const Dashboard = () => {
         }
       }
 
-      // Battery level analysis
-      if (manhole.sensors.batteryLevel !== undefined) {
-        if (manhole.sensors.batteryLevel < 20) {
-          stats.batteryLevel.critical++;
-        } else if (manhole.sensors.batteryLevel < 40) {
-          stats.batteryLevel.warning++;
+      // // Battery level analysis
+      // if (manhole.sensors.batteryLevel !== undefined) {
+      //   if (manhole.sensors.batteryLevel < 20) {
+      //     stats.batteryLevel.critical++;
+      //   } else if (manhole.sensors.batteryLevel < 40) {
+      //     stats.batteryLevel.warning++;
+      //   } else {
+      //     stats.batteryLevel.normal++;
+      //   }
+      // }
+
+      // Temperature analysis (assuming thresholds: critical > 40°C or < 0°C, warning > 35°C or < 5°C)
+      if (manhole.sensors.temperature !== undefined) {
+        if (manhole.sensors.temperature > 40 || manhole.sensors.temperature < 0) {
+          stats.temperature.critical++;
+        } else if (manhole.sensors.temperature > 35 || manhole.sensors.temperature < 5) {
+          stats.temperature.warning++;
         } else {
-          stats.batteryLevel.normal++;
+          stats.temperature.normal++;
         }
       }
     });
@@ -290,33 +305,31 @@ const Dashboard = () => {
     { name: "Warning", value: sensorStatistics.gasLevel.warning, color: COLORS.warning },
     { name: "Critical", value: sensorStatistics.gasLevel.critical, color: COLORS.critical },
   ];
-
-  const batteryLevelData = [
-    { name: "Normal", value: sensorStatistics.batteryLevel.normal, color: COLORS.normal },
-    { name: "Warning", value: sensorStatistics.batteryLevel.warning, color: COLORS.warning },
-    { name: "Critical", value: sensorStatistics.batteryLevel.critical, color: COLORS.critical },
+  const temperatureData = [
+    { name: "Normal", value: sensorStatistics.temperature.normal, color: COLORS.normal },
+    { name: "Warning", value: sensorStatistics.temperature.warning, color: COLORS.warning },
+    { name: "Critical", value: sensorStatistics.temperature.critical, color: COLORS.critical },
   ];
-
   // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 shadow-lg rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-          <p className="font-medium text-gray-900 dark:text-white">{label}</p>
-          {payload.map((entry, index) => (
-            <p
-              key={`tooltip-${index}`}
-              style={{ color: entry.color }}
-              className="text-sm"
-            >
-              {entry.name}: {entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
+  // const CustomTooltip = ({ active, payload, label }) => {
+  //   if (active && payload && payload.length) {
+  //     return (
+  //       <div className="bg-white p-3 shadow-lg rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+  //         <p className="font-medium text-gray-900 dark:text-white">{label}</p>
+  //         {payload.map((entry, index) => (
+  //           <p
+  //             key={`tooltip-${index}`}
+  //             style={{ color: entry.color }}
+  //             className="text-sm"
+  //           >
+  //             {entry.name}: {entry.value}
+  //           </p>
+  //         ))}
+  //       </div>
+  //     );
+  //   }
+  //   return null;
+  // };
 
   // Manhole status card component
   const ManholeStatusCard = ({ manhole }) => {
@@ -336,14 +349,13 @@ const Dashboard = () => {
               {manhole.name}
             </CardTitle>
             <div className="flex items-center gap-2">
-              <span 
-                className={`text-xs px-2 py-1 rounded-full ${
-                  manhole.status === "critical" 
-                    ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" 
-                    : manhole.status === "warning" 
-                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" 
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${manhole.status === "critical"
+                  ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                  : manhole.status === "warning"
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
                     : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                }`}
+                  }`}
               >
                 {manhole.status}
               </span>
@@ -369,16 +381,15 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
-                  <div 
-                    className={`h-1.5 rounded-full ${
-                      (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.9 
-                        ? "bg-red-600" 
-                        : (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.75 
-                        ? "bg-amber-500" 
+                  <div
+                    className={`h-1.5 rounded-full ${(manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.9
+                      ? "bg-red-600"
+                      : (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.75
+                        ? "bg-amber-500"
                         : "bg-green-600"
-                    }`} 
-                    style={{ 
-                      width: `${Math.min(100, (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100)}%` 
+                      }`}
+                    style={{
+                      width: `${Math.min(100, (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100)}%`
                     }}
                   ></div>
                 </div>
@@ -399,16 +410,15 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
-                  <div 
-                    className={`h-1.5 rounded-full ${
-                      manhole.sensors.methaneLevel > manhole.thresholds.maxGas 
-                        ? "bg-red-600" 
-                        : manhole.sensors.methaneLevel > manhole.thresholds.maxGas * 0.7 
-                        ? "bg-amber-500" 
+                  <div
+                    className={`h-1.5 rounded-full ${manhole.sensors.methaneLevel > manhole.thresholds.maxGas
+                      ? "bg-red-600"
+                      : manhole.sensors.methaneLevel > manhole.thresholds.maxGas * 0.7
+                        ? "bg-amber-500"
                         : "bg-green-600"
-                    }`} 
-                    style={{ 
-                      width: `${Math.min(100, (manhole.sensors.methaneLevel / manhole.thresholds.maxGas) * 100)}%` 
+                      }`}
+                    style={{
+                      width: `${Math.min(100, (manhole.sensors.methaneLevel / manhole.thresholds.maxGas) * 100)}%`
                     }}
                   ></div>
                 </div>
@@ -429,23 +439,22 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
-                  <div 
-                    className={`h-1.5 rounded-full ${
-                      manhole.sensors.flowRate < manhole.thresholds.minFlow 
-                        ? "bg-red-600" 
-                        : manhole.sensors.flowRate < manhole.thresholds.minFlow * 1.3 
-                        ? "bg-amber-500" 
+                  <div
+                    className={`h-1.5 rounded-full ${manhole.sensors.flowRate < manhole.thresholds.minFlow
+                      ? "bg-red-600"
+                      : manhole.sensors.flowRate < manhole.thresholds.minFlow * 1.3
+                        ? "bg-amber-500"
                         : "bg-green-600"
-                    }`} 
-                    style={{ 
-                      width: `${Math.min(100, (manhole.sensors.flowRate / (manhole.thresholds.minFlow * 3)) * 100)}%` 
+                      }`}
+                    style={{
+                      width: `${Math.min(100, (manhole.sensors.flowRate / (manhole.thresholds.minFlow * 3)) * 100)}%`
                     }}
                   ></div>
                 </div>
               </div>
             </div>
 
-            {/* Battery Level */}
+            {/* Battery Level
             <div className="flex items-center gap-3">
               <Battery className="w-5 h-5" style={{ 
                 color: manhole.sensors.batteryLevel < 20 
@@ -472,6 +481,35 @@ const Dashboard = () => {
                   ></div>
                 </div>
               </div>
+            </div> */}
+            {/* Temperature */}
+            <div className="flex items-center gap-3">
+              <Thermometer className="w-5 h-5" style={{
+                color: manhole.sensors.temperature > 40 || manhole.sensors.temperature < 0
+                  ? COLORS.danger
+                  : manhole.sensors.temperature > 35 || manhole.sensors.temperature < 5
+                    ? COLORS.warning
+                    : COLORS.success
+              }} />
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Temperature</p>
+                <p className="font-medium">
+                  {manhole.sensors.temperature}°C
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
+                  <div
+                    className={`h-1.5 rounded-full ${manhole.sensors.temperature > 40 || manhole.sensors.temperature < 0
+                      ? "bg-red-600"
+                      : manhole.sensors.temperature > 35 || manhole.sensors.temperature < 5
+                        ? "bg-amber-500"
+                        : "bg-green-600"
+                      }`}
+                    style={{
+                      width: `${Math.min(100, Math.max(0, (manhole.sensors.temperature / 50) * 100))}%`
+                    }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -483,7 +521,7 @@ const Dashboard = () => {
               </p>
               <div className="flex flex-wrap gap-2">
                 {manhole.alertTypes.map((alert, index) => (
-                  <span 
+                  <span
                     key={index}
                     className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                   >
@@ -497,6 +535,68 @@ const Dashboard = () => {
       </Card>
     );
   };
+
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    index,
+    name
+  }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight={500}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
+  // Enhanced Custom Tooltip Component
+  const CustomTooltip = ({ active, payload, label, valueSuffix = '', formatter }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-popover text-popover-foreground p-4 rounded-lg shadow-lg border">
+          <p className="font-medium">{payload[0].payload.name}</p>
+          {payload.map((entry, index) => (
+            <div key={`tooltip-${index}`} className="flex items-center mt-1">
+              <div
+                className="w-3 h-3 rounded-full mr-2"
+                style={{ backgroundColor: entry.color }}
+              />
+              <p className="text-sm">
+                {formatter
+                  ? formatter(entry.value)[0]
+                  : entry.value}
+                {valueSuffix}
+              </p>
+              {formatter && (
+                <span className="text-muted-foreground text-xs ml-2">
+                  {formatter(entry.value)[1]}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -559,8 +659,8 @@ const Dashboard = () => {
                     dashboardData.systemStatus.systemHealth > 80
                       ? COLORS.success
                       : dashboardData.systemStatus.systemHealth > 60
-                      ? COLORS.warning
-                      : COLORS.danger,
+                        ? COLORS.warning
+                        : COLORS.danger,
                 }}
               >
                 {dashboardData.systemStatus.systemHealth}%
@@ -573,8 +673,8 @@ const Dashboard = () => {
                   dashboardData.systemStatus.systemHealth > 80
                     ? COLORS.success
                     : dashboardData.systemStatus.systemHealth > 60
-                    ? COLORS.warning
-                    : COLORS.danger,
+                      ? COLORS.warning
+                      : COLORS.danger,
               }}
             />
           </CardContent>
@@ -615,18 +715,32 @@ const Dashboard = () => {
             ))}
         </div>
       </div>
-
-      {/* Charts Row */}
+      {/* Enhanced Charts Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Water Level Status */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Water Level Status
-            </CardTitle>
+        {/* Water Level Status Card with Advanced Features */}
+        <Card className="hover:shadow-lg transition-shadow group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                Water Level Status
+              </CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Shows distribution of water levels across all monitored manholes</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {dashboardData.systemStatus.monitoredManholes} monitored manholes
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[320px] relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -634,53 +748,124 @@ const Dashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
+                    outerRadius={100}
+                    innerRadius={60}
+                    paddingAngle={2}
                     dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
+                    animationBegin={100}
+                    animationDuration={1000}
+                    label={renderCustomizedLabel}
                   >
                     {waterLevelData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell
+                        key={`water-cell-${index}`}
+                        fill={entry.color}
+                        stroke="#fff"
+                        strokeWidth={1}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Tooltip
+                    content={<CustomTooltip
+                      valueSuffix=" manholes"
+                      formatter={(value) => [`${value}`, 'Count']}
+                    />}
+                  />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">
+                    {waterLevelData.reduce((acc, curr) => acc + curr.value, 0)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Total</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Gas Level Status */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Gas Level Status
-            </CardTitle>
+        {/* Gas Level Status Card with Interactive Features */}
+        <Card className="hover:shadow-lg transition-shadow group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                Gas Level Status
+              </CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Methane concentration levels across the system</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Threshold: {dashboardData.manholes[0]?.thresholds.maxGas || 1000} ppm
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={gasLevelData}
                   layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 35 }}
+                  barCategoryGap={15}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#e5e7eb"
                     strokeOpacity={0.3}
+                    horizontal={false}
                   />
-                  <XAxis type="number" stroke="#6b7280" />
-                  <YAxis dataKey="name" type="category" stroke="#6b7280" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="value" name="Manholes">
-                    <Cell fill={COLORS.normal} />
-                    <Cell fill={COLORS.warning} />
-                    <Cell fill={COLORS.critical} />
+                  <XAxis
+                    type="number"
+                    stroke="#6b7280"
+                    tickFormatter={(value) => `${value} manholes`}
+                  />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    stroke="#6b7280"
+                    width={80}
+                  />
+                  <Tooltip
+                    content={<CustomTooltip
+                      valueSuffix=" manholes"
+                      formatter={(value) => [`${value}`, 'Count']}
+                    />}
+                  />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ paddingTop: '10px' }}
+                  />
+                  <Bar
+                    dataKey="value"
+                    name="Manholes"
+                    radius={[0, 4, 4, 0]}
+                    animationBegin={200}
+                    animationDuration={1000}
+                  >
+                    {gasLevelData.map((entry, index) => (
+                      <Cell
+                        key={`gas-cell-${index}`}
+                        fill={entry.color}
+                        stroke="#fff"
+                        strokeWidth={1}
+                      />
+                    ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -688,41 +873,84 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Battery Level Status */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Battery Status
-            </CardTitle>
+        {/* Temperature Status Card with Enhanced Visualization */}
+        <Card className="hover:shadow-lg transition-shadow group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                Temperature Status
+              </CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Temperature distribution across monitoring points</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Current range: 0°C to 50°C
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[320px] relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={batteryLevelData}
+                    data={temperatureData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
+                    outerRadius={100}
+                    innerRadius={60}
+                    paddingAngle={2}
                     dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
+                    animationBegin={300}
+                    animationDuration={1000}
+                    label={renderCustomizedLabel}
                   >
-                    {batteryLevelData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    {temperatureData.map((entry, index) => (
+                      <Cell
+                        key={`temp-cell-${index}`}
+                        fill={entry.color}
+                        stroke="#fff"
+                        strokeWidth={1}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Tooltip
+                    content={<CustomTooltip
+                      valueSuffix=" manholes"
+                      formatter={(value) => [`${value}`, 'Count']}
+                    />}
+                  />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">
+                    {temperatureData.reduce((acc, curr) => acc + curr.value, 0)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Total</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Custom label renderer for pie charts */}
+
+
 
       {/* Sensor Trends */}
       <Card className="hover:shadow-lg transition-shadow">
@@ -794,11 +1022,10 @@ const Dashboard = () => {
                   className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <div
-                    className={`p-2 rounded-full ${
-                      alert.severity === "critical"
-                        ? "bg-red-100 dark:bg-red-900/30"
-                        : "bg-amber-100 dark:bg-amber-900/30"
-                    }`}
+                    className={`p-2 rounded-full ${alert.severity === "critical"
+                      ? "bg-red-100 dark:bg-red-900/30"
+                      : "bg-amber-100 dark:bg-amber-900/30"
+                      }`}
                   >
                     {alert.severity === "critical" ? (
                       <AlertCircle className="text-red-600 dark:text-red-400" />
@@ -812,13 +1039,12 @@ const Dashboard = () => {
                         {alert.type}
                       </h3>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          alert.status === "pending"
-                            ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                            : alert.status === "assigned"
+                        className={`text-xs px-2 py-1 rounded-full ${alert.status === "pending"
+                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                          : alert.status === "assigned"
                             ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                             : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                        }`}
+                          }`}
                       >
                         {alert.status}
                       </span>
@@ -857,13 +1083,12 @@ const Dashboard = () => {
                   className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <div
-                    className={`p-2 rounded-full ${
-                      log.status === "completed"
-                        ? "bg-green-100 dark:bg-green-900/30"
-                        : log.status === "in-progress"
+                    className={`p-2 rounded-full ${log.status === "completed"
+                      ? "bg-green-100 dark:bg-green-900/30"
+                      : log.status === "in-progress"
                         ? "bg-blue-100 dark:bg-blue-900/30"
                         : "bg-gray-100 dark:bg-gray-800"
-                    }`}
+                      }`}
                   >
                     {log.status === "completed" ? (
                       <CheckCircle className="text-green-600 dark:text-green-400" />
@@ -879,13 +1104,12 @@ const Dashboard = () => {
                         {log.type}
                       </h3>
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          log.status === "completed"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                            : log.status === "in-progress"
+                        className={`text-xs px-2 py-1 rounded-full ${log.status === "completed"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                          : log.status === "in-progress"
                             ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                             : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                        }`}
+                          }`}
                       >
                         {log.status}
                       </span>
