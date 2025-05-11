@@ -12,6 +12,9 @@ import {
   Thermometer,
   Waves,
   HardHat,
+  Battery,
+  Fuel,
+  WavesIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -31,7 +34,7 @@ import {
 import SewageSystemMap from "./map";
 
 const Dashboard = () => {
-  // Sample data - replace with API calls in a real implementation
+  // Sample data structure that matches your schema with multiple manholes
   const [dashboardData, setDashboardData] = useState({
     systemStatus: {
       totalManholes: 42,
@@ -40,77 +43,141 @@ const Dashboard = () => {
       maintenanceOngoing: 3,
       systemHealth: 82, // percentage
     },
-    sensorStatistics: {
-      waterLevel: {
-        normal: 28,
-        warning: 8,
-        critical: 6,
+    manholes: [
+      {
+        _id: "mh001",
+        manholeId: "mh001",
+        name: "Manhole #12",
+        location: { lat: 9.0123, lng: 38.7894 },
+        timestamp: "2025-04-30T08:15:00Z",
+        sensors: {
+          sewageLevel: 85, // cm
+          methaneLevel: 300, // ppm
+          flowRate: 15.5, // L/s
+          temperature: 24.5, // °C
+          humidity: 65, // %
+          batteryLevel: 78, // %
+        },
+        thresholds: {
+          maxDistance: 90, // cm (overflow threshold)
+          maxGas: 1000, // ppm
+          minFlow: 5, // L/s (blockage threshold)
+        },
+        lastCalibration: "2025-04-15T00:00:00Z",
+        batteryLevel: 78,
+        status: "critical",
+        alertTypes: ["sewage_high"],
+        createdAt: "2025-01-15T00:00:00Z",
+        updatedAt: "2025-04-30T08:15:00Z"
       },
-      gasLevel: {
-        normal: 35,
-        warning: 5,
-        critical: 2,
+      {
+        _id: "mh002",
+        manholeId: "mh002",
+        name: "Manhole #07",
+        location: { lat: 9.0156, lng: 38.7912 },
+        timestamp: "2025-04-30T07:30:00Z",
+        sensors: {
+          sewageLevel: 45,
+          methaneLevel: 1200, // Above threshold
+          flowRate: 12.1,
+          batteryLevel: 65,
+        },
+        thresholds: {
+          maxDistance: 95,
+          maxGas: 1000,
+          minFlow: 5,
+        },
+        lastCalibration: "2025-04-10T00:00:00Z",
+        batteryLevel: 65,
+        status: "critical",
+        alertTypes: ["gas_leak"],
+        createdAt: "2025-01-20T00:00:00Z",
+        updatedAt: "2025-04-30T07:30:00Z"
       },
-      flowRate: {
-        normal: 30,
-        warning: 9,
-        critical: 3,
+      {
+        _id: "mh003",
+        manholeId: "mh003",
+        name: "Manhole #23",
+        location: { lat: 9.0142, lng: 38.7931 },
+        timestamp: "2025-04-29T16:45:00Z",
+        sensors: {
+          sewageLevel: 35,
+          methaneLevel: 250,
+          flowRate: 3.8, // Below threshold
+          temperature: 26.2,
+          humidity: 70,
+          batteryLevel: 92,
+        },
+        thresholds: {
+          maxDistance: 85,
+          maxGas: 1000,
+          minFlow: 5,
+        },
+        lastCalibration: "2025-04-18T00:00:00Z",
+        batteryLevel: 92,
+        status: "critical",
+        alertTypes: ["blockage"],
+        createdAt: "2025-02-05T00:00:00Z",
+        updatedAt: "2025-04-29T16:45:00Z"
       },
-    },
+      // ... more manholes
+    ],
     recentAlerts: [
       {
         id: 1,
         type: "High Water Level",
         location: "Manhole #12",
+        manholeId: "mh001",
         timestamp: "2025-04-30T08:15:00",
         status: "pending",
+        severity: "warning"
       },
       {
         id: 2,
-        type: "Gas Leak Detected",
+        type: "Fuel Leak Detected",
         location: "Manhole #07",
+        manholeId: "mh002",
         timestamp: "2025-04-30T07:30:00",
         status: "assigned",
+        severity: "critical"
       },
       {
         id: 3,
         type: "Blockage Detected",
         location: "Manhole #23",
+        manholeId: "mh003",
         timestamp: "2025-04-29T16:45:00",
         status: "resolved",
-      },
-      {
-        id: 4,
-        type: "Sensor Failure",
-        location: "Manhole #18",
-        timestamp: "2025-04-29T14:20:00",
-        status: "pending",
+        severity: "warning"
       },
     ],
     maintenanceLogs: [
       {
         id: 1,
         manhole: "#05",
+        manholeId: "mh005",
         type: "Routine Check",
         technician: "Abebe K.",
         status: "completed",
-        date: "2025-04-28",
+        date: "2025-04-28"
       },
       {
         id: 2,
         manhole: "#12",
+        manholeId: "mh001",
         type: "Emergency Repair",
         technician: "Mekdes T.",
         status: "in-progress",
-        date: "2025-04-29",
+        date: "2025-04-29"
       },
       {
         id: 3,
         manhole: "#22",
+        manholeId: "mh022",
         type: "Sensor Replacement",
         technician: "Yohannes A.",
         status: "scheduled",
-        date: "2025-05-02",
+        date: "2025-05-02"
       },
     ],
     sensorTrends: [
@@ -122,6 +189,73 @@ const Dashboard = () => {
       { hour: "20:00", waterLevel: 3.1, gasLevel: 20, flowRate: 1.5 },
     ],
   });
+
+  // Calculate sensor statistics based on actual manhole data
+  const calculateSensorStats = () => {
+    const stats = {
+      waterLevel: { normal: 0, warning: 0, critical: 0 },
+      gasLevel: { normal: 0, warning: 0, critical: 0 },
+      flowRate: { normal: 0, warning: 0, critical: 0 },
+      batteryLevel: { normal: 0, warning: 0, critical: 0 }
+    };
+
+    dashboardData.manholes.forEach(manhole => {
+      // Water level analysis
+      if (!manhole.sensors.sewageLevel) {
+        // Sensor missing or not reporting
+      } else {
+        const percentage = (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100;
+        if (percentage > 90) {
+          stats.waterLevel.critical++;
+        } else if (percentage > 75) {
+          stats.waterLevel.warning++;
+        } else {
+          stats.waterLevel.normal++;
+        }
+      }
+
+      // Gas level analysis
+      if (!manhole.sensors.methaneLevel) {
+        // Sensor missing or not reporting
+      } else {
+        if (manhole.sensors.methaneLevel > manhole.thresholds.maxGas) {
+          stats.gasLevel.critical++;
+        } else if (manhole.sensors.methaneLevel > manhole.thresholds.maxGas * 0.7) {
+          stats.gasLevel.warning++;
+        } else {
+          stats.gasLevel.normal++;
+        }
+      }
+
+      // Flow rate analysis
+      if (!manhole.sensors.flowRate) {
+        // Sensor missing or not reporting
+      } else {
+        if (manhole.sensors.flowRate < manhole.thresholds.minFlow) {
+          stats.flowRate.critical++;
+        } else if (manhole.sensors.flowRate < manhole.thresholds.minFlow * 1.3) {
+          stats.flowRate.warning++;
+        } else {
+          stats.flowRate.normal++;
+        }
+      }
+
+      // Battery level analysis
+      if (manhole.sensors.batteryLevel !== undefined) {
+        if (manhole.sensors.batteryLevel < 20) {
+          stats.batteryLevel.critical++;
+        } else if (manhole.sensors.batteryLevel < 40) {
+          stats.batteryLevel.warning++;
+        } else {
+          stats.batteryLevel.normal++;
+        }
+      }
+    });
+
+    return stats;
+  };
+
+  const sensorStatistics = calculateSensorStats();
 
   // Updated color palette
   const COLORS = {
@@ -144,23 +278,23 @@ const Dashboard = () => {
     scheduled: "#4b5563",
   };
 
-  // Data for water level pie chart
+  // Data for charts
   const waterLevelData = [
-    {
-      name: "Normal",
-      value: dashboardData.sensorStatistics.waterLevel.normal,
-      color: COLORS.normal,
-    },
-    {
-      name: "Warning",
-      value: dashboardData.sensorStatistics.waterLevel.warning,
-      color: COLORS.warning,
-    },
-    {
-      name: "Critical",
-      value: dashboardData.sensorStatistics.waterLevel.critical,
-      color: COLORS.critical,
-    },
+    { name: "Normal", value: sensorStatistics.waterLevel.normal, color: COLORS.normal },
+    { name: "Warning", value: sensorStatistics.waterLevel.warning, color: COLORS.warning },
+    { name: "Critical", value: sensorStatistics.waterLevel.critical, color: COLORS.critical },
+  ];
+
+  const gasLevelData = [
+    { name: "Normal", value: sensorStatistics.gasLevel.normal, color: COLORS.normal },
+    { name: "Warning", value: sensorStatistics.gasLevel.warning, color: COLORS.warning },
+    { name: "Critical", value: sensorStatistics.gasLevel.critical, color: COLORS.critical },
+  ];
+
+  const batteryLevelData = [
+    { name: "Normal", value: sensorStatistics.batteryLevel.normal, color: COLORS.normal },
+    { name: "Warning", value: sensorStatistics.batteryLevel.warning, color: COLORS.warning },
+    { name: "Critical", value: sensorStatistics.batteryLevel.critical, color: COLORS.critical },
   ];
 
   // Custom tooltip for charts
@@ -182,6 +316,186 @@ const Dashboard = () => {
       );
     }
     return null;
+  };
+
+  // Manhole status card component
+  const ManholeStatusCard = ({ manhole }) => {
+    const getStatusColor = () => {
+      switch (manhole.status) {
+        case "critical": return COLORS.danger;
+        case "warning": return COLORS.warning;
+        default: return COLORS.success;
+      }
+    };
+
+    return (
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg text-gray-900 dark:text-white">
+              {manhole.name}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <span 
+                className={`text-xs px-2 py-1 rounded-full ${
+                  manhole.status === "critical" 
+                    ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" 
+                    : manhole.status === "warning" 
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" 
+                    : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                }`}
+              >
+                {manhole.status}
+              </span>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Last updated: {new Date(manhole.timestamp).toLocaleString()}
+          </p>
+        </CardHeader>
+        <CardContent className="pt-2">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Sewage Level */}
+            <div className="flex items-center gap-3">
+              <Droplets className="w-5 h-5" style={{ color: COLORS.primary }} />
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Sewage Level</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">
+                    {manhole.sensors.sewageLevel} cm
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    (max: {manhole.thresholds.maxDistance}cm)
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
+                  <div 
+                    className={`h-1.5 rounded-full ${
+                      (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.9 
+                        ? "bg-red-600" 
+                        : (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) > 0.75 
+                        ? "bg-amber-500" 
+                        : "bg-green-600"
+                    }`} 
+                    style={{ 
+                      width: `${Math.min(100, (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Methane Level */}
+            <div className="flex items-center gap-3">
+              <Fuel className="w-5 h-5" style={{ color: COLORS.danger }} />
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Methane</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">
+                    {manhole.sensors.methaneLevel} ppm
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    (max: {manhole.thresholds.maxGas}ppm)
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
+                  <div 
+                    className={`h-1.5 rounded-full ${
+                      manhole.sensors.methaneLevel > manhole.thresholds.maxGas 
+                        ? "bg-red-600" 
+                        : manhole.sensors.methaneLevel > manhole.thresholds.maxGas * 0.7 
+                        ? "bg-amber-500" 
+                        : "bg-green-600"
+                    }`} 
+                    style={{ 
+                      width: `${Math.min(100, (manhole.sensors.methaneLevel / manhole.thresholds.maxGas) * 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Flow Rate */}
+            <div className="flex items-center gap-3">
+              <WavesIcon className="w-5 h-5" style={{ color: COLORS.info }} />
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Flow Rate</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">
+                    {manhole.sensors.flowRate} L/s
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    (min: {manhole.thresholds.minFlow}L/s)
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
+                  <div 
+                    className={`h-1.5 rounded-full ${
+                      manhole.sensors.flowRate < manhole.thresholds.minFlow 
+                        ? "bg-red-600" 
+                        : manhole.sensors.flowRate < manhole.thresholds.minFlow * 1.3 
+                        ? "bg-amber-500" 
+                        : "bg-green-600"
+                    }`} 
+                    style={{ 
+                      width: `${Math.min(100, (manhole.sensors.flowRate / (manhole.thresholds.minFlow * 3)) * 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Battery Level */}
+            <div className="flex items-center gap-3">
+              <Battery className="w-5 h-5" style={{ 
+                color: manhole.sensors.batteryLevel < 20 
+                  ? COLORS.danger 
+                  : manhole.sensors.batteryLevel < 40 
+                  ? COLORS.warning 
+                  : COLORS.success 
+              }} />
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Battery</p>
+                <p className="font-medium">
+                  {manhole.sensors.batteryLevel}%
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700 mt-1">
+                  <div 
+                    className={`h-1.5 rounded-full ${
+                      manhole.sensors.batteryLevel < 20 
+                        ? "bg-red-600" 
+                        : manhole.sensors.batteryLevel < 40 
+                        ? "bg-amber-500" 
+                        : "bg-green-600"
+                    }`} 
+                    style={{ width: `${manhole.sensors.batteryLevel}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Alert types */}
+          {manhole.alertTypes && manhole.alertTypes.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+                Active Alerts:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {manhole.alertTypes.map((alert, index) => (
+                  <span 
+                    key={index}
+                    className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                  >
+                    {alert.replace(/_/g, ' ')}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -287,6 +601,21 @@ const Dashboard = () => {
         </Card>
       </div>
 
+      {/* Critical Manholes */}
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Critical Manholes
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardData.manholes
+            .filter(manhole => manhole.status === "critical")
+            .slice(0, 3) // Show only top 3 critical manholes
+            .map(manhole => (
+              <ManholeStatusCard key={manhole._id} manhole={manhole} />
+            ))}
+        </div>
+      </div>
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Water Level Status */}
@@ -324,59 +653,6 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Sensor Trends */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Sensor Trends (Last 24h)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={dashboardData.sensorTrends}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e5e7eb"
-                    strokeOpacity={0.3}
-                  />
-                  <XAxis dataKey="hour" stroke="#6b7280" />
-                  <YAxis stroke="#6b7280" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="waterLevel"
-                    stroke={COLORS.primary}
-                    strokeWidth={2}
-                    name="Water Level (m)"
-                    dot={{ r: 4, fill: COLORS.primary }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="gasLevel"
-                    stroke={COLORS.danger}
-                    strokeWidth={2}
-                    name="Gas Level (ppm)"
-                    dot={{ r: 4, fill: COLORS.danger }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="flowRate"
-                    stroke={COLORS.success}
-                    strokeWidth={2}
-                    name="Flow Rate (m/s)"
-                    dot={{ r: 4, fill: COLORS.success }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Gas Level Status */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
@@ -388,20 +664,7 @@ const Dashboard = () => {
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={[
-                    {
-                      name: "Normal",
-                      value: dashboardData.sensorStatistics.gasLevel.normal,
-                    },
-                    {
-                      name: "Warning",
-                      value: dashboardData.sensorStatistics.gasLevel.warning,
-                    },
-                    {
-                      name: "Critical",
-                      value: dashboardData.sensorStatistics.gasLevel.critical,
-                    },
-                  ]}
+                  data={gasLevelData}
                   layout="vertical"
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
@@ -424,7 +687,95 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Battery Level Status */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="text-gray-900 dark:text-white">
+              Battery Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={batteryLevelData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {batteryLevelData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Sensor Trends */}
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">
+            Sensor Trends (Last 24h)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={dashboardData.sensorTrends}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  strokeOpacity={0.3}
+                />
+                <XAxis dataKey="hour" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="waterLevel"
+                  stroke={COLORS.primary}
+                  strokeWidth={2}
+                  name="Water Level (m)"
+                  dot={{ r: 4, fill: COLORS.primary }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="gasLevel"
+                  stroke={COLORS.danger}
+                  strokeWidth={2}
+                  name="Gas Level (ppm)"
+                  dot={{ r: 4, fill: COLORS.danger }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="flowRate"
+                  stroke={COLORS.success}
+                  strokeWidth={2}
+                  name="Flow Rate (m/s)"
+                  dot={{ r: 4, fill: COLORS.success }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Alerts and Maintenance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -444,19 +795,15 @@ const Dashboard = () => {
                 >
                   <div
                     className={`p-2 rounded-full ${
-                      alert.status === "pending"
-                        ? "bg-amber-100 dark:bg-amber-900/30"
-                        : alert.status === "assigned"
-                        ? "bg-blue-100 dark:bg-blue-900/30"
-                        : "bg-green-100 dark:bg-green-900/30"
+                      alert.severity === "critical"
+                        ? "bg-red-100 dark:bg-red-900/30"
+                        : "bg-amber-100 dark:bg-amber-900/30"
                     }`}
                   >
-                    {alert.status === "pending" ? (
-                      <AlertCircle className="text-amber-600 dark:text-amber-400" />
-                    ) : alert.status === "assigned" ? (
-                      <XCircle className="text-blue-600 dark:text-blue-400" />
+                    {alert.severity === "critical" ? (
+                      <AlertCircle className="text-red-600 dark:text-red-400" />
                     ) : (
-                      <CheckCircle className="text-green-600 dark:text-green-400" />
+                      <AlertCircle className="text-amber-600 dark:text-amber-400" />
                     )}
                   </div>
                   <div className="flex-1">
@@ -563,7 +910,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Map Visualization Placeholder */}
+      {/* Map Visualization */}
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">
@@ -571,7 +918,7 @@ const Dashboard = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <SewageSystemMap />
+          <SewageSystemMap manholes={dashboardData.manholes} />
         </CardContent>
       </Card>
     </div>
