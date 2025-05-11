@@ -184,14 +184,37 @@ const Dashboard = () => {
       },
     ],
     sensorTrends: [
-      { hour: "00:00", waterLevel: 2.1, gasLevel: 12, flowRate: 1.2 },
-      { hour: "04:00", waterLevel: 2.3, gasLevel: 15, flowRate: 1.1 },
-      { hour: "08:00", waterLevel: 2.8, gasLevel: 18, flowRate: 1.4 },
-      { hour: "12:00", waterLevel: 3.2, gasLevel: 22, flowRate: 1.6 },
-      { hour: "16:00", waterLevel: 3.5, gasLevel: 25, flowRate: 1.8 },
-      { hour: "20:00", waterLevel: 3.1, gasLevel: 20, flowRate: 1.5 },
+      { hour: "00:00", waterLevel: 2.1, gasLevel: 12, flowRate: 1.2, temperature: 28 },
+      { hour: "04:00", waterLevel: 2.3, gasLevel: 15, flowRate: 1.1, temperature: 29 },
+      { hour: "08:00", waterLevel: 2.8, gasLevel: 18, flowRate: 1.4, temperature: 30 },
+      { hour: "12:00", waterLevel: 3.2, gasLevel: 22, flowRate: 1.6, temperature: 32 },
+      { hour: "16:00", waterLevel: 3.5, gasLevel: 25, flowRate: 1.8, temperature: 34 },
+      { hour: "20:00", waterLevel: 3.1, gasLevel: 20, flowRate: 1.5, temperature: 31 },
     ],
+
   });
+
+  // Updated color palette
+  const COLORS = {
+    primary: "#2563eb", // Vibrant blue
+    secondary: "#ea580c", // Orange
+    success: "#16a34a", // Green
+    warning: "#d97706", // Amber
+    danger: "#dc2626", // Red
+    info: "#0284c7", // Sky blue
+
+    // Status colors
+    normal: "#16a34a",
+    warning: "#d97706",
+    critical: "#dc2626",
+    pending: "#d97706",
+    assigned: "#2563eb",
+    resolved: "#16a34a",
+    completed: "#16a34a",
+    inProgress: "#2563eb",
+    scheduled: "#4b5563",
+  };
+
 
   // Calculate sensor statistics based on actual manhole data
   const calculateSensorStats = () => {
@@ -201,7 +224,6 @@ const Dashboard = () => {
       flowRate: { normal: 0, warning: 0, critical: 0 },
       temperature: { normal: 0, warning: 0, critical: 0 } // Added temperature stats
     };
-
 
     dashboardData.manholes.forEach(manhole => {
       // Water level analysis
@@ -269,30 +291,7 @@ const Dashboard = () => {
 
     return stats;
   };
-
   const sensorStatistics = calculateSensorStats();
-
-  // Updated color palette
-  const COLORS = {
-    primary: "#2563eb", // Vibrant blue
-    secondary: "#ea580c", // Orange
-    success: "#16a34a", // Green
-    warning: "#d97706", // Amber
-    danger: "#dc2626", // Red
-    info: "#0284c7", // Sky blue
-
-    // Status colors
-    normal: "#16a34a",
-    warning: "#d97706",
-    critical: "#dc2626",
-    pending: "#d97706",
-    assigned: "#2563eb",
-    resolved: "#16a34a",
-    completed: "#16a34a",
-    inProgress: "#2563eb",
-    scheduled: "#4b5563",
-  };
-
   // Data for charts
   const waterLevelData = [
     { name: "Normal", value: sensorStatistics.waterLevel.normal, color: COLORS.normal },
@@ -310,6 +309,12 @@ const Dashboard = () => {
     { name: "Warning", value: sensorStatistics.temperature.warning, color: COLORS.warning },
     { name: "Critical", value: sensorStatistics.temperature.critical, color: COLORS.critical },
   ];
+
+
+
+
+
+
   // Custom tooltip for charts
   // const CustomTooltip = ({ active, payload, label }) => {
   //   if (active && payload && payload.length) {
@@ -995,6 +1000,14 @@ const Dashboard = () => {
                   type="monotone"
                   dataKey="flowRate"
                   stroke={COLORS.success}
+                  strokeWidth={2}
+                  name="Flow Rate (m/s)"
+                  dot={{ r: 4, fill: COLORS.success }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="temperature"
+                  stroke={COLORS.warning}
                   strokeWidth={2}
                   name="Flow Rate (m/s)"
                   dot={{ r: 4, fill: COLORS.success }}
