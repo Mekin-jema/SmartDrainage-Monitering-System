@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
+
 const manholeSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  id: String,
   code: String,
+  elevation: Number,
   location: {
     type: {
       type: String,
@@ -17,13 +19,13 @@ const manholeSchema = new mongoose.Schema({
         message: 'Coordinates must be an array of [longitude, latitude]',
       },
     },
-    address: String,
-    zone: String,
   },
-  installedDate: Date,
-  lastInspection: Date,
+  zone: String,  // Moved zone to top level to match mock data
   status: String,
-  notes: String,
+  lastInspection: String,  // Changed to String to match mock data
+  cover_status: String,
+  overflow_level: String,
+  connections: [String]
 });
 
 manholeSchema.index({ 'location.coordinates': '2dsphere' });
