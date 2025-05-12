@@ -10,6 +10,13 @@ axios.defaults.withCredentials = true;
 export const useManholeStore = create(
   persist(
     (set) => ({
+      status: {
+        totalManholes: 0,
+        monitoredManholes: 0,
+        criticalIssues: 0,
+        maintenanceOngoing: 0,
+        systemHealth: 0,
+      },
       manholesData: [], // Store the list of manholesData
       loading: false, // Loading state
       error: null, // Error state
@@ -28,6 +35,15 @@ export const useManholeStore = create(
           set({ error: error?.response?.data?.message || 'Something went wrong' });
         } finally {
           set({ loading: false });
+        }
+      },
+      fetchSystemStatus: async () => {
+        set({ loading: true, error: null });
+        try {
+          const response = await axios.get(`${API_END_POINT}/system-status`); // adjust the endpoint as needed
+          set({ status: response.data.data, loading: false });
+        } catch (error) {
+          set({ error: error.message || 'Failed to fetch system status', loading: false });
         }
       },
 

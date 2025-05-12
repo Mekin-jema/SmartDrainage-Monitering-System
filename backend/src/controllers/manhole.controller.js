@@ -296,6 +296,53 @@ const deleteAllManholes = async (req, res) => {
   }
 };
 
+// Get system status with aggregated statistics
+const getSystemStatus = async (req, res) => {
+  try {
+    // Get all manholes from database
+    const allManholes = await Manhole.find().lean();
+
+    // Calculate metrics
+    const totalManholes = allManholes.length;
+    const monitoredManholes = allManholes.filter((m) => m.status === 'functional').length;
+    const criticalIssues = allManholes.filter(
+      (m) =>
+        ['damaged', 'overflowing'].includes(m.status) ||
+        m.overflow_level === 'risk' ||
+        m.cover_status === 'open'
+    ).length;
+
+    const maintenanceOngoing = allManholes.filter((m) => m.status === 'under_maintenance').length;
+
+    // Calculate system health percentage
+    const healthyManholes = allManholes.filter(
+      (m) => m.status === 'functional' && m.overflow_level === 'good' && m.cover_status === 'closed'
+    ).length;
+
+    const systemHealth = Math.round((healthyManholes / totalManholes) * 100);
+
+    // Prepare response
+    const systemStatus = {
+      totalManholes,
+      monitoredManholes,
+      criticalIssues,
+      maintenanceOngoing,
+      systemHealth,
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: systemStatus,
+    });
+  } catch (error) {
+    console.error('System status error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
 export {
   createManhole,
   getAllManholes,
@@ -305,4 +352,9 @@ export {
   updateManholeStatus,
   deleteManholeById,
   deleteAllManholes,
+<<<<<<< HEAD
 };
+=======
+  getSystemStatus,
+};
+>>>>>>> 438cac6aa77a7e5ca492e2cc99ce017a8e883e8a
