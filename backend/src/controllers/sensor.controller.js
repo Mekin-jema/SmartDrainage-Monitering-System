@@ -335,4 +335,75 @@ const getSensorAnalytics = async (req, res) => {
   }
 };
 
-export { createReading, getReadingsByManhole, getCriticalReadings, getSensorAnalytics };
+const getAllSensorReadings = async (req, res) => {
+  try {
+    const readings = await SensorReading.find().sort({ timestamp: -1 }).lean();
+
+    const formattedManholes = readings.map((reading) => {
+      const {
+        manholeId,
+        name,
+        location,
+        timestamp,
+        sensors,
+        thresholds,
+        lastCalibration,
+        batteryLevel,
+      } = reading;
+
+      // Determine alert types
+      const alertTypes = [];
+
+      if (sensors.sewageLevel > thresholds.maxDistance) {
+        alertTypes.push('sewage_high');
+      }
+
+      if (sensors.methaneLevel > thresholds.maxGas) {
+        alertTypes.push('gas_leak');
+      }
+
+      if (sensors.flowRate < thresholds.minFlow) {
+        alertTypes.push('blockage');
+      }
+
+      if (sensors.batteryLevel < 70) {
+        alertTypes.push('low_battery');
+      }
+
+      // Determine status based on alerts
+      const status = alertTypes.length > 0 ? 'critical' : 'normal';
+
+      return {
+        manholeId,
+        name,
+        location,
+        timestamp,
+        sensors,
+        thresholds,
+        lastCalibration,
+        batteryLevel: sensors.batteryLevel,
+        status,
+        alertTypes,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      manholes: formattedManholes,
+    });
+  } catch (error) {
+    console.error('Get all sensor readings error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve all sensor readings',
+    });
+  }
+};
+
+export {
+  createReading,
+  getReadingsByManhole,
+  getCriticalReadings,
+  getSensorAnalytics,
+  getAllSensorReadings,
+};
