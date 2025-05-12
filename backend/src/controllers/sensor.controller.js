@@ -12,7 +12,7 @@ const createReading = async (req, res) => {
     if (!manholeId || !sensors) {
       return res.status(400).json({
         success: false,
-        message: 'Manhole ID and sensor data are required'
+        message: 'Manhole ID and sensor data are required',
       });
     }
 
@@ -21,17 +21,20 @@ const createReading = async (req, res) => {
     if (!manhole) {
       return res.status(404).json({
         success: false,
-        message: 'Manhole not found'
+        message: 'Manhole not found',
       });
     }
 
     // Check for alerts and determine status
-    const alertTypes = checkThresholds(sensors, thresholds || {
-      maxDistance: 2.5,
-      maxGas: 1000,
-      minFlow: 0.1
-    });
-    
+    const alertTypes = checkThresholds(
+      sensors,
+      thresholds || {
+        maxDistance: 2.5,
+        maxGas: 1000,
+        minFlow: 0.1,
+      }
+    );
+
     const status = determineStatus(alertTypes);
 
     // Create reading
@@ -39,14 +42,14 @@ const createReading = async (req, res) => {
       manholeId,
       sensors,
       thresholds: thresholds || {
-        maxDistance: 2.5,  // Default thresholds (meters)
-        maxGas: 1000,      // ppm
-        minFlow: 0.1       // m/s
+        maxDistance: 2.5, // Default thresholds (meters)
+        maxGas: 1000, // ppm
+        minFlow: 0.1, // m/s
       },
       lastCalibration: lastCalibration || Date.now(),
       status,
       alertTypes,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     await newReading.save();
@@ -55,7 +58,7 @@ const createReading = async (req, res) => {
     if (status === 'critical') {
       await Manhole.findByIdAndUpdate(manholeId, {
         lastInspection: Date.now(),
-        status: 'needs_attention'
+        status: 'needs_attention',
       });
     }
 
@@ -64,16 +67,15 @@ const createReading = async (req, res) => {
       message: 'Reading recorded',
       data: {
         ...newReading.toObject(),
-        manholeCode: manhole.code // Include manhole info in response
-      }
+        manholeCode: manhole.code, // Include manhole info in response
+      },
     });
-
   } catch (error) {
     console.error('Create reading error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 };
@@ -87,7 +89,7 @@ const getReadingsByManhole = async (req, res) => {
     // Build query
     const query = { manholeId };
     if (status) query.status = status;
-    
+
     // Time range filtering
     if (timeRange && !isNaN(timeRange)) {
       const hoursAgo = new Date();
@@ -103,14 +105,13 @@ const getReadingsByManhole = async (req, res) => {
     return res.status(200).json({
       success: true,
       count: readings.length,
-      data: readings
+      data: readings,
     });
-
   } catch (error) {
     console.error('Get readings error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve readings'
+      message: 'Failed to retrieve readings',
     });
   }
 };
@@ -119,22 +120,22 @@ const getReadingsByManhole = async (req, res) => {
 const getCriticalReadings = async (req, res) => {
   try {
     const { hours = 24, limit = 50 } = req.query;
-    
+
     // Validate query parameters
     const hoursNum = parseInt(hours);
     const limitNum = parseInt(limit);
-    
+
     if (isNaN(hoursNum) || hoursNum <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Hours must be a positive number'
+        message: 'Hours must be a positive number',
       });
     }
-    
+
     if (isNaN(limitNum) || limitNum <= 0 || limitNum > 1000) {
       return res.status(400).json({
         success: false,
-        message: 'Limit must be a positive number and not exceed 1000'
+        message: 'Limit must be a positive number and not exceed 1000',
       });
     }
 
@@ -143,45 +144,44 @@ const getCriticalReadings = async (req, res) => {
     // Check if critical readings exist within the time frame
     const criticalExist = await SensorReading.exists({
       status: 'critical',
-      timestamp: { $gte: timeThreshold }
+      timestamp: { $gte: timeThreshold },
     });
-    
+
     if (!criticalExist) {
       return res.status(404).json({
-        success: false, 
-        message: 'No critical alerts found in the specified time frame'
+        success: false,
+        message: 'No critical alerts found in the specified time frame',
       });
     }
-    
+
     const readings = await SensorReading.find({
       status: 'critical',
-      timestamp: { $gte: timeThreshold }
+      timestamp: { $gte: timeThreshold },
     })
-    .sort({ timestamp: -1 })
-    .limit(limitNum)
-    .populate({
-      path: 'manholeId',
-      select: 'code location zone',
-      model: Manhole
-    })
-    .lean();
+      .sort({ timestamp: -1 })
+      .limit(limitNum)
+      .populate({
+        path: 'manholeId',
+        select: 'code location zone',
+        model: Manhole,
+      })
+      .lean();
 
     return res.status(200).json({
       success: true,
       count: readings.length,
-      data: readings.map(r => ({
+      data: readings.map((r) => ({
         ...r,
         manhole: r.manholeId, // Flatten populated field
-        manholeId: undefined // Remove the original field
-      }))
+        manholeId: undefined, // Remove the original field
+      })),
     });
-
   } catch (error) {
     console.error('Get critical readings error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve critical alerts',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 };
@@ -190,12 +190,13 @@ const getCriticalReadings = async (req, res) => {
 const getSensorAnalytics = async (req, res) => {
   try {
     const { manholeId, metric, period = '24h', groupBy } = req.query;
-    
+
     // Validate required parameters
     if (!metric || !['sewageLevel', 'methaneLevel', 'flowRate', 'temperature'].includes(metric)) {
       return res.status(400).json({
         success: false,
-        message: 'Valid metric parameter is required. Supported metrics: sewageLevel, methaneLevel, flowRate, temperature'
+        message:
+          'Valid metric parameter is required. Supported metrics: sewageLevel, methaneLevel, flowRate, temperature',
       });
     }
 
@@ -204,17 +205,17 @@ const getSensorAnalytics = async (req, res) => {
     if (!periodRegex.test(period)) {
       return res.status(400).json({
         success: false,
-        message: 'Period must be in format like "24h" or "7d"'
+        message: 'Period must be in format like "24h" or "7d"',
       });
     }
 
     const [, periodValue, periodUnit] = period.match(periodRegex);
     const numericPeriod = parseInt(periodValue);
-    
+
     if (isNaN(numericPeriod) || numericPeriod <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Period value must be a positive number'
+        message: 'Period value must be a positive number',
       });
     }
 
@@ -223,13 +224,12 @@ const getSensorAnalytics = async (req, res) => {
     if (numericPeriod > maxPeriod) {
       return res.status(400).json({
         success: false,
-        message: `Period cannot exceed ${maxPeriod}${periodUnit}`
+        message: `Period cannot exceed ${maxPeriod}${periodUnit}`,
       });
     }
 
-    const range = periodUnit === 'h' 
-      ? numericPeriod * 60 * 60 * 1000 
-      : numericPeriod * 24 * 60 * 60 * 1000;
+    const range =
+      periodUnit === 'h' ? numericPeriod * 60 * 60 * 1000 : numericPeriod * 24 * 60 * 60 * 1000;
 
     const timeThreshold = new Date(Date.now() - range);
 
@@ -239,16 +239,16 @@ const getSensorAnalytics = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(manholeId)) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid manholeId format'
+          message: 'Invalid manholeId format',
         });
       }
       manholeObjectId = new mongoose.Types.ObjectId(manholeId);
     }
 
     // Build query
-    const match = { 
+    const match = {
       timestamp: { $gte: timeThreshold },
-      [`sensors.${metric}`]: { $exists: true, $ne: null }
+      [`sensors.${metric}`]: { $exists: true, $ne: null },
     };
     if (manholeId) match.manholeId = manholeObjectId;
 
@@ -259,7 +259,7 @@ const getSensorAnalytics = async (req, res) => {
     } else if (!['hour', 'day'].includes(groupBy)) {
       return res.status(400).json({
         success: false,
-        message: 'groupBy must be either "hour" or "day"'
+        message: 'groupBy must be either "hour" or "day"',
       });
     }
 
@@ -269,27 +269,27 @@ const getSensorAnalytics = async (req, res) => {
       {
         $group: {
           _id: {
-            ...(interval === 'hour' && { 
+            ...(interval === 'hour' && {
               hour: { $hour: '$timestamp' },
               day: { $dayOfMonth: '$timestamp' },
               month: { $month: '$timestamp' },
-              year: { $year: '$timestamp' }
+              year: { $year: '$timestamp' },
             }),
-            ...(interval === 'day' && { 
+            ...(interval === 'day' && {
               day: { $dayOfMonth: '$timestamp' },
               month: { $month: '$timestamp' },
-              year: { $year: '$timestamp' }
+              year: { $year: '$timestamp' },
             }),
-            ...(manholeId && { manholeId: '$manholeId' })
+            ...(manholeId && { manholeId: '$manholeId' }),
           },
           avgValue: { $avg: `$sensors.${metric}` },
           maxValue: { $max: `$sensors.${metric}` },
           minValue: { $min: `$sensors.${metric}` },
           count: { $sum: 1 },
-          firstTimestamp: { $min: '$timestamp' } // For proper sorting
-        }
+          firstTimestamp: { $min: '$timestamp' }, // For proper sorting
+        },
       },
-      { $sort: { 'firstTimestamp': 1 } },
+      { $sort: { firstTimestamp: 1 } },
       {
         $project: {
           _id: 0,
@@ -298,47 +298,41 @@ const getSensorAnalytics = async (req, res) => {
             avg: { $round: ['$avgValue', 2] },
             max: { $round: ['$maxValue', 2] },
             min: { $round: ['$minValue', 2] },
-            count: 1
-          }
-        }
-      }
+            count: 1,
+          },
+        },
+      },
     ];
 
     const results = await SensorReading.aggregate(aggregationPipeline);
-    if(results.length === 0) {
+    if (results.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No data found for the specified parameters'
+        message: 'No data found for the specified parameters',
       });
     }
-    
+
     return res.status(200).json({
       success: true,
       period: {
         value: numericPeriod,
         unit: periodUnit,
         start: timeThreshold,
-        end: new Date()
+        end: new Date(),
       },
       metric,
       groupBy: interval,
       count: results.length,
-      data: results
+      data: results,
     });
-
   } catch (error) {
     console.error('Sensor analytics error:', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to generate analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 };
 
-export {
-  createReading,
-  getReadingsByManhole,
-  getCriticalReadings,
-  getSensorAnalytics
-};
+export { createReading, getReadingsByManhole, getCriticalReadings, getSensorAnalytics };

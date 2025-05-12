@@ -14,30 +14,30 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 // import { useRouter } from "react-router-dom";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField, CheckboxField } from "@/components/auth/FormFields";
-import {  loginSchema } from "@/lib/schema/loginSchema";
+import { loginSchema } from "@/lib/schema/loginSchema";
 import { useUserStore } from "@/store/useUserStore";
 // import { authClient } from "@/lib/auth-client";
 const Login = () => {
   const [pending, setPending] = useState(false);
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const { toast } = useToast();
-  const {login,loading} = useUserStore();
+  const { login, loading } = useUserStore();
   // const router = useRouter();
   const form = useForm
-  // <LoginFormValues>
-  ({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-  });
+    // <LoginFormValues>
+    ({
+      resolver: zodResolver(loginSchema),
+      defaultValues: {
+        email: "",
+        password: "",
+        rememberMe: false,
+      },
+    });
   const onSubmit = async (data) => {
     try {
       await login(data);

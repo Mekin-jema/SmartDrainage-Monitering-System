@@ -1,13 +1,14 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import axios from "axios";
-import { toast } from "sonner";
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import axios from 'axios';
+import { toast } from 'sonner';
 
-const API_END_POINT = "http://localhost:3000/api/v1/users";
+const API_END_POINT = 'http://localhost:3000/api/v1/users';
 axios.defaults.withCredentials = true;
 
-export const useUserStore = create()(persist((set) => 
-  ({
+export const useUserStore = create()(
+  persist(
+    (set) => ({
       user: null,
       isAuthenticated: false,
       isCheckingAuth: true,
@@ -16,19 +17,17 @@ export const useUserStore = create()(persist((set) =>
       signup: async (input) => {
         try {
           set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/signup`,
-            input,
-            { headers: { "Content-Type": "application/json" } }
-          );
+          const response = await axios.post(`${API_END_POINT}/signup`, input, {
+            headers: { 'Content-Type': 'application/json' },
+          });
           if (response.data.success) {
             toast.success(response.data.message);
             set({ user: response.data.user, isAuthenticated: true });
           } else {
-            toast.error(response.data.message || "Signup failed");
+            toast.error(response.data.message || 'Signup failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -37,19 +36,17 @@ export const useUserStore = create()(persist((set) =>
       login: async (input) => {
         try {
           set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/login`,
-            input,
-            { headers: { "Content-Type": "application/json" } }
-          );
+          const response = await axios.post(`${API_END_POINT}/login`, input, {
+            headers: { 'Content-Type': 'application/json' },
+          });
           if (response.data.success) {
             toast.success(response.data.message);
             set({ user: response.data.user, isAuthenticated: true });
           } else {
-            toast.error(response.data.message || "Login failed");
+            toast.error(response.data.message || 'Login failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -61,16 +58,16 @@ export const useUserStore = create()(persist((set) =>
           const response = await axios.post(
             `${API_END_POINT}/verify-email`,
             { verificationCode },
-            { headers: { "Content-Type": "application/json" } }
+            { headers: { 'Content-Type': 'application/json' } }
           );
           if (response.data.success) {
             toast.success(response.data.message);
             set({ user: response.data.user, isAuthenticated: true });
           } else {
-            toast.error(response.data.message || "Verification failed");
+            toast.error(response.data.message || 'Verification failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -102,10 +99,10 @@ export const useUserStore = create()(persist((set) =>
             toast.success(response.data.message);
             set({ user: null, isAuthenticated: false });
           } else {
-            toast.error(response.data.message || "Logout failed");
+            toast.error(response.data.message || 'Logout failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -114,17 +111,14 @@ export const useUserStore = create()(persist((set) =>
       forgotPassword: async (email) => {
         try {
           set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/forgot-password`,
-            { email }
-          );
+          const response = await axios.post(`${API_END_POINT}/forgot-password`, { email });
           if (response.data.success) {
             toast.success(response.data.message);
           } else {
-            toast.error(response.data.message || "Request failed");
+            toast.error(response.data.message || 'Request failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -133,17 +127,16 @@ export const useUserStore = create()(persist((set) =>
       resetPassword: async (token, newPassword) => {
         try {
           set({ loading: true });
-          const response = await axios.post(
-            `${API_END_POINT}/reset-password/${token}`,
-            { newPassword }
-          );
+          const response = await axios.post(`${API_END_POINT}/reset-password/${token}`, {
+            newPassword,
+          });
           if (response.data.success) {
             toast.success(response.data.message);
           } else {
-            toast.error(response.data.message || "Reset failed");
+            toast.error(response.data.message || 'Reset failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
@@ -152,32 +145,30 @@ export const useUserStore = create()(persist((set) =>
       updateProfile: async (input) => {
         try {
           set({ loading: true });
-          const response = await axios.put(
-            `${API_END_POINT}/profile/update`,
-            input,
-            { headers: { "Content-Type": "application/json" } }
-          );
+          const response = await axios.put(`${API_END_POINT}/profile/update`, input, {
+            headers: { 'Content-Type': 'application/json' },
+          });
           if (response.data.success) {
             toast.success(response.data.message);
             set({ user: response.data.user, isAuthenticated: true });
           } else {
-            toast.error(response.data.message || "Update failed");
+            toast.error(response.data.message || 'Update failed');
           }
         } catch (error) {
-          toast.error(error?.response?.data?.message || "Something went wrong");
+          toast.error(error?.response?.data?.message || 'Something went wrong');
         } finally {
           set({ loading: false });
         }
       },
     }),
     {
-      name: "user-storage",
+      name: 'user-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         isCheckingAuth: state.isCheckingAuth,
-      }), // omit loading so it’s never persisted:contentReference[oaicite:1]{index=1}  
+      }), // omit loading so it’s never persisted:contentReference[oaicite:1]{index=1}
     }
   )
 );
