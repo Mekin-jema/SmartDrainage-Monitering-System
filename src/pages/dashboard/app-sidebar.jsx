@@ -15,16 +15,16 @@ import { useSidebar } from "@/components/ui/sidebar"; // Ensure this path is cor
 import { Command } from "lucide-react";
 
 export function AppSidebar({ ...props }) {
-  const { state } = useSidebar(); // Get sidebar state (expanded or collapsed)
+  const { state, isMobile } = useSidebar(); // Get sidebar state (expanded or collapsed)
+  console.log(isMobile)
   return (
-<Sidebar
-  collapsible="icon"
-  {...props}
-  className={`mx-3 mt-3 bg-[#0A141F] text-white rounded-xl border-gray-400 border-2 ${
-    state.collapsed ? "w-28" : "w-64" // custom widths when collapsed/expanded
-  }`}
->
-<SidebarHeader className="flex items-center justify-between px-7 py-2">
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className={`mx-3 mt-3 ${isMobile ? "bg-green-800" : "bg-inherit"} text-white rounded-xl border-gray-400 border-2 ${state.collapsed ? "w-28" : "w-64"  // custom widths when collapsed/expanded
+        }`}
+    >
+      <SidebarHeader className="flex items-center justify-between px-7 py-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>

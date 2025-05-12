@@ -1,10 +1,10 @@
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
-import DashboardMainPage from "./pages/dashboard/amba-dashboard";
-import NotFoundError from "./pages/error/404";
 // import ForgotPassword from "./pages/auth/forgot-password/route";
 // import SignIn from "./pages/auth/sign-in/route";
 // import SignUp from "./pages/auth/sign-up/route";
 // import Otp from "./pages/auth/otp/route";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import DashboardMainPage from "./pages/dashboard/drainx-dashboard";
+import NotFoundError from "./pages/error/404";
 import Dashboard from "./pages/dashboard/board/Dashboard";
 import SensorsData from "./pages/dashboard/sensor-data/SensorsData";
 import Manholes from "./pages/dashboard/manholes/Manholes";
@@ -54,19 +54,19 @@ const ProtectedRoutes = ({ children }) => {
 const AuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useUserStore();
   console.log("user", user);
-  if(isAuthenticated && user?.isVerified){
-    return <Navigate to="/" replace/>
+  if (isAuthenticated && user?.isVerified) {
+    return <Navigate to="/" replace />
   }
   return children;
 };
 
-const AdminRoute = ({children}) => {
-  const {user, isAuthenticated} = useUserStore();
-  if(!isAuthenticated){
-    return <Navigate to="/login" replace/>
+const AdminRoute = ({ children }) => {
+  const { user, isAuthenticated } = useUserStore();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
   }
-  if(!user?.admin){
-    return <Navigate to="/" replace/>
+  if (!user?.admin) {
+    return <Navigate to="/" replace />
   }
 
   return children;
@@ -96,22 +96,25 @@ const router = createBrowserRouter([
   },
 
   // Dashboard routes
-{path:"/reset-password",element:<ResetPassword/>},
+  { path: "/reset-password", element: <ResetPassword /> },
 
-  {path:"/login",element:// <AuthenticatedUser>
-     <Login/>
+  {
+    path: "/login", element:// <AuthenticatedUser>
+      <Login />
     // </AuthenticatedUser>
   },
-  {path:"/signup",element:
-    // <AuthenticatedUser>
-      <Signup/>
+  {
+    path: "/signup", element:
+      // <AuthenticatedUser>
+      <Signup />
     // </AuthenticatedUser>
-    },
-    {path:"/veri>fy-email",element:
+  },
+  {
+    path: "/veri>fy-email", element:
       <AuthenticatedUser>
-        <VerifyEmail/>
+        <VerifyEmail />
       </AuthenticatedUser>
-    },
+  },
   // Authentication routes
   // {
   //   path: "/signin",
@@ -127,7 +130,7 @@ const router = createBrowserRouter([
   // },
   {
     path: "/forgot-password",
-    element:<AuthenticatedUser>
+    element: <AuthenticatedUser>
 
       <ForgotPassword />,
     </AuthenticatedUser>
@@ -135,12 +138,12 @@ const router = createBrowserRouter([
 
   {
     path: "/dashboard",
-    element:(
+    element: (
       //  <AdminRoute> 
-        <DashboardMainPage />
-        // </AdminRoute>
+      <DashboardMainPage />
+      // </AdminRoute>
 
-      ),
+    ),
 
 
     children: [
@@ -175,12 +178,12 @@ const router = createBrowserRouter([
 
 // App Component
 function App() {
-  const {checkAuthentication, isCheckingAuth} = useUserStore();
+  const { checkAuthentication, isCheckingAuth } = useUserStore();
   // checking auth every time when page is loaded
-  useEffect(()=>{
+  useEffect(() => {
     checkAuthentication();
-  },[checkAuthentication])
-  if(isCheckingAuth) return <Loading/>
+  }, [checkAuthentication])
+  if (isCheckingAuth) return <Loading />
   return (
     <RouterProvider router={router}>
       {/* The content is routed and displayed by the Router */}
