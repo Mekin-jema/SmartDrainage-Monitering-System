@@ -340,16 +340,8 @@ const getAllSensorReadings = async (req, res) => {
     const readings = await SensorReading.find().sort({ timestamp: -1 }).lean();
 
     const formattedManholes = readings.map((reading) => {
-      const {
-        manholeId,
-        name,
-        location,
-        timestamp,
-        sensors,
-        thresholds,
-        lastCalibration,
-        batteryLevel,
-      } = reading;
+      const { manholeId, name, location, timestamp, sensors, thresholds, lastCalibration } =
+        reading;
 
       // Determine alert types
       const alertTypes = [];

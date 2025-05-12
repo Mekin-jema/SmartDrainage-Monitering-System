@@ -25,11 +25,6 @@ const sensorReadingSchema = new mongoose.Schema(
       minFlow: Number,
     },
     lastCalibration: Date,
-    status: {
-      type: String,
-      enum: ['normal', 'warning', 'critical'],
-      default: 'normal',
-    },
     alertTypes: [String],
   },
   { timestamps: true }

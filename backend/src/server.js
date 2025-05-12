@@ -118,268 +118,6 @@ process.on('SIGINT', () => {
   }
 })();
 
-//  insert many data to manhole.model
-// const mockManholes = [
-//   // === Main Road (6 Kilo to 5 Kilo) ===
-//   {
-//     id: '1',
-//     code: 'MH-001',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.758712, 9.031256],
-//     },
-//     elevation: 2400,
-//     status: 'functional',
-//     zone: 'A',
-//     lastInspection: '2023-05-15',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['2'],
-//   }, // Near 6 Kilo (Addis Ababa University)
-//   {
-//     id: '2',
-//     code: 'MH-002',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.759012, 9.030845],
-//     },
-//     elevation: 2395,
-//     status: 'damaged',
-//     zone: 'A',
-//     lastInspection: '2023-04-20',
-//     cover_status: 'open',
-//     overflow_level: 'risk',
-//     connections: ['1', '3'],
-//   },
-//   {
-//     id: '3',
-//     code: 'MH-003',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.759423, 9.030512],
-//     },
-//     elevation: 2390,
-//     status: 'overflowing',
-//     zone: 'B',
-//     lastInspection: '2023-06-01',
-//     cover_status: 'closed',
-//     overflow_level: 'overflow',
-//     connections: ['2', '4'],
-//   },
-//   {
-//     id: '4',
-//     code: 'MH-004',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.759815, 9.030201],
-//     },
-//     elevation: 2385,
-//     status: 'functional',
-//     zone: 'B',
-//     lastInspection: '2023-05-25',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['3', '5'],
-//   },
-//   {
-//     id: '5',
-//     code: 'MH-005',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.760302, 9.029843],
-//     },
-//     elevation: 2380,
-//     status: 'under_maintenance',
-//     zone: 'C',
-//     lastInspection: '2023-06-05',
-//     cover_status: 'open',
-//     overflow_level: 'moderate',
-//     connections: ['4', '6'],
-//   },
-//   {
-//     id: '6',
-//     code: 'MH-006',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.760745, 9.029512],
-//     },
-//     elevation: 2375,
-//     status: 'functional',
-//     zone: 'C',
-//     lastInspection: '2023-06-07',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['5', '7'],
-//   },
-//   {
-//     id: '7',
-//     code: 'MH-007',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.761128, 9.029201],
-//     },
-//     elevation: 2370,
-//     status: 'damaged',
-//     zone: 'C',
-//     lastInspection: '2023-05-10',
-//     cover_status: 'open',
-//     overflow_level: 'risk',
-//     connections: ['6', '8'],
-//   },
-//   {
-//     id: '8',
-//     code: 'MH-008',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.761602, 9.028843],
-//     },
-//     elevation: 2365,
-//     status: 'functional',
-//     zone: 'D',
-//     lastInspection: '2023-06-03',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['7', '9'],
-//   },
-//   {
-//     id: '9',
-//     code: 'MH-009',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.762015, 9.028512],
-//     },
-//     elevation: 2360,
-//     status: 'overflowing',
-//     zone: 'D',
-//     lastInspection: '2023-06-01',
-//     cover_status: 'open',
-//     overflow_level: 'overflow',
-//     connections: ['8', '10'],
-//   },
-//   {
-//     id: '10',
-//     code: 'MH-010',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.762502, 9.028156],
-//     },
-//     elevation: 2355,
-//     status: 'functional',
-//     zone: 'D',
-//     lastInspection: '2023-06-08',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['9'],
-//   }, // Near 5 Kilo (Ethio-China Rd)
-
-//   // === Branch Road 1 (Towards Arat Kilo) ===
-//   {
-//     id: '11',
-//     code: 'MH-011',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.759215, 9.031012],
-//     },
-//     elevation: 2395,
-//     status: 'functional',
-//     zone: 'A',
-//     lastInspection: '2023-06-10',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['2', '12'],
-//   },
-//   {
-//     id: '12',
-//     code: 'MH-012',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.759512, 9.031645],
-//     },
-//     elevation: 2390,
-//     status: 'damaged',
-//     zone: 'B',
-//     lastInspection: '2023-05-15',
-//     cover_status: 'open',
-//     overflow_level: 'risk',
-//     connections: ['11'],
-//   },
-
-//   // === Branch Road 2 (Towards Sidist Kilo) ===
-//   {
-//     id: '13',
-//     code: 'MH-013',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.760512, 9.030301],
-//     },
-//     elevation: 2380,
-//     status: 'under_maintenance',
-//     zone: 'C',
-//     lastInspection: '2023-06-02',
-//     cover_status: 'open',
-//     overflow_level: 'moderate',
-//     connections: ['4', '14'],
-//   },
-//   {
-//     id: '14',
-//     code: 'MH-014',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.760845, 9.030912],
-//     },
-//     elevation: 2375,
-//     status: 'functional',
-//     zone: 'C',
-//     lastInspection: '2023-06-03',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['13'],
-//   },
-
-//   // === Branch Road 3 (Small side road near 5 Kilo) ===
-//   {
-//     id: '15',
-//     code: 'MH-015',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.761098, 9.029751],
-//     },
-//     elevation: 2370,
-//     status: 'damaged',
-//     zone: 'D',
-//     lastInspection: '2023-05-10',
-//     cover_status: 'open',
-//     overflow_level: 'risk',
-//     connections: ['16'],
-//   },
-//   {
-//     id: '16',
-//     code: 'MH-016',
-//     location: {
-//       type: 'Point',
-//       coordinates: [38.761412, 9.029432],
-//     },
-//     elevation: 2365,
-//     status: 'functional',
-//     zone: 'D',
-//     lastInspection: '2023-06-07',
-//     cover_status: 'closed',
-//     overflow_level: 'good',
-//     connections: ['15'],
-//   },
-//   // Additional data can be added as necessary
-// ];
-
-// await Manholes.insertMany(mockManholes)
-//   .then(() => {
-//     console.log('Mock data inserted successfully');
-//   })
-//   .catch((error) => {
-//     console.error('Error inserting mock data:', error);
-//   });
-
-//insert many data to sendors.model
-
 // const manholes = [
 //   {
 //     manholeId: '1',
@@ -401,7 +139,7 @@ process.on('SIGINT', () => {
 //     },
 //     lastCalibration: '2025-04-15T00:00:00Z',
 //     batteryLevel: 78,
-//     status: 'critical',
+
 //     alertTypes: ['sewage_high', 'low_battery', 'bloackage'],
 //   },
 //   {
@@ -423,7 +161,7 @@ process.on('SIGINT', () => {
 //     },
 //     lastCalibration: '2025-04-10T00:00:00Z',
 //     batteryLevel: 65,
-//     status: 'critical',
+
 //     alertTypes: ['gas_leak'],
 //   },
 //   {
@@ -446,8 +184,75 @@ process.on('SIGINT', () => {
 //     },
 //     lastCalibration: '2025-04-18T00:00:00Z',
 //     batteryLevel: 92,
-//     status: 'critical',
+
 //     alertTypes: ['blockage'],
+//   },
+//   {
+//     manholeId: '4',
+//     name: 'Manhole #04',
+//     location: { lat: 9.0168, lng: 38.795 },
+//     timestamp: '2025-05-01T09:20:00Z',
+//     sensors: {
+//       sewageLevel: 60,
+//       methaneLevel: 800,
+//       flowRate: 6.5,
+//       temperature: 25.2,
+//       humidity: 55,
+//       batteryLevel: 88,
+//     },
+//     thresholds: {
+//       maxDistance: 85,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-20T00:00:00Z',
+//     batteryLevel: 88,
+//     alertTypes: [],
+//   },
+//   {
+//     manholeId: '5',
+//     name: 'Manhole #09',
+//     location: { lat: 9.0182, lng: 38.7971 },
+//     timestamp: '2025-05-01T10:10:00Z',
+//     sensors: {
+//       sewageLevel: 95,
+//       methaneLevel: 1500,
+//       flowRate: 2.4,
+//       temperature: 23.4,
+//       humidity: 60,
+//       batteryLevel: 60,
+//     },
+//     thresholds: {
+//       maxDistance: 90,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-22T00:00:00Z',
+//     batteryLevel: 60,
+
+//     alertTypes: ['sewage_high', 'gas_leak', 'blockage', 'low_battery'],
+//   },
+//   {
+//     manholeId: '6',
+//     name: 'Manhole #15',
+//     location: { lat: 9.0195, lng: 38.7922 },
+//     timestamp: '2025-04-30T11:05:00Z',
+//     sensors: {
+//       sewageLevel: 40,
+//       methaneLevel: 400,
+//       flowRate: 10.8,
+//       temperature: 21.9,
+//       humidity: 50,
+//       batteryLevel: 95,
+//     },
+//     thresholds: {
+//       maxDistance: 95,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-19T00:00:00Z',
+//     batteryLevel: 95,
+//     alertTypes: [],
 //   },
 // ];
 
