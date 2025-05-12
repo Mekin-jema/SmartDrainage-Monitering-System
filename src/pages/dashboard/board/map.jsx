@@ -45,7 +45,13 @@ import {
   XCircle,
   AlertTriangle,
   CheckCircle,
+  Droplet,
+  Wrench,
+  ArrowRight,
+  Circle
+
 } from "lucide-react";
+
 
 // SVG Icons for manholes
 
@@ -288,33 +294,68 @@ const SewageSystemMap = () => {
   };
 
 
-  const updateLayers = (map) => {
-    // Remove existing layers and sources if they exist
-    // Remove existing layers and sources if they exist
-    if (map.getLayer('manholes-layer')) map.removeLayer('manholes-layer');
-    if (map.getLayer('pipes-layer')) map.removeLayer('pipes-layer');
+  const updateLayers = async (map) => {
+    // Import the API key
+    const API_KEY = "0d3e5c9668f242409228bfa012c04031"
+    console.log("API_KEY", API_KEY);
+
+    // Remove existing layers and sources
+    const layersToRemove = [
+      'manholes-circle', 'manholes-status-icon', 'manholes-cover-status',
+      'manholes-code-label', 'pipes-line', 'pipes-arrows',
+      'pipes-blocked-highlight', 'manholes-popup-highlight', 'pipes-flow-direction'
+    ];
+
+    layersToRemove.forEach(layer => {
+      if (map.getLayer(layer)) map.removeLayer(layer);
+    });
+
     if (map.getSource('manholes')) map.removeSource('manholes');
     if (map.getSource('pipes')) map.removeSource('pipes');
 
-    // Add pipes as lines
+    // Load pipes with flow direction information
     const pipeFeatures = pipes.map(pipe => {
-      const startManhole = manholes.find(m => m.id === pipe.start);
-      const endManhole = manholes.find(m => m.id === pipe.end);
+      const start = manholes.find(m => m.id === pipe.start);
+      const end = manholes.find(m => m.id === pipe.end);
+      if (!start || !end) return null;
+
+      const dx = end.location[0] - start.location[0];
+      const dy = end.location[1] - start.location[1];
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+      // Calculate midpoint for flow direction indicators
+      const midPoint = [
+        start.location[0] + dx * 0.5,
+        start.location[1] + dy * 0.5
+      ];
+      const quarterPoint = [
+        start.location[0] + dx * 0.25,
+        start.location[1] + dy * 0.25
+      ];
+      const threeQuarterPoint = [
+        start.location[0] + dx * 0.75,
+        start.location[1] + dy * 0.75
+      ];
 
       return {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [startManhole.location, endManhole.location]
+          coordinates: [start.location, end.location]
         },
         properties: {
           id: pipe.id,
           blockage: pipe.blockage,
           start: pipe.start,
-          end: pipe.end
+          end: pipe.end,
+          angle,
+          flowDirection: pipe.flowDirection || 'start_to_end', // default flow direction
+          midPoint: midPoint,
+          quarterPoint: quarterPoint,
+          threeQuarterPoint: threeQuarterPoint
         }
       };
-    });
+    }).filter(Boolean);
 
     map.addSource('pipes', {
       type: 'geojson',
@@ -324,34 +365,21 @@ const SewageSystemMap = () => {
       }
     });
 
-    map.addLayer({
-      id: 'pipes-layer',
-      type: 'line',
-      source: 'pipes',
-      paint: {
-        'line-color': [
-          'case',
-          ['==', ['get', 'blockage'], true],
-          '#ef4444',
-          '#10b981'
-        ],
-        'line-width': 3
-      }
-    });
-
-    // Add manholes as circle markers
-    const manholeFeatures = manholes.map(manhole => ({
+    // Load manholes
+    const manholeFeatures = manholes.map(m => ({
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: manhole.location
+        coordinates: m.location
       },
       properties: {
-        id: manhole.id,
-        code: manhole.code,
-        cover_status: manhole.cover_status,
-        overflow_level: manhole.overflow_level,
-        status: manhole.status
+        id: m.id,
+        code: m.code,
+        status: m.status,
+        overflow_level: m.overflow_level,
+        cover_status: m.cover_status,
+        last_inspection: m.last_inspection,
+        flow_rate: m.flow_rate
       }
     }));
 
@@ -363,49 +391,282 @@ const SewageSystemMap = () => {
       }
     });
 
-    map.addLayer({
-      id: 'manholes-layer',
-      type: 'circle',
-      source: 'manholes',
-      paint: {
-        'circle-radius': 12,
-        'circle-color': [
-          'case',
-          ['==', ['get', 'overflow_level'], 'overflow'], '#ef4444',
-          ['==', ['get', 'overflow_level'], 'risk'], '#f59e0b',
-          '#10b981'
-        ],
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff'
+    // === Improved icon definitions for manhole status ===
+    const statusToIcon = {
+      'functional': { icon: 'check-circle', color: 'green' },
+      'damaged': { icon: 'alert-circle', color: 'red' },
+      'overflowing': { icon: 'alert-triangle', color: 'purple' },
+      'under_maintenance': { icon: 'wrench', color: 'orange' },
+      'needs_cleaning': { icon: 'broom', color: 'yellow' },
+      'default': { icon: 'help-circle', color: 'gray' }
+    };
+
+    const coverStatusToIcon = {
+      'open': { icon: 'lock-open', color: 'red' },
+      'closed': { icon: 'lock', color: 'green' },
+      'damaged': { icon: 'alert-circle', color: 'orange' }
+    };
+
+    // Add a map event listener to handle missing icons
+    map.on('styleimagemissing', async (event) => {
+      const missingIconId = event.id;
+      console.log(`Missing icon: ${missingIconId}`);
+
+      // Check if it's a manhole status icon
+      if (missingIconId.startsWith('geoapify-status-')) {
+        const manholeId = missingIconId.replace('geoapify-status-', '');
+        const manhole = manholes.find(m => m.id === manholeId);
+        if (manhole) {
+          const status = manhole.status || 'default';
+          const iconDef = statusToIcon[status] || statusToIcon['default'];
+          const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=${iconDef.color}&size=42&icon=${iconDef.icon}&apiKey=${API_KEY}`;
+
+          try {
+            const response = await fetch(iconUrl);
+            const blob = await response.blob();
+            const imageBitmap = await createImageBitmap(blob);
+            if (!map.hasImage(missingIconId)) {
+              map.addImage(missingIconId, imageBitmap);
+            }
+          } catch (error) {
+            console.error(`Failed to load icon for ${missingIconId}:`, error);
+          }
+        }
+      }
+      // Check if it's a cover status icon
+      else if (missingIconId.startsWith('geoapify-cover-')) {
+        const manholeId = missingIconId.replace('geoapify-cover-', '');
+        const manhole = manholes.find(m => m.id === manholeId);
+        if (manhole) {
+          const status = manhole.cover_status || 'closed';
+          const iconDef = coverStatusToIcon[status] || coverStatusToIcon['closed'];
+          const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=${iconDef.color}&size=24&icon=${iconDef.icon}&apiKey=${API_KEY}`;
+
+          try {
+            const response = await fetch(iconUrl);
+            const blob = await response.blob();
+            const imageBitmap = await createImageBitmap(blob);
+            if (!map.hasImage(missingIconId)) {
+              map.addImage(missingIconId, imageBitmap);
+            }
+          } catch (error) {
+            console.error(`Failed to load icon for ${missingIconId}:`, error);
+          }
+        }
+      }
+      // Check if it's a flow direction icon
+      else if (missingIconId === 'flow-arrow') {
+        const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=blue&size=24&icon=arrow-right&apiKey=${API_KEY}`;
+        try {
+          const response = await fetch(iconUrl);
+          const blob = await response.blob();
+          const imageBitmap = await createImageBitmap(blob);
+          if (!map.hasImage('flow-arrow')) {
+            map.addImage('flow-arrow', imageBitmap);
+          }
+        } catch (error) {
+          console.error(`Failed to load flow direction icon:`, error);
+        }
       }
     });
 
-    // Add symbol layer for cover status
+    // Preload and add icons
+    for (const manhole of manholes) {
+      // Load status icon
+      const statusIconId = `geoapify-status-${manhole.id}`;
+      if (!map.hasImage(statusIconId)) {
+        const status = manhole.status || 'default';
+        const iconDef = statusToIcon[status] || statusToIcon['default'];
+        const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=${iconDef.color}&size=42&icon=${iconDef.icon}&apiKey=${API_KEY}`;
+
+        try {
+          const response = await fetch(iconUrl);
+          const blob = await response.blob();
+          const imageBitmap = await createImageBitmap(blob);
+          map.addImage(statusIconId, imageBitmap);
+        } catch (error) {
+          console.error(`Failed to load icon for ${statusIconId}:`, error);
+        }
+      }
+
+      // Load cover status icon
+      const coverIconId = `geoapify-cover-${manhole.id}`;
+      if (!map.hasImage(coverIconId)) {
+        const status = manhole.cover_status || 'closed';
+        const iconDef = coverStatusToIcon[status] || coverStatusToIcon['closed'];
+        const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=${iconDef.color}&size=24&icon=${iconDef.icon}&apiKey=${API_KEY}`;
+
+        try {
+          const response = await fetch(iconUrl);
+          const blob = await response.blob();
+          const imageBitmap = await createImageBitmap(blob);
+          map.addImage(coverIconId, imageBitmap);
+        } catch (error) {
+          console.error(`Failed to load icon for ${coverIconId}:`, error);
+        }
+      }
+    }
+
+    // Preload flow direction icon if not already loaded
+    if (!map.hasImage('flow-arrow')) {
+      const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=blue&size=24&icon=arrow-right&apiKey=${API_KEY}`;
+      try {
+        const response = await fetch(iconUrl);
+        const blob = await response.blob();
+        const imageBitmap = await createImageBitmap(blob);
+        map.addImage('flow-arrow', imageBitmap);
+      } catch (error) {
+        console.error(`Failed to load flow direction icon:`, error);
+      }
+    }
+
+    // === Add layers ===
+
+    // 1. Status icon using Geoapify icons
     map.addLayer({
-      id: 'manholes-symbol',
+      id: 'manholes-status-icon',
       type: 'symbol',
       source: 'manholes',
       layout: {
-        'text-field': [
-          'case',
-          ['==', ['get', 'cover_status'], 'open'], '✕',
-          '✓'
-        ],
-        'text-size': 12,
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
-      },
-      paint: {
-        'text-color': '#ffffff'
+        'icon-image': ['concat', 'geoapify-status-', ['get', 'id']],
+        'icon-size': 1,
+        'icon-allow-overlap': true
       }
     });
 
-    // Click handlers
-    map.on('click', 'manholes-layer', (e) => {
+    // 2. Cover status icon
+    map.addLayer({
+      id: 'manholes-cover-status',
+      type: 'symbol',
+      source: 'manholes',
+      layout: {
+        'icon-image': ['concat', 'geoapify-cover-', ['get', 'id']],
+        'icon-size': 0.6,
+        'icon-offset': [0, -0.8],
+        'icon-allow-overlap': true
+      }
+    });
+
+    // 3. Manhole code label
+    map.addLayer({
+      id: 'manholes-code-label',
+      type: 'symbol',
+      source: 'manholes',
+      layout: {
+        'text-field': ['get', 'code'],
+        'text-size': 10,
+        'text-offset': [0, 1.5],
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-allow-overlap': false
+      },
+      paint: {
+        'text-color': '#1F2937',
+        'text-halo-color': '#FFFFFF',
+        'text-halo-width': 1
+      }
+    });
+
+    // 4. Pipe line
+    map.addLayer({
+      id: 'pipes-line',
+      type: 'line',
+      source: 'pipes',
+      paint: {
+        'line-color': [
+          'case',
+          ['==', ['get', 'blockage'], true], '#EF4444',
+          ['==', ['get', 'flowDirection'], 'bidirectional'], '#10B981',
+          '#3B82F6'
+        ],
+        'line-width': 3,
+        'line-opacity': 0.8
+      }
+    });
+
+    // 5. Flow direction indicators
+    map.addLayer({
+      id: 'pipes-flow-direction',
+      type: 'symbol',
+      source: 'pipes',
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 150,
+        'icon-image': 'flow-arrow',
+        'icon-size': 0.7,
+        'icon-rotate': ['get', 'angle'],
+        'icon-allow-overlap': true,
+        'icon-pitch-alignment': 'viewport'
+      },
+      filter: ['!=', ['get', 'flowDirection'], 'bidirectional']
+    });
+
+    // For bidirectional pipes, add arrows in both directions
+    map.addLayer({
+      id: 'pipes-bidirectional-arrows',
+      type: 'symbol',
+      source: 'pipes',
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 150,
+        'icon-image': 'flow-arrow',
+        'icon-size': 0.7,
+        'icon-rotate': ['get', 'angle'],
+        'icon-allow-overlap': true,
+        'icon-pitch-alignment': 'viewport'
+      },
+      filter: ['==', ['get', 'flowDirection'], 'bidirectional']
+    });
+
+    map.addLayer({
+      id: 'pipes-bidirectional-arrows-reverse',
+      type: 'symbol',
+      source: 'pipes',
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 150,
+        'icon-image': 'flow-arrow',
+        'icon-size': 0.7,
+        'icon-rotate': ['+', ['get', 'angle'], 180],
+        'icon-allow-overlap': true,
+        'icon-pitch-alignment': 'viewport'
+      },
+      filter: ['==', ['get', 'flowDirection'], 'bidirectional']
+    });
+
+    // 6. Highlight blocked pipes
+    map.addLayer({
+      id: 'pipes-blocked-highlight',
+      type: 'line',
+      source: 'pipes',
+      filter: ['==', ['get', 'blockage'], true],
+      paint: {
+        'line-color': '#EF4444',
+        'line-width': 5,
+        'line-dasharray': [2, 2],
+        'line-opacity': 0.6
+      }
+    });
+
+    // 7. Highlight hovered manhole
+    map.addLayer({
+      id: 'manholes-popup-highlight',
+      type: 'circle',
+      source: 'manholes',
+      paint: {
+        'circle-radius': 15,
+        'circle-color': '#FACC15',
+        'circle-opacity': 0.2
+      },
+      filter: ['==', 'id', '']
+    });
+
+    // === Events ===
+    map.on('click', 'manholes-status-icon', (e) => {
       const manhole = manholes.find(m => m.id === e.features[0].properties.id);
       if (manhole) handleManholeClick(manhole);
     });
 
-    map.on('click', 'pipes-layer', (e) => {
+    map.on('click', 'pipes-line', (e) => {
       const pipe = pipes.find(p => p.id === e.features[0].properties.id);
       if (pipe) {
         setSelectedPipe(pipe);
@@ -413,21 +674,28 @@ const SewageSystemMap = () => {
       }
     });
 
-    //   // Hover effects
-    map.on('mouseenter', 'manholes-layer', () => {
+    map.on('mouseenter', 'manholes-status-icon', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', 'manholes-layer', () => {
+    map.on('mouseleave', 'manholes-status-icon', () => {
       map.getCanvas().style.cursor = '';
     });
-    map.on('mouseenter', 'pipes-layer', () => {
+
+    map.on('mouseenter', 'pipes-line', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', 'pipes-layer', () => {
+    map.on('mouseleave', 'pipes-line', () => {
       map.getCanvas().style.cursor = '';
     });
-    // ... rest of your code for map.addSource, map.addLayer, etc.
+
+    map.on('mousemove', 'manholes-status-icon', (e) => {
+      map.setFilter('manholes-popup-highlight', ['==', 'id', e.features[0].properties.id]);
+    });
+    map.on('mouseleave', 'manholes-status-icon', () => {
+      map.setFilter('manholes-popup-highlight', ['==', 'id', '']);
+    });
   };
+
 
   // Update map when data changes
   useEffect(() => {
