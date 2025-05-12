@@ -1,11 +1,16 @@
 import Manhole from '../models/manhole.model.js';
 import mongoose from 'mongoose';
 
-// Create a new manhole (allows custom _id)
+// Helper function to generate auto-incrementing numeric ID
+const getNextManholeId = async () => {
+  const lastManhole = await Manhole.findOne().sort({ id: -1 });
+  return lastManhole ? lastManhole.id + 1 : 1;
+};
+
+// Create a new manhole with auto-generated numeric ID
 const createManhole = async (req, res) => {
   try {
     const { 
-      _id,
       code, 
       location, 
       elevation,
@@ -22,40 +27,23 @@ const createManhole = async (req, res) => {
     if (!code || !location || !elevation) {
       return res.status(400).json({ 
         success: false,
-        message: 'Code, location, and elevation are required' 
+        message: 'Code, location coordinates, and elevation are required' 
       });
     }
 
-    // Check if code already exists
-    const existingCode = await Manhole.findOne({ code });
-    if (existingCode) {
+    // Check if code exists
+    const existingManhole = await Manhole.findOne({ code });
+    if (existingManhole) {
       return res.status(400).json({
         success: false,
         message: 'Manhole with this code already exists'
       });
     }
 
-    // Check if custom ID is provided and valid
-    if (_id && !mongoose.Types.ObjectId.isValid(_id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Provided ID is not valid'
-      });
-    }
-
-    // Check if custom ID already exists
-    if (_id) {
-      const existingId = await Manhole.findById(_id);
-      if (existingId) {
-        return res.status(400).json({
-          success: false,
-          message: 'Manhole with this ID already exists'
-        });
-      }
-    }
+    const id = await getNextManholeId();
 
     const newManhole = new Manhole({
-      _id: _id || new mongoose.Types.ObjectId(),
+      id,
       code,
       location: {
         type: "Point",
@@ -63,27 +51,23 @@ const createManhole = async (req, res) => {
       },
       elevation,
       zone: zone || 'A',
-      installedDate: new Date(),
-      lastInspection: lastInspection ? new Date(lastInspection) : null,
       status: status || 'functional',
       cover_status: cover_status || 'closed',
       overflow_level: overflow_level || 'good',
       connections: connections || [],
+      lastInspection: lastInspection || null,
       notes: notes || ''
     });
-    
-    await newManhole.save();
 
-    // Transform to match mock data structure
-    const responseData = {
-      ...newManhole.toObject(),
-      location: newManhole.location.coordinates
-    };
+    await newManhole.save();
 
     return res.status(201).json({
       success: true,
       message: 'Manhole created successfully',
-      data: responseData
+      data: {
+        ...newManhole.toObject(),
+        location: newManhole.location.coordinates
+      }
     });
 
   } catch (error) {
@@ -95,28 +79,21 @@ const createManhole = async (req, res) => {
   }
 };
 
-// Get all manholes
+// Get all manholes sorted by numeric ID
 const getAllManholes = async (req, res) => {
   try {
-    const manholes = await Manhole.find().lean();
+    const manholes = await Manhole.find().sort({ id: 1 }).lean();
     
-    if(manholes.length === 0) {
+    if (manholes.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'No manholes found'
       });
     }
 
-    // Transform to match mock data structure
-    const transformedManholes = manholes.map(manhole => ({
-      ...manhole,
-      location: manhole.location.coordinates,
-      // Ensure all fields have defaults matching mock data
-      cover_status: manhole.cover_status || 'closed',
-      overflow_level: manhole.overflow_level || 'good',
-      connections: manhole.connections || [],
-      zone: manhole.zone || 'A',
-      status: manhole.status || 'functional'
+    const transformedManholes = manholes.map(m => ({
+      ...m,
+      location: m.location.coordinates
     }));
 
     return res.status(200).json({
@@ -134,12 +111,116 @@ const getAllManholes = async (req, res) => {
   }
 };
 
-// Get manholes near a location
-const getManholesNearLocation = async (req, res) => {
+// Get manhole by numeric ID
+const getManholeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const manhole = await Manhole.findOne({ id }).lean();
+    if (!manhole) {
+      return res.status(404).json({
+        success: false,
+        message: 'Manhole not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        ...manhole,
+        location: manhole.location.coordinates
+      }
+    });
+
+  } catch (error) {
+    console.error('Get manhole error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Update manhole by numeric ID
+const updateManhole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    if (updateData.location && Array.isArray(updateData.location)) {
+      updateData.location = {
+        type: "Point",
+        coordinates: updateData.location
+      };
+    }
+
+    const updatedManhole = await Manhole.findOneAndUpdate(
+      { id: Number(id) },
+      updateData,
+      { new: true }
+    ).lean();
+
+    if (!updatedManhole) {
+      return res.status(404).json({
+        success: false,
+        message: 'Manhole not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Manhole updated successfully',
+      data: {
+        ...updatedManhole,
+        location: updatedManhole.location.coordinates
+      }
+    });
+
+  } catch (error) {
+    console.error('Update manhole error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Delete manhole by numeric ID
+const deleteManhole = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedManhole = await Manhole.findOneAndDelete({ id: Number(id) }).lean();
+    if (!deletedManhole) {
+      return res.status(404).json({
+        success: false,
+        message: 'Manhole not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Manhole deleted successfully',
+      data: {
+        ...deletedManhole,
+        location: deletedManhole.location.coordinates
+      }
+    });
+
+  } catch (error) {
+    console.error('Delete manhole error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Get manholes near location
+const getNearbyManholes = async (req, res) => {
   try {
     const { longitude, latitude, maxDistance = 1000 } = req.query;
 
-    // Validate inputs
     if (!longitude || !latitude) {
       return res.status(400).json({
         success: false,
@@ -157,25 +238,24 @@ const getManholesNearLocation = async (req, res) => {
           $maxDistance: parseInt(maxDistance)
         }
       }
-    }).lean();
+    }).sort({ id: 1 }).lean();
 
-    // Transform to match mock data structure
-    const transformedManholes = manholes.map(manhole => ({
-      ...manhole,
-      location: manhole.location.coordinates
+    const transformedManholes = manholes.map(m => ({
+      ...m,
+      location: m.location.coordinates
     }));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: transformedManholes.length,
       data: transformedManholes
     });
 
   } catch (error) {
-    console.error('Geospatial query error:', error);
-    res.status(500).json({
+    console.error('Nearby manholes error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Server error: ' + error.message
+      message: 'Internal server error'
     });
   }
 };
@@ -184,20 +264,18 @@ const getManholesNearLocation = async (req, res) => {
 const getManholesByZone = async (req, res) => {
   try {
     const { zone } = req.params;
-    
-    const manholes = await Manhole.find({ zone }).lean();
-    
-    if(manholes.length === 0) {
+
+    const manholes = await Manhole.find({ zone }).sort({ id: 1 }).lean();
+    if (manholes.length === 0) {
       return res.status(404).json({
         success: false,
         message: `No manholes found in zone ${zone}`
       });
     }
 
-    // Transform to match mock data structure
-    const transformedManholes = manholes.map(manhole => ({
-      ...manhole,
-      location: manhole.location.coordinates
+    const transformedManholes = manholes.map(m => ({
+      ...m,
+      location: m.location.coordinates
     }));
 
     return res.status(200).json({
@@ -207,7 +285,7 @@ const getManholesByZone = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Zone query error:', error);
+    console.error('Zone manholes error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -215,163 +293,12 @@ const getManholesByZone = async (req, res) => {
   }
 };
 
-// Update manhole (full update)
-const updateManholeStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { 
-      code,
-      location,
-      elevation,
-      zone,
-      status,
-      cover_status,
-      overflow_level,
-      connections,
-      lastInspection,
-      notes
-    } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid manhole ID'
-      });
-    }
-
-    // Check if manhole exists
-    const existingManhole = await Manhole.findById(id);
-    if (!existingManhole) {
-      return res.status(404).json({
-        success: false,
-        message: 'Manhole not found'
-      });
-    }
-
-    // Check if new code conflicts with another manhole
-    if (code && code !== existingManhole.code) {
-      const codeExists = await Manhole.findOne({ code, _id: { $ne: id } });
-      if (codeExists) {
-        return res.status(400).json({
-          success: false,
-          message: 'Another manhole already uses this code'
-        });
-      }
-    }
-
-    const updateFields = {
-      lastInspection: lastInspection ? new Date(lastInspection) : new Date()
-    };
-
-    if (code) updateFields.code = code;
-    if (location) {
-      updateFields.location = {
-        type: "Point",
-        coordinates: Array.isArray(location) ? location : location.coordinates
-      };
-    }
-    if (elevation) updateFields.elevation = elevation;
-    if (zone) updateFields.zone = zone;
-    if (status) updateFields.status = status;
-    if (cover_status) updateFields.cover_status = cover_status;
-    if (overflow_level) updateFields.overflow_level = overflow_level;
-    if (connections) updateFields.connections = connections;
-    if (notes !== undefined) updateFields.notes = notes;
-
-    const updatedManhole = await Manhole.findByIdAndUpdate(
-      id,
-      updateFields,
-      { new: true }
-    ).lean();
-    
-    // Transform to match mock data structure
-    const transformedManhole = {
-      ...updatedManhole,
-      location: updatedManhole.location.coordinates
-    };
-
-    return res.status(200).json({
-      success: true,
-      message: 'Manhole updated successfully',
-      data: transformedManhole
-    });
-
-  } catch (error) {
-    console.error('Update manhole error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-};
-
-// Delete all manholes
-const deleteAllManholes = async (req, res) => {
-  try {
-    const result = await Manhole.deleteMany({});
-    
-    return res.status(200).json({
-      success: true,
-      message: `Deleted ${result.deletedCount} manholes`,
-      deletedCount: result.deletedCount
-    });
-
-  } catch (error) {
-    console.error('Delete all manholes error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-};
-
-// Delete manhole by ID
-const deleteManholeById = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid manhole ID' 
-      });
-    }
-
-    const deletedManhole = await Manhole.findByIdAndDelete(id).lean();
-
-    if (!deletedManhole) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Manhole not found' 
-      });
-    }
-
-    // Transform to match mock data structure
-    const transformedManhole = {
-      ...deletedManhole,
-      location: deletedManhole.location.coordinates
-    };
-
-    res.status(200).json({
-      success: true,
-      message: 'Manhole deleted successfully',
-      data: transformedManhole
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error: ' + error.message
-    });
-  }
-};
-
-export { 
-  createManhole, 
-  getAllManholes, 
-  getManholesNearLocation, 
-  getManholesByZone, 
-  updateManholeStatus,
-  deleteAllManholes,
-  deleteManholeById
+export {
+  createManhole,
+  getAllManholes,
+  getManholeById,
+  updateManhole,
+  deleteManhole,
+  getNearbyManholes,
+  getManholesByZone
 };

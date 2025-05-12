@@ -1,12 +1,12 @@
 import express from 'express';
 import {
-  createManhole,
-  getAllManholes,
-  getManholesNearLocation,
-  getManholesByZone,
-  updateManholeStatus,
-  deleteAllManholes,
-  deleteManholeById
+ createManhole,
+   getAllManholes,
+   getManholeById,
+   updateManhole,
+   deleteManhole,
+   getNearbyManholes,
+   getManholesByZone
 } from '../controllers/manhole.controller.js';
 
 const router = express.Router();
@@ -16,16 +16,17 @@ router.post('/', createManhole);
 
 // GET /api/manholes - Get all manholes
 router.get('/', getAllManholes);
-router.delete('/', deleteAllManholes);                                    
-router.delete('/:id', deleteManholeById);
+// router.delete('/', deleteAllManholes);                                    
+router.delete('/:id', deleteManhole);
+router.get('/:id', getManholeById);
 // GET /api/manholes/nearby - Get manholes near location
-router.get('/nearby', getManholesNearLocation);
+router.get('/nearby', getNearbyManholes);
 
 // GET /api/manholes/zone/:zone - Get manholes by zone
 router.get('/zone/:zone', getManholesByZone);
 
 // PATCH /api/manholes/:id/status - Update manhole status
-router.put('/status/:id', updateManholeStatus);
+router.put('/status/:id', updateManhole);
 
 export default router;
 
