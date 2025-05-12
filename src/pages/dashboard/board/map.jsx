@@ -45,7 +45,12 @@ import {
   XCircle,
   AlertTriangle,
   CheckCircle,
+  Droplet,
+  Wrench,
+  ArrowRight
+
 } from "lucide-react";
+
 
 // SVG Icons for manholes
 
@@ -291,15 +296,48 @@ const SewageSystemMap = () => {
   const updateLayers = (map) => {
     // Remove existing layers and sources if they exist
     // Remove existing layers and sources if they exist
-    if (map.getLayer('manholes-layer')) map.removeLayer('manholes-layer');
-    if (map.getLayer('pipes-layer')) map.removeLayer('pipes-layer');
+
+    // Example of loading icons (implementation depends on your setup)
+    const loadIcons = async () => {
+      const icons = {
+        'check-circle': CheckCircle,
+        'x-circle': XCircle,
+        'alert-circle': AlertCircle,
+        'water': Droplet,
+        'wrench': Wrench /* SVG for wrench icon */,
+        'arrow-right': ArrowRight /* SVG for arrow-right icon */
+      };
+
+
+
+      for (const [name, svg] of Object.entries(icons)) {
+        map.addImage(name, svg);
+      }
+    };
+
+    // ... rest of your code for map.addSource, map.addLayer, etc.
+    // Remove existing layers and sources if they exist
+    const layersToRemove = [
+      'manholes-circle', 'manholes-status-icon', 'manholes-cover-status',
+      'manholes-code-label', 'pipes-line', 'pipes-arrows', 'pipes-blocked-highlight'
+    ];
+
+    layersToRemove.forEach(layer => {
+      if (map.getLayer(layer)) map.removeLayer(layer);
+    });
+
     if (map.getSource('manholes')) map.removeSource('manholes');
     if (map.getSource('pipes')) map.removeSource('pipes');
 
-    // Add pipes as lines
+    // Add pipes as lines with calculated angles for arrows
     const pipeFeatures = pipes.map(pipe => {
       const startManhole = manholes.find(m => m.id === pipe.start);
       const endManhole = manholes.find(m => m.id === pipe.end);
+
+      // Calculate angle for arrow direction
+      const dx = endManhole.location[0] - startManhole.location[0];
+      const dy = endManhole.location[1] - startManhole.location[1];
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
       return {
         type: 'Feature',
@@ -311,7 +349,8 @@ const SewageSystemMap = () => {
           id: pipe.id,
           blockage: pipe.blockage,
           start: pipe.start,
-          end: pipe.end
+          end: pipe.end,
+          angle: angle
         }
       };
     });
@@ -321,21 +360,6 @@ const SewageSystemMap = () => {
       data: {
         type: 'FeatureCollection',
         features: pipeFeatures
-      }
-    });
-
-    map.addLayer({
-      id: 'pipes-layer',
-      type: 'line',
-      source: 'pipes',
-      paint: {
-        'line-color': [
-          'case',
-          ['==', ['get', 'blockage'], true],
-          '#ef4444',
-          '#10b981'
-        ],
-        'line-width': 3
       }
     });
 
@@ -363,49 +387,135 @@ const SewageSystemMap = () => {
       }
     });
 
+    // Add manhole circle layer
     map.addLayer({
-      id: 'manholes-layer',
+      id: 'manholes-circle',
       type: 'circle',
       source: 'manholes',
       paint: {
-        'circle-radius': 12,
+        'circle-radius': 10,
         'circle-color': [
-          'case',
-          ['==', ['get', 'overflow_level'], 'overflow'], '#ef4444',
-          ['==', ['get', 'overflow_level'], 'risk'], '#f59e0b',
-          '#10b981'
+          'match',
+          ['get', 'status'],
+          'functional', '#10B981', // Green
+          'damaged', '#EF4444',   // Red
+          'overflowing', '#7C3AED', // Purple
+          'under_maintenance', '#F59E0B', // Yellow
+          '#64748B' // Default gray
         ],
         'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff'
+        'circle-stroke-color': '#FFFFFF'
       }
     });
 
-    // Add symbol layer for cover status
+    // Add manhole status icon layer
     map.addLayer({
-      id: 'manholes-symbol',
+      id: 'manholes-status-icon',
       type: 'symbol',
       source: 'manholes',
       layout: {
-        'text-field': [
-          'case',
-          ['==', ['get', 'cover_status'], 'open'], '✕',
-          '✓'
+        'icon-image': [
+          'match',
+          ['get', 'status'],
+          'functional', 'check-circle',
+          'damaged', 'alert-circle',
+          'overflowing', 'water',
+          'under_maintenance', 'wrench',
+          'circle' // Default
         ],
-        'text-size': 12,
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+        'icon-size': 0.7,
+        'icon-allow-overlap': true
+      }
+    });
+
+    // Add manhole cover status layer
+    map.addLayer({
+      id: 'manholes-cover-status',
+      type: 'symbol',
+      source: 'manholes',
+      layout: {
+        'icon-image': [
+          'case',
+          ['==', ['get', 'cover_status'], 'open'], 'x-circle',
+          'check-circle'
+        ],
+        'icon-size': 0.5,
+        'icon-offset': [0, -0.5],
+        'icon-allow-overlap': true
+      }
+    });
+
+    // Add manhole code label layer
+    map.addLayer({
+      id: 'manholes-code-label',
+      type: 'symbol',
+      source: 'manholes',
+      layout: {
+        'text-field': ['get', 'code'],
+        'text-size': 10,
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-offset': [0, 1.2],
+        'text-allow-overlap': false
       },
       paint: {
-        'text-color': '#ffffff'
+        'text-color': '#1F2937',
+        'text-halo-color': '#FFFFFF',
+        'text-halo-width': 1
+      }
+    });
+
+    // Add pipe line layer
+    map.addLayer({
+      id: 'pipes-line',
+      type: 'line',
+      source: 'pipes',
+      paint: {
+        'line-color': [
+          'case',
+          ['==', ['get', 'blockage'], true], '#EF4444', // Red if blocked
+          '#3B82F6' // Blue if clear
+        ],
+        'line-width': 3,
+        'line-opacity': 0.8
+      }
+    });
+
+    // Add pipe arrow layer for flow direction
+    map.addLayer({
+      id: 'pipes-arrows',
+      type: 'symbol',
+      source: 'pipes',
+      layout: {
+        'symbol-placement': 'line-center',
+        'icon-image': 'arrow-right',
+        'icon-size': 0.5,
+        'icon-rotate': ['get', 'angle'],
+        'icon-allow-overlap': true,
+        'icon-pitch-alignment': 'viewport'
+      }
+    });
+
+    // Add blocked pipe highlight layer
+    map.addLayer({
+      id: 'pipes-blocked-highlight',
+      type: 'line',
+      source: 'pipes',
+      filter: ['==', ['get', 'blockage'], true],
+      paint: {
+        'line-color': '#EF4444',
+        'line-width': 5,
+        'line-dasharray': [2, 2],
+        'line-opacity': 0.6
       }
     });
 
     // Click handlers
-    map.on('click', 'manholes-layer', (e) => {
+    map.on('click', 'manholes-circle', (e) => {
       const manhole = manholes.find(m => m.id === e.features[0].properties.id);
       if (manhole) handleManholeClick(manhole);
     });
 
-    map.on('click', 'pipes-layer', (e) => {
+    map.on('click', 'pipes-line', (e) => {
       const pipe = pipes.find(p => p.id === e.features[0].properties.id);
       if (pipe) {
         setSelectedPipe(pipe);
@@ -413,20 +523,19 @@ const SewageSystemMap = () => {
       }
     });
 
-    //   // Hover effects
-    map.on('mouseenter', 'manholes-layer', () => {
+    // Hover effects
+    map.on('mouseenter', 'manholes-circle', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', 'manholes-layer', () => {
+    map.on('mouseleave', 'manholes-circle', () => {
       map.getCanvas().style.cursor = '';
     });
-    map.on('mouseenter', 'pipes-layer', () => {
+    map.on('mouseenter', 'pipes-line', () => {
       map.getCanvas().style.cursor = 'pointer';
     });
-    map.on('mouseleave', 'pipes-layer', () => {
+    map.on('mouseleave', 'pipes-line', () => {
       map.getCanvas().style.cursor = '';
     });
-    // ... rest of your code for map.addSource, map.addLayer, etc.
   };
 
   // Update map when data changes
