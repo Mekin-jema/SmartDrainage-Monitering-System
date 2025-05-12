@@ -1,80 +1,104 @@
 import express from 'express';
 import mqtt from 'mqtt';
 import db from './configure/db.confige.js';
-import SensorReading from './models/sensor.model.js'; // Renamed from Sensor to SensorReading
+import router from './routes/index.js';
 import cors from 'cors';
-import mongoose from 'mongoose';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const port = 3000;
-
-// MQTT Configuration
-// const mqttBroker = 'mqtt://localhost:1883'; // Change to your broker URL
-const mqttBroker = 'mqtt://broker.hivemq.com';
-const topic = 'drainage/sensor-data';
-
-const client = mqtt.connect(mqttBroker);
-
-client.on('connect', () => {
-  console.log('Connected to HiveMQ Broker');
-  client.subscribe(topic);
+const sensorData = []; // Array to store received sensor data
+const port = process.env.PORT || 3000;
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ['GET', 'POST'],
+  },
 });
 
-client.on('message', async (topic, message) => {
+// WebSocket connection handling
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  
+  // Send current data to newly connected client
+  socket.emit('initialData', sensorData);
+  
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || 'mqtt://broker.hivemq.com';
+const MQTT_TOPIC = process.env.MQTT_TOPIC || 'drainage/sensor-data';
+
+const mqttOptions = {
+  clientId: `nodejs-server_${Math.random().toString(16).substring(2, 8)}`,
+  clean: true,
+  connectTimeout: 4000,
+  reconnectPeriod: 1000,
+};
+
+const mqttClient = mqtt.connect(MQTT_BROKER_URL, mqttOptions);
+
+mqttClient.on('connect', () => {
+  console.log(`MQTT Connected to: ${MQTT_BROKER_URL}`);
+  mqttClient.subscribe(MQTT_TOPIC, { qos: 1 }, (err) => {
+    if (err) console.error('MQTT Subscribe Error:', err);
+    else console.log(`Subscribed to Topic: "${MQTT_TOPIC}"`);
+  });
+});
+
+mqttClient.on('error', (err) => console.error('MQTT Connection Error:', err));
+mqttClient.on('close', () => console.log('MQTT Connection Closed'));
+mqttClient.on('reconnect', () => console.log('MQTT Reconnecting...'));
+
+mqttClient.on('message', async (topic, message) => {
   try {
-    const rawData = JSON.parse(message.toString());
-    console.log('Received data:', rawData);
+    const data = JSON.parse(message.toString());
     
-    // Transform incoming data to match SensorReading schema
-    // const sensorData = {
-    //   // manholeId: new mongoose.Types.ObjectId(), // Generate new ID or get from ESP32
-    //   sensors: {
-    //     sewageLevel: rawData.water || 0,          // Map 'water' to 'sewageLevel'
-    //     methaneLevel: rawData.methane || 0,       // Keep methane
-    //     flowRate: rawData.flowRate || 0,          // Add defaults if missing
-    //     temperature: rawData.temperature || 25,
-    //     humidity: rawData.humidity || 50,
-    //     batteryLevel: rawData.battery || 100      // Assuming 'battery' field
-    //   },
-    //   thresholds: {
-    //     maxDistance: 100,                         // Default values
-    //     maxGas: 500,
-    //     minFlow: 10
-    //   },
-    //   status: calculateStatus(rawData),           // Custom function
-    //   alertTypes: getAlertTypes(rawData)          // Custom function
-    // };
-
-    // await SensorReading.create(sensorData);
-    // console.log('Data saved:', sensorData);
-
+    // Add timestamp to the received data
+    const timestampedData = {
+      ...data,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Store the data in array (you might want to limit the array size)
+    sensorData.push(timestampedData);
+    
+    // Broadcast to all connected clients
+    io.emit('sensorData', timestampedData);
+    
+    console.log('Received sensor data:', timestampedData);
   } catch (error) {
-    console.error('Error processing MQTT data:', error);
+    console.error('Error processing MQTT message:', error);
   }
 });
 
-// Helper: Determine status based on sensor values
-function calculateStatus(data) {
-  if (data.methane > 500 || data.water > 90) return 'critical';
-  if (data.methane > 300 || data.water > 70) return 'warning';
-  return 'normal';
-}
-
-// Helper: Identify alert types
-function getAlertTypes(data) {
-  const alerts = [];
-  if (data.methane > 500) alerts.push('methane_overflow');
-  if (data.water > 90) alerts.push('sewage_flooding');
-  if (data.battery < 20) alerts.push('low_battery');
-  return alerts;
-}
-
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.use('/api', router);
+
+process.on('SIGINT', () => {
+  mqttClient.end();
+  process.exit(0);
+});
 
 (async () => {
-  await db();
-  app.listen(port, () => {
-    console.log(`Server running on port ${port} `);
-  });
+  try {
+    await db();
+    httpServer.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 })();

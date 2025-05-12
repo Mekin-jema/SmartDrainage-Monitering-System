@@ -1,0 +1,96 @@
+.sensor-table {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  border-collapse: collapse;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sensor-table th,
+.sensor-table td {
+  border: 1px solid #ddd;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.sensor-table th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.sensor-table td {
+  background-color: #fff;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 2rem;
+}
+.table-container {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sensor-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.sensor-table th, .sensor-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.sensor-table th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+}
+
+.connection-status {
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.connection-status[data-status="connected"] {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.connection-status[data-status="disconnected"],
+.connection-status[data-status="error"] {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.connection-status[data-status="connecting"] {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+}
+
+.sensor-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sensor-table th {
+  position: sticky;
+  top: 0;
+  background: white;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
