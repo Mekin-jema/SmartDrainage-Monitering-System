@@ -2,6 +2,7 @@
 // import SignIn from "./pages/auth/sign-in/route";
 // import SignUp from "./pages/auth/sign-up/route";
 // import Otp from "./pages/auth/otp/route";
+import Table from "./pages/tables/Table"
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import DashboardMainPage from "./pages/dashboard/drainx-dashboard";
 import NotFoundError from "./pages/error/404";
@@ -108,6 +109,10 @@ const router = createBrowserRouter([
       // <AuthenticatedUser>
       <Signup />
     // </AuthenticatedUser>
+  },
+  {
+    path:"/sensor", element:
+    <Table />
   },
   {
     path: "/veri>fy-email", element:
