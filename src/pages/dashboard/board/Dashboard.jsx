@@ -4,16 +4,24 @@ import { Button } from "@/components/ui/button";
 import { MapPin, AlertCircle, CheckCircle, XCircle, Activity, Gauge, Droplets, Thermometer, Waves, HardHat, Battery, Fuel, WavesIcon, Info } from "lucide-react"; import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import SewageSystemMap from "./map";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { useManholeStore } from "@/store/useManholeStore";
 
 const Dashboard = () => {
+
+  const { status, loading, error, fetchSystemStatus } = useManholeStore();
+
+  useEffect(() => {
+    fetchSystemStatus();
+  }, []);
+
   // Sample data structure that matches your schema with multiple manholes
   const [dashboardData, setDashboardData] = useState({
     systemStatus: {
-      totalManholes: 42,
-      monitoredManholes: 38,
-      criticalIssues: 7,
-      maintenanceOngoing: 3,
-      systemHealth: 82, // percentage
+      totalManholes: status.totalManholes,
+      monitoredManholes: status.monitoredManholes,
+      criticalIssues: status.criticalIssues,
+      maintenanceOngoing: status.maintenanceOngoing,
+      systemHealth: status.systemHealth, // percentage
     },
     manholes: [
       {
