@@ -45,6 +45,7 @@ import {
   AlertTriangle,
   CheckCircle,
 } from "lucide-react";
+import { useManholeStore } from "@/store/useManholeStore";
 
 // Custom SVG Icons for manholes
 const ManholeIcon = ({ status }) => {
@@ -105,32 +106,23 @@ const SewageSystemMap = () => {
   const [flowDirectionMode, setFlowDirectionMode] = useState(false);
   const [editingPipe, setEditingPipe] = useState(null);
 
+  const {
+    manholesData,   // List of manholes
+    loading,    // Loading state
+    error,      // Error state
+    fetchManholes // Action to fetch manholes
+  } = useManholeStore();  // Accessing the Zustand store
+
+  useEffect(() => {
+    // Fetch manholes when the component mounts
+    fetchManholes();
+    // setManholes(manholesData);
+  }, [fetchManholes,]);
+  console.log(manholesData);
+  console.log("pipes", pipes);
   // Load initial data with elevation data for flow direction
   useEffect(() => {
-    const mockManholes = [
-      // === Main Road (6 Kilo to 5 Kilo) ===
-      { id: "1", code: "MH-001", location: [38.758712, 9.031256], elevation: 2400, status: "functional", zone: "A", lastInspection: "2023-05-15", cover_status: "closed", overflow_level: "good", connections: ["2"] }, // Near 6 Kilo (Addis Ababa University)
-      { id: "2", code: "MH-002", location: [38.759012, 9.030845], elevation: 2395, status: "damaged", zone: "A", lastInspection: "2023-04-20", cover_status: "open", overflow_level: "risk", connections: ["1", "3"] },
-      { id: "3", code: "MH-003", location: [38.759423, 9.030512], elevation: 2390, status: "overflowing", zone: "B", lastInspection: "2023-06-01", cover_status: "closed", overflow_level: "overflow", connections: ["2", "4"] },
-      { id: "4", code: "MH-004", location: [38.759815, 9.030201], elevation: 2385, status: "functional", zone: "B", lastInspection: "2023-05-25", cover_status: "closed", overflow_level: "good", connections: ["3", "5"] },
-      { id: "5", code: "MH-005", location: [38.760302, 9.029843], elevation: 2380, status: "under_maintenance", zone: "C", lastInspection: "2023-06-05", cover_status: "open", overflow_level: "moderate", connections: ["4", "6"] },
-      { id: "6", code: "MH-006", location: [38.760745, 9.029512], elevation: 2375, status: "functional", zone: "C", lastInspection: "2023-06-07", cover_status: "closed", overflow_level: "good", connections: ["5", "7"] },
-      { id: "7", code: "MH-007", location: [38.761128, 9.029201], elevation: 2370, status: "damaged", zone: "C", lastInspection: "2023-05-10", cover_status: "open", overflow_level: "risk", connections: ["6", "8"] },
-      { id: "8", code: "MH-008", location: [38.761602, 9.028843], elevation: 2365, status: "functional", zone: "D", lastInspection: "2023-06-03", cover_status: "closed", overflow_level: "good", connections: ["7", "9"] },
-      { id: "9", code: "MH-009", location: [38.762015, 9.028512], elevation: 2360, status: "overflowing", zone: "D", lastInspection: "2023-06-01", cover_status: "open", overflow_level: "overflow", connections: ["8", "10"] },
-      { id: "10", code: "MH-010", location: [38.762502, 9.028156], elevation: 2355, status: "functional", zone: "D", lastInspection: "2023-06-08", cover_status: "closed", overflow_level: "good", connections: ["9"] }, // Near 5 Kilo (Ethio-China Rd)
-
-      // === Branch Road 1 (Towards Arat Kilo) ===
-      { id: "11", code: "MH-011", location: [38.759215, 9.031012], elevation: 2395, status: "functional", zone: "A", lastInspection: "2023-06-10", cover_status: "closed", overflow_level: "good", connections: ["2", "12"] },
-      { id: "12", code: "MH-012", location: [38.759512, 9.031645], elevation: 2390, status: "damaged", zone: "B", lastInspection: "2023-05-15", cover_status: "open", overflow_level: "risk", connections: ["11"] },
-
-      // === Branch Road 2 (Towards Sidist Kilo) ===
-      { id: "13", code: "MH-013", location: [38.760512, 9.030301], elevation: 2380, status: "under_maintenance", zone: "C", lastInspection: "2023-06-02", cover_status: "open", overflow_level: "moderate", connections: ["4", "14"] },
-      { id: "14", code: "MH-014", location: [38.760845, 9.030912], elevation: 2375, status: "functional", zone: "C", lastInspection: "2023-06-03", cover_status: "closed", overflow_level: "good", connections: ["13"] },
-
-      // === Branch Road 3 (Small side road near 5 Kilo) ===
-      { id: "15", code: "MH-015", location: [38.761845, 9.029601], elevation: 2370, status: "overflowing", zone: "C", lastInspection: "2023-06-06", cover_status: "open", overflow_level: "overflow", connections: ["6"] },
-    ];
+    const mockManholes = manholesData
 
     const generatedPipes = [];
 
@@ -253,7 +245,7 @@ const SewageSystemMap = () => {
     setAlerts(mockAlerts);
     setWorkers(mockWorkers);
   }, []);
-
+  console.log("manholes", manholes)
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -330,7 +322,7 @@ const SewageSystemMap = () => {
     });
 
     return () => map.remove();
-  }, [drawingMode, newManholeLocation, connectingManhole, flowDirectionMode, editingPipe]);
+  }, [drawingMode, newManholeLocation, connectingManhole, flowDirectionMode, editingPipe, manholes]);
 
   // Find manhole at map point
   const findManholeAtPoint = (point) => {

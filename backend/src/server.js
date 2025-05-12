@@ -15,8 +15,9 @@ const port = process.env.PORT || 3000;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
+    credentials: true,
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
 
@@ -80,15 +81,26 @@ mqttClient.on('message', async (topic, message) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   cors({
+//     origin: '*',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
-    origin: '*',
+    origin: 'http://localhost:5173', // Set this to your frontend's URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow credentials like cookies or HTTP authentication
   })
 );
 
-app.use('/api', router);
+app.use('/api/v1', router);
 
 process.on('SIGINT', () => {
   mqttClient.end();

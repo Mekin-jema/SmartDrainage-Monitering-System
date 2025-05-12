@@ -86,6 +86,7 @@ const createManhole = async (req, res) => {
 const getAllManholes = async (req, res) => {
   try {
     const manholes = await Manhole.find().lean();
+    console.log('Manholes:', manholes);
 
     if (manholes.length === 0) {
       return res.status(404).json({
