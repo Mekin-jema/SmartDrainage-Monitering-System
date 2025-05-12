@@ -29,8 +29,9 @@ const createManhole = async (req, res) => {
       });
     }
 
-    const alreadyExists = await Manhole.findOne({ code });
-    if (alreadyExists) {
+    // Check if code already exists
+    const existingCode = await Manhole.findOne({ code });
+    if (existingCode) {
       return res.status(400).json({
         success: false,
         message: 'Manhole with this code already exists',
@@ -57,6 +58,12 @@ const createManhole = async (req, res) => {
     });
 
     await newManhole.save();
+
+    // Transform to match mock data structure
+    const responseData = {
+      ...newManhole.toObject(),
+      location: newManhole.location.coordinates,
+    };
 
     return res.status(201).json({
       success: true,
@@ -208,13 +215,20 @@ const updateManholeStatus = async (req, res) => {
       lastInspection: new Date().toISOString(),
     };
 
+    if (code) updateFields.code = code;
+    if (location) {
+      updateFields.location = {
+        type: 'Point',
+        coordinates: Array.isArray(location) ? location : location.coordinates,
+      };
+    }
+    if (elevation) updateFields.elevation = elevation;
+    if (zone) updateFields.zone = zone;
     if (status) updateFields.status = status;
     if (cover_status) updateFields.cover_status = cover_status;
     if (overflow_level) updateFields.overflow_level = overflow_level;
-    if (notes) updateFields.notes = notes;
-    if (elevation) updateFields.elevation = elevation;
-    if (zone) updateFields.zone = zone;
     if (connections) updateFields.connections = connections;
+    if (notes !== undefined) updateFields.notes = notes;
 
     const updatedManhole = await Manhole.findOneAndUpdate({ id }, updateFields, {
       new: true,
