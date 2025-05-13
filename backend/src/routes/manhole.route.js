@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 // POST /api/manholes - Create a new manhole
-router.post('/', createManhole);
+router.post('/create', createManhole);
 
 // GET /api/manholes - Get all manholes
 router.get('/', getAllManholes);

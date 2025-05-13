@@ -6,7 +6,14 @@ import { checkThresholds, determineStatus } from '../helpers/checkThreshold.js';
 // 1. Create New Sensor Reading
 const createReading = async (req, res) => {
   try {
-    const { manholeId, sensors, thresholds, lastCalibration } = req.body;
+    const {
+      manholeId,
+      sensors,
+      thresholds,
+      lastCalibration,
+      timestamp,
+      alertTypes: incomingAlerts,
+    } = req.body;
 
     // Validate required fields
     if (!manholeId || !sensors) {
@@ -16,8 +23,8 @@ const createReading = async (req, res) => {
       });
     }
 
-    // Verify manhole exists
-    const manhole = await Manhole.findById(manholeId);
+    // Match manhole based on provided `id`
+    const manhole = await Manhole.findOne({ id: manholeId });
     if (!manhole) {
       return res.status(404).json({
         success: false,
@@ -25,43 +32,40 @@ const createReading = async (req, res) => {
       });
     }
 
-    // Check for alerts and determine status
-    const alertTypes = checkThresholds(
-      sensors,
-      thresholds || {
-        maxDistance: 2.5,
-        maxGas: 1000,
-        minFlow: 0.1,
-      }
-    );
+    const defaultThresholds = {
+      maxDistance: 90, // cm
+      maxGas: 1000, // ppm
+      minFlow: 5, // m/s
+    };
 
+    const activeThresholds = thresholds || defaultThresholds;
+
+    const alertTypes = incomingAlerts || checkThresholds(sensors, activeThresholds);
     const status = determineStatus(alertTypes);
 
-    // Create reading
     const newReading = new SensorReading({
       manholeId,
       sensors,
-      thresholds: thresholds || {
-        maxDistance: 2.5, // Default thresholds (meters)
-        maxGas: 1000, // ppm
-        minFlow: 0.1, // m/s
-      },
+      thresholds: activeThresholds,
       lastCalibration: lastCalibration || Date.now(),
       status,
       alertTypes,
-      timestamp: new Date(),
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
     });
 
     await newReading.save();
 
-    // Update manhole status if critical
     if (status === 'critical') {
-      await Manhole.findByIdAndUpdate(manholeId, {
-        lastInspection: Date.now(),
-        status: 'needs_attention',
-      });
+      await Manhole.findOneAndUpdate(
+        { id: manholeId },
+        {
+          lastInspection: Date.now(),
+          status: 'needs_attention',
+        }
+      );
     }
-      const io = req.app.get('io');
+
+    const io = req.app.get('io');
     if (io) {
       io.emit('sensor-data', {
         manholeId,
@@ -71,18 +75,17 @@ const createReading = async (req, res) => {
         timestamp: newReading.timestamp,
       });
     }
-    // Emit event to notify other services
 
     return res.status(201).json({
       success: true,
-      message: 'Reading recorded',
+      message: 'Reading recorded successfully',
       data: {
         ...newReading.toObject(),
-        manholeCode: manhole.code, // Include manhole info in response
+        manholeCode: manhole.code, // From sample data: "MH-001"
       },
     });
   } catch (error) {
-    console.error('Create reading error:', error);
+    console.error('Create reading error:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
@@ -101,7 +104,7 @@ const getReadingsByManhole = async (req, res) => {
     const query = { manholeId };
     if (status) query.status = status;
 
-    // Time 
+    // Time
     // range filtering
     if (timeRange && !isNaN(timeRange)) {
       const hoursAgo = new Date();

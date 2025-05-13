@@ -352,9 +352,5 @@ export {
   updateManholeStatus,
   deleteManholeById,
   deleteAllManholes,
-<<<<<<< HEAD
-};
-=======
   getSystemStatus,
 };
->>>>>>> 438cac6aa77a7e5ca492e2cc99ce017a8e883e8a

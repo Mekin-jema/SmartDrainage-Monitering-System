@@ -110,153 +110,128 @@ process.on('SIGINT', () => {
     process.exit(1);
   }
 })();
-<<<<<<< HEAD
-=======
 
-// const manholes = [
+// const mockData = [
 //   {
-//     manholeId: '1',
-//     name: 'Manhole #12',
-//     location: { lat: 9.0123, lng: 38.7894 },
-//     timestamp: '2025-04-30T08:15:00Z',
+//     manholeId: '7',
+//     timestamp: '2025-05-01T08:30:00.000+00:00',
 //     sensors: {
-//       sewageLevel: 85, // cm
-//       methaneLevel: 300, // ppm
-//       flowRate: 15.5, // L/s
-//       temperature: 24.5, // °C
-//       humidity: 65, // %
-//       batteryLevel: 78, // %
-//     },
-//     thresholds: {
-//       maxDistance: 90, // cm (overflow threshold)
-//       maxGas: 1000, // ppm
-//       minFlow: 5, // L/s (blockage threshold)
-//     },
-//     lastCalibration: '2025-04-15T00:00:00Z',
-//     batteryLevel: 78,
-
-//     alertTypes: ['sewage_high', 'low_battery', 'bloackage'],
-//   },
-//   {
-//     manholeId: '2',
-//     name: 'Manhole #07',
-//     location: { lat: 9.0156, lng: 38.7912 },
-//     timestamp: '2025-04-30T07:30:00Z',
-//     sensors: {
-//       sewageLevel: 45,
-//       methaneLevel: 1200, // Above threshold
-//       flowRate: 12.1,
-//       batteryLevel: 65,
-//       temperature: 22.0,
-//     },
-//     thresholds: {
-//       maxDistance: 95,
-//       maxGas: 1000,
-//       minFlow: 5,
-//     },
-//     lastCalibration: '2025-04-10T00:00:00Z',
-//     batteryLevel: 65,
-
-//     alertTypes: ['gas_leak'],
-//   },
-//   {
-//     manholeId: '3',
-//     name: 'Manhole #23',
-//     location: { lat: 9.0142, lng: 38.7931 },
-//     timestamp: '2025-04-29T16:45:00Z',
-//     sensors: {
-//       sewageLevel: 35,
-//       methaneLevel: 250,
-//       flowRate: 3.8, // Below threshold
-//       temperature: 26.2,
-//       humidity: 70,
-//       batteryLevel: 92,
-//     },
-//     thresholds: {
-//       maxDistance: 85,
-//       maxGas: 1000,
-//       minFlow: 5,
-//     },
-//     lastCalibration: '2025-04-18T00:00:00Z',
-//     batteryLevel: 92,
-
-//     alertTypes: ['blockage'],
-//   },
-//   {
-//     manholeId: '4',
-//     name: 'Manhole #04',
-//     location: { lat: 9.0168, lng: 38.795 },
-//     timestamp: '2025-05-01T09:20:00Z',
-//     sensors: {
-//       sewageLevel: 60,
-//       methaneLevel: 800,
-//       flowRate: 6.5,
-//       temperature: 25.2,
-//       humidity: 55,
-//       batteryLevel: 88,
-//     },
-//     thresholds: {
-//       maxDistance: 85,
-//       maxGas: 1000,
-//       minFlow: 5,
-//     },
-//     lastCalibration: '2025-04-20T00:00:00Z',
-//     batteryLevel: 88,
-//     alertTypes: [],
-//   },
-//   {
-//     manholeId: '5',
-//     name: 'Manhole #09',
-//     location: { lat: 9.0182, lng: 38.7971 },
-//     timestamp: '2025-05-01T10:10:00Z',
-//     sensors: {
-//       sewageLevel: 95,
-//       methaneLevel: 1500,
-//       flowRate: 2.4,
+//       sewageLevel: 65,
+//       methaneLevel: 920,
+//       flowRate: 9.1,
 //       temperature: 23.4,
 //       humidity: 60,
-//       batteryLevel: 60,
+//       batteryLevel: 80,
 //     },
 //     thresholds: {
 //       maxDistance: 90,
 //       maxGas: 1000,
 //       minFlow: 5,
 //     },
-//     lastCalibration: '2025-04-22T00:00:00Z',
-//     batteryLevel: 60,
-
-//     alertTypes: ['sewage_high', 'gas_leak', 'blockage', 'low_battery'],
+//     lastCalibration: '2025-04-16T00:00:00.000+00:00',
+//     alertTypes: [],
 //   },
 //   {
-//     manholeId: '6',
-//     name: 'Manhole #15',
-//     location: { lat: 9.0195, lng: 38.7922 },
-//     timestamp: '2025-04-30T11:05:00Z',
+//     manholeId: '8',
+//     timestamp: '2025-05-01T09:15:00.000+00:00',
 //     sensors: {
-//       sewageLevel: 40,
-//       methaneLevel: 400,
-//       flowRate: 10.8,
-//       temperature: 21.9,
-//       humidity: 50,
-//       batteryLevel: 95,
+//       sewageLevel: 92,
+//       methaneLevel: 1200,
+//       flowRate: 3.4,
+//       temperature: 25.1,
+//       humidity: 75,
+//       batteryLevel: 52,
+//     },
+//     thresholds: {
+//       maxDistance: 85,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-12T00:00:00.000+00:00',
+//     alertTypes: ['sewage_high', 'gas_leak', 'low_battery'],
+//   },
+//   {
+//     manholeId: '9',
+//     timestamp: '2025-05-01T10:00:00.000+00:00',
+//     sensors: {
+//       sewageLevel: 108,
+//       methaneLevel: 710,
+//       flowRate: 3.0,
+//       temperature: 21.8,
+//       humidity: 55,
+//       batteryLevel: 74,
+//     },
+//     thresholds: {
+//       maxDistance: 90,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-14T00:00:00.000+00:00',
+//     alertTypes: ['blockage'],
+//   },
+//   {
+//     manholeId: '10',
+//     timestamp: '2025-05-01T10:45:00.000+00:00',
+//     sensors: {
+//       sewageLevel: 705,
+//       methaneLevel: 850,
+//       flowRate: 6.7,
+//       temperature: 290.9,
+//       humidity: 67,
+//       batteryLevel: 91,
+//     },
+//     thresholds: {
+//       maxDistance: 85,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-18T00:00:00.000+00:00',
+//     alertTypes: [],
+//   },
+//   {
+//     manholeId: '11',
+//     timestamp: '2025-05-01T11:30:00.000+00:00',
+//     sensors: {
+//       sewageLevel: 58,
+//       methaneLevel: 970,
+//       flowRate: 8.3,
+//       temperature: 23.7,
+//       humidity: 62,
+//       batteryLevel: 66,
+//     },
+//     thresholds: {
+//       maxDistance: 90,
+//       maxGas: 1000,
+//       minFlow: 5,
+//     },
+//     lastCalibration: '2025-04-20T00:00:00.000+00:00',
+//     alertTypes: ['gas_leak'],
+//   },
+//   {
+//     manholeId: '12',
+//     timestamp: '2025-05-01T12:15:00.000+00:00',
+//     sensors: {
+//       sewageLevel: 400,
+//       methaneLevel: 280,
+//       flowRate: 9.5,
+//       temperature: 24.6,
+//       humidity: 58,
+//       batteryLevel: 88,
 //     },
 //     thresholds: {
 //       maxDistance: 95,
 //       maxGas: 1000,
 //       minFlow: 5,
 //     },
-//     lastCalibration: '2025-04-19T00:00:00Z',
-//     batteryLevel: 95,
+//     lastCalibration: '2025-04-22T00:00:00.000+00:00',
 //     alertTypes: [],
 //   },
 // ];
-
 // await sensorModel
-//   .insertMany(manholes)
-//   .then(() => {
-//     console.log('Mock sensor data inserted successfully');
+//   .insertMany(mockData, { ordered: false })
+//   .then((result) => {
+//     console.log('Mock data inserted successfully:', result);
 //   })
 //   .catch((error) => {
-//     console.error('Error inserting mock sensor data:', error);
+//     console.error('Error inserting mock data:', error);
 //   });
->>>>>>> 4d524a53fa9bc7a6b9f9279341d793f851a089a4

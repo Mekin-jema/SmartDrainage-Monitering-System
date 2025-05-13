@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, AlertCircle, CheckCircle, XCircle, Activity, Gauge, Droplets, Thermometer, Waves, HardHat, Battery, Fuel, WavesIcon, Info } from "lucide-react"; import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -15,52 +15,53 @@ const Dashboard = () => {
   const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
 
   console.log("sensors", manholes)
-    const socketRef = useRef(null);  
+  const socketRef = useRef(null);
 
   useEffect(() => {
-     // Fetch initial data
+    // Fetch initial data
+    fetchSystemStatus();
+    fetchManholes();
+    fetchSensorTrends();
+    // Initialize Socket.IO connection
+    socketRef.current = io('http://localhost:3000', {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    // Socket.IO event handlers
+    const socket = socketRef.current;
+
+    socket.on('connect', () => {
+      console.log('Socket.IO connected');
+    });
+
+    socket.on('sensor-data', (data) => {
+      console.log('Received sensor data:', data);
       fetchSystemStatus();
-     fetchManholes();
-     fetchSensorTrends();
-     // Initialize Socket.IO connection
-     socketRef.current = io('http://localhost:3000', {
-       reconnection: true,
-       reconnectionAttempts: 5,
-       reconnectionDelay: 1000,
-     });
- 
-     // Socket.IO event handlers
-     const socket = socketRef.current;
- 
-     socket.on('connect', () => {
-       console.log('Socket.IO connected');
-     });
- 
-     socket.on('sensor-data', (data) => {
-       console.log('Received sensor data:', data);
-       fetchSystemStatus();
-     fetchManholes();
-     fetchSensorTrends();
-   
-       
-      
- 
-     socket.on('disconnect', () => {
-       console.log('Socket.IO disconnected');
-     });
- 
-     socket.on('connect_error', (error) => {
-       console.error('Socket.IO connection error:', error.message);
-     });
-     
- 
-     // Cleanup on unmount
-     return () => {
-       if (socketRef.current) {
-         socketRef.current.disconnect();
-       }
-     };
-   }, []); 
+      fetchManholes();
+      fetchSensorTrends();
+
+
+
+
+      socket.on('disconnect', () => {
+        console.log('Socket.IO disconnected');
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Socket.IO connection error:', error.message);
+      });
+
+
+      // Cleanup on unmount
+      return () => {
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+        }
+      };
+    })
+  }, []);
   // console.log("sensors trends", sensorTrends)
 
   // Sample data structure that matches your schema with multiple manholes

@@ -4,7 +4,8 @@ import {
   assignWorkerToAlert, // (optional, based on your usage)
   updateAlertStatus,
   getAlerts,
-  addResolutionNotes
+  addResolutionNotes,
+  getRecentAlerts,
 } from '../controllers/alert.controller.js';
 
 const router = express.Router();
@@ -15,6 +16,9 @@ router.post('/', createAlert);
 // @route   GET /api/alerts
 // @desc    Get alerts with optional filters
 router.get('/', getAlerts);
+
+// getRecentAlerts
+router.get('/recent', getRecentAlerts);
 
 // @route   PATCH /api/alets/:alertId/status
 // @desc    Update alert status
