@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import io from 'socket.io-client';
 import {
   Select,
   SelectContent,
@@ -118,61 +117,7 @@ const SewageSystemMap = () => {
 
   
   // Socket.IO ref
-  const socketRef = useRef(null);  
-  useEffect(() => {
-    // Fetch initial data
-    fetchManholes();
-    // Initialize Socket.IO connection
-    socketRef.current = io('http://localhost:3000', {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    // Socket.IO event handlers
-    const socket = socketRef.current;
-
-    socket.on('connect', () => {
-      console.log('Socket.IO connected');
-    });
-
-    socket.on('sensor-data', (data) => {
-      console.log('Received sensor data:', data);
-      fetchManholes(); // Refresh data when new sensor data arrives
-      
-      // You might want to update specific manhole data instead of fetching all
-      // For example:
-      // updateManholeData(data.manholeId, data.newReadings);
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Socket.IO disconnected');
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('Socket.IO connection error:', error.message);
-    });
-
-    // Add any other event listeners you need
-    // socket.on('manhole-status-update', (update) => {
-    //   setManholes(prev => prev.map(mh => 
-    //     mh.id === update.manholeId ? { ...mh, status: update.status } : mh
-    //   ));
-    // });
-
-    // socket.on('pipe-status-update', (update) => {
-    //   setPipes(prev => prev.map(pipe => 
-    //     pipe.id === update.pipeId ? { ...pipe, blockage: update.blockage } : pipe
-    //   ));
-    // });
-
-    // Cleanup on unmount
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, []); 
+ 
   console.log(manholesData);
   console.log("pipes", pipes);
   // Load initial data with elevation data for flow direction

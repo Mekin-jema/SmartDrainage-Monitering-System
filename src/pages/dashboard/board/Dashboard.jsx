@@ -5,14 +5,63 @@ import { MapPin, AlertCircle, CheckCircle, XCircle, Activity, Gauge, Droplets, T
 import SewageSystemMap from "./map";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useManholeStore } from "@/store/useManholeStore";
+import useSensorsStore from "@/store/useSensorsStore";
+import io from 'socket.io-client';
+
 
 const Dashboard = () => {
 
   const { status, loading, error, fetchSystemStatus } = useManholeStore();
+  const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
+
+  console.log("sensors", manholes)
+    const socketRef = useRef(null);  
 
   useEffect(() => {
-    fetchSystemStatus();
-  }, []);
+     // Fetch initial data
+      fetchSystemStatus();
+     fetchManholes();
+     fetchSensorTrends();
+     // Initialize Socket.IO connection
+     socketRef.current = io('http://localhost:3000', {
+       reconnection: true,
+       reconnectionAttempts: 5,
+       reconnectionDelay: 1000,
+     });
+ 
+     // Socket.IO event handlers
+     const socket = socketRef.current;
+ 
+     socket.on('connect', () => {
+       console.log('Socket.IO connected');
+     });
+ 
+     socket.on('sensor-data', (data) => {
+       console.log('Received sensor data:', data);
+       fetchSystemStatus();
+     fetchManholes();
+     fetchSensorTrends();
+   
+       
+      
+ 
+     socket.on('disconnect', () => {
+       console.log('Socket.IO disconnected');
+     });
+ 
+     socket.on('connect_error', (error) => {
+       console.error('Socket.IO connection error:', error.message);
+     });
+     
+ 
+     // Cleanup on unmount
+     return () => {
+       if (socketRef.current) {
+         socketRef.current.disconnect();
+       }
+     };
+   }, []); 
+  // console.log("sensors trends", sensorTrends)
 
   // Sample data structure that matches your schema with multiple manholes
   const [dashboardData, setDashboardData] = useState({
@@ -23,86 +72,7 @@ const Dashboard = () => {
       maintenanceOngoing: status.maintenanceOngoing,
       systemHealth: status.systemHealth, // percentage
     },
-    manholes: [
-      {
-        _id: "mh001",
-        manholeId: "mh001",
-        name: "Manhole #12",
-        location: { lat: 9.0123, lng: 38.7894 },
-        timestamp: "2025-04-30T08:15:00Z",
-        sensors: {
-          sewageLevel: 85, // cm
-          methaneLevel: 300, // ppm
-          flowRate: 15.5, // L/s
-          temperature: 24.5, // °C
-          humidity: 65, // %
-          batteryLevel: 78, // %
-        },
-        thresholds: {
-          maxDistance: 90, // cm (overflow threshold)
-          maxGas: 1000, // ppm
-          minFlow: 5, // L/s (blockage threshold)
-        },
-        lastCalibration: "2025-04-15T00:00:00Z",
-        batteryLevel: 78,
-        status: "critical",
-        alertTypes: ["sewage_high", "low_battery", "bloackage"],
-        createdAt: "2025-01-15T00:00:00Z",
-        updatedAt: "2025-04-30T08:15:00Z"
-      },
-      {
-        _id: "mh002",
-        manholeId: "mh002",
-        name: "Manhole #07",
-        location: { lat: 9.0156, lng: 38.7912 },
-        timestamp: "2025-04-30T07:30:00Z",
-        sensors: {
-          sewageLevel: 45,
-          methaneLevel: 1200, // Above threshold
-          flowRate: 12.1,
-          batteryLevel: 65,
-          temperature: 22.0,
-        },
-        thresholds: {
-          maxDistance: 95,
-          maxGas: 1000,
-          minFlow: 5,
-        },
-        lastCalibration: "2025-04-10T00:00:00Z",
-        batteryLevel: 65,
-        status: "critical",
-        alertTypes: ["gas_leak"],
-        createdAt: "2025-01-20T00:00:00Z",
-        updatedAt: "2025-04-30T07:30:00Z"
-      },
-      {
-        _id: "mh003",
-        manholeId: "mh003",
-        name: "Manhole #23",
-        location: { lat: 9.0142, lng: 38.7931 },
-        timestamp: "2025-04-29T16:45:00Z",
-        sensors: {
-          sewageLevel: 35,
-          methaneLevel: 250,
-          flowRate: 3.8, // Below threshold
-          temperature: 26.2,
-          humidity: 70,
-          batteryLevel: 92,
-        },
-        thresholds: {
-          maxDistance: 85,
-          maxGas: 1000,
-          minFlow: 5,
-        },
-        lastCalibration: "2025-04-18T00:00:00Z",
-        batteryLevel: 92,
-        status: "critical",
-        alertTypes: ["blockage"],
-        createdAt: "2025-02-05T00:00:00Z",
-        updatedAt: "2025-04-29T16:45:00Z"
-      },
-      // ... more manholes
-    ],
+    manholes,
     recentAlerts: [
       {
         id: 1,
@@ -161,15 +131,7 @@ const Dashboard = () => {
         date: "2025-05-02"
       },
     ],
-    sensorTrends: [
-      { hour: "00:00", waterLevel: 2.1, gasLevel: 12, flowRate: 1.2, temperature: 28 },
-      { hour: "04:00", waterLevel: 2.3, gasLevel: 15, flowRate: 1.1, temperature: 29 },
-      { hour: "08:00", waterLevel: 2.8, gasLevel: 18, flowRate: 1.4, temperature: 30 },
-      { hour: "12:00", waterLevel: 3.2, gasLevel: 22, flowRate: 1.6, temperature: 32 },
-      { hour: "16:00", waterLevel: 3.5, gasLevel: 25, flowRate: 1.8, temperature: 34 },
-      { hour: "20:00", waterLevel: 3.1, gasLevel: 20, flowRate: 1.5, temperature: 31 },
-    ],
-
+    sensorTrends
   });
 
   // Updated color palette
@@ -694,7 +656,7 @@ const Dashboard = () => {
             .filter(manhole => manhole.status === "critical")
             .slice(0, 3) // Show only top 3 critical manholes
             .map(manhole => (
-              <ManholeStatusCard key={manhole._id} manhole={manhole} />
+              <ManholeStatusCard key={manhole.manholeId} manhole={manhole} />
             ))}
         </div>
       </div>

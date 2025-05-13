@@ -347,4 +347,123 @@ const getSensorAnalytics = async (req, res) => {
   }
 };
 
-export { createReading, getReadingsByManhole, getCriticalReadings, getSensorAnalytics };
+const getAllSensorReadings = async (req, res) => {
+  try {
+    const readings = await SensorReading.find().sort({ timestamp: -1 }).lean();
+
+    const formattedManholes = readings.map((reading) => {
+      const { manholeId, name, location, timestamp, sensors, thresholds, lastCalibration } =
+        reading;
+
+      // Determine alert types
+      const alertTypes = [];
+
+      if (sensors.sewageLevel > thresholds.maxDistance) {
+        alertTypes.push('sewage_high');
+      }
+
+      if (sensors.methaneLevel > thresholds.maxGas) {
+        alertTypes.push('gas_leak');
+      }
+
+      if (sensors.flowRate < thresholds.minFlow) {
+        alertTypes.push('blockage');
+      }
+
+      if (sensors.batteryLevel < 70) {
+        alertTypes.push('low_battery');
+      }
+
+      // Determine status based on alerts
+      const status = alertTypes.length > 0 ? 'critical' : 'normal';
+
+      return {
+        manholeId,
+        name,
+        location,
+        timestamp,
+        sensors,
+        thresholds,
+        lastCalibration,
+        batteryLevel: sensors.batteryLevel,
+        status,
+        alertTypes,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      manholes: formattedManholes,
+    });
+  } catch (error) {
+    console.error('Get all sensor readings error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve all sensor readings',
+    });
+  }
+};
+
+const getSensorsTrend = async (req, res) => {
+  try {
+    // Use static mock manholeIds for now since the mock data uses '1', '2', etc.
+    const manholeIds = ['1', '2', '3', '4', '5', '6'];
+
+    const trends = await SensorReading.aggregate([
+      {
+        $match: {
+          manholeId: { $in: manholeIds },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            manholeId: '$manholeId',
+            hour: { $hour: '$timestamp' },
+          },
+          avgWaterLevel: { $avg: '$sensors.sewageLevel' },
+          avgGasLevel: { $avg: '$sensors.methaneLevel' },
+          avgFlowRate: { $avg: '$sensors.flowRate' },
+          avgTemperature: { $avg: '$sensors.temperature' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          manholeId: '$_id.manholeId',
+          hour: {
+            $concat: [
+              { $cond: [{ $lt: ['$_id.hour', 10] }, '0', ''] },
+              { $toString: '$_id.hour' },
+              ':00',
+            ],
+          },
+          waterLevel: { $round: ['$avgWaterLevel', 2] },
+          gasLevel: { $round: ['$avgGasLevel', 2] },
+          flowRate: { $round: ['$avgFlowRate', 2] },
+          temperature: { $round: ['$avgTemperature', 2] },
+        },
+      },
+      {
+        $sort: {
+          manholeId: 1,
+          hour: 1,
+        },
+      },
+    ]);
+
+    res.json({ success: true, sensorTrends: trends });
+  } catch (error) {
+    console.error('Error fetching trends:', error);
+    res.status(500).json({ message: 'Error fetching trends data' });
+  }
+};
+
+export {
+  createReading,
+  getReadingsByManhole,
+  getCriticalReadings,
+  getSensorAnalytics,
+  getAllSensorReadings,
+  getSensorsTrend,
+};
