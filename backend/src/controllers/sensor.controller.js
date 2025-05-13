@@ -392,10 +392,66 @@ const getAllSensorReadings = async (req, res) => {
   }
 };
 
+const getSensorsTrend = async (req, res) => {
+  try {
+    // Use static mock manholeIds for now since the mock data uses '1', '2', etc.
+    const manholeIds = ['1', '2', '3', '4', '5', '6'];
+
+    const trends = await SensorReading.aggregate([
+      {
+        $match: {
+          manholeId: { $in: manholeIds },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            manholeId: '$manholeId',
+            hour: { $hour: '$timestamp' },
+          },
+          avgWaterLevel: { $avg: '$sensors.sewageLevel' },
+          avgGasLevel: { $avg: '$sensors.methaneLevel' },
+          avgFlowRate: { $avg: '$sensors.flowRate' },
+          avgTemperature: { $avg: '$sensors.temperature' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          manholeId: '$_id.manholeId',
+          hour: {
+            $concat: [
+              { $cond: [{ $lt: ['$_id.hour', 10] }, '0', ''] },
+              { $toString: '$_id.hour' },
+              ':00',
+            ],
+          },
+          waterLevel: { $round: ['$avgWaterLevel', 2] },
+          gasLevel: { $round: ['$avgGasLevel', 2] },
+          flowRate: { $round: ['$avgFlowRate', 2] },
+          temperature: { $round: ['$avgTemperature', 2] },
+        },
+      },
+      {
+        $sort: {
+          manholeId: 1,
+          hour: 1,
+        },
+      },
+    ]);
+
+    res.json({ success: true, sensorTrends: trends });
+  } catch (error) {
+    console.error('Error fetching trends:', error);
+    res.status(500).json({ message: 'Error fetching trends data' });
+  }
+};
+
 export {
   createReading,
   getReadingsByManhole,
   getCriticalReadings,
   getSensorAnalytics,
   getAllSensorReadings,
+  getSensorsTrend,
 };
