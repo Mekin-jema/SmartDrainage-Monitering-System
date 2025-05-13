@@ -7,11 +7,6 @@ const alertSchema = new mongoose.Schema(
       ref: 'Manhole',
       required: true,
     },
-    manholeId: {
-      type: String,
-      ref: 'Manhole',
-      required: true,
-    },
     sensorId: mongoose.Schema.Types.ObjectId,
     alertType: String,
     alertLevel: String,
