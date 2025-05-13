@@ -146,6 +146,22 @@ const Dashboard = () => {
     sensorTrends
   });
 
+  useEffect(() => {
+    setDashboardData({
+      systemStatus: {
+        totalManholes: status.totalManholes,
+        monitoredManholes: status.monitoredManholes,
+        criticalIssues: status.criticalIssues,
+        maintenanceOngoing: status.maintenanceOngoing,
+        systemHealth: status.systemHealth,
+      },
+      manholes,
+      recentAlerts,
+      maintenanceLogs,
+      sensorTrends,
+    });
+  }, [status, manholes, recentAlerts, maintenanceLogs, sensorTrends]);
+
   // Updated color palette
   const COLORS = {
     primary: "#2563eb", // Vibrant blue
