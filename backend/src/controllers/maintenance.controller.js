@@ -3,65 +3,67 @@ import MaintenanceLog from '../models/maintenance.model.js';
 import Manhole from '../models/manhole.model.js';
 import User from '../models/user.model.js';
 
-// Status workflow configuration
 const MAINTENANCE_STATUSES = ['scheduled', 'in_progress', 'completed', 'deferred', 'cancelled'];
 const MAINTENANCE_TYPES = ['routine', 'repair', 'emergency', 'inspection'];
+
+// Helper: resolve manhole by ID or code
+const resolveManholeId = async (input) => {
+  if (!mongoose.Types.ObjectId.isValid(input)) {
+    const manhole = await Manhole.findOne({ id: input });
+    return manhole ? manhole._id.toString() : null;
+  }
+  const manhole = await Manhole.findById(input);
+  return manhole ? manhole._id.toString() : null;
+};
 
 // 1. Create Maintenance Log
 const createMaintenanceLog = async (req, res) => {
   try {
-    const { manholeId, userId, type, description, scheduledDate, partsReplaced } = req.body;
+    let { manholeId, userId, type, description, scheduledDate, partsReplaced } = req.body;
 
-    // Validate required fields
     if (!manholeId || !userId || !type || !scheduledDate) {
       return res.status(400).json({
         success: false,
-        message: 'Manhole ID, User ID, type and scheduled date are required'
+        message: 'Manhole ID, User ID, type and scheduled date are required',
       });
     }
 
-    // Validate reference IDs
-    const [manhole, user] = await Promise.all([
-      Manhole.findById(manholeId),
-      User.findById(userId)
-    ]);
+    const resolvedManholeId = await resolveManholeId(manholeId);
+    const user = await User.findById(userId);
 
-    if (!manhole || !user) {
+    if (!resolvedManholeId || !user) {
       return res.status(404).json({
         success: false,
-        message: 'Manhole or User not found'
+        message: 'Manhole or User not found',
       });
     }
 
-    // Validate type and default status
     if (!MAINTENANCE_TYPES.includes(type)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid type. Valid types: ${MAINTENANCE_TYPES.join(', ')}`
+        message: `Invalid type. Valid types: ${MAINTENANCE_TYPES.join(', ')}`,
       });
     }
 
-    // Create new log
     const newLog = new MaintenanceLog({
       _id: new mongoose.Types.ObjectId(),
-      manholeId,
+      manholeId: resolvedManholeId,
       userId,
       type,
       description: description || `${type} maintenance`,
       status: 'scheduled',
       scheduledDate,
       partsReplaced: partsReplaced || [],
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     await newLog.save();
 
-    // Update worker's assignments if user is a worker
     if (user.role === 'worker') {
       user.assignments.push({
-        manholeId,
+        manholeId: resolvedManholeId,
         task: `Maintenance: ${type}`,
-        date: scheduledDate
+        date: scheduledDate,
       });
       await user.save();
     }
@@ -69,14 +71,13 @@ const createMaintenanceLog = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'Maintenance log created',
-      data: newLog
+      data: newLog,
     });
-
   } catch (error) {
     console.error('Create maintenance error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 };
@@ -87,11 +88,10 @@ const updateMaintenanceStatus = async (req, res) => {
     const { logId } = req.params;
     const { status, userId, actualStart, actualEnd, notes } = req.body;
 
-    // Validate status
     if (!MAINTENANCE_STATUSES.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid status. Valid statuses: ${MAINTENANCE_STATUSES.join(', ')}`
+        message: `Invalid status. Valid statuses: ${MAINTENANCE_STATUSES.join(', ')}`,
       });
     }
 
@@ -99,11 +99,10 @@ const updateMaintenanceStatus = async (req, res) => {
     if (!log) {
       return res.status(404).json({
         success: false,
-        message: 'Maintenance log not found'
+        message: 'Maintenance log not found',
       });
     }
 
-    // Status transition logic
     if (status === 'in_progress') {
       log.actualStart = actualStart || new Date();
     } else if (status === 'completed') {
@@ -119,14 +118,13 @@ const updateMaintenanceStatus = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Maintenance status updated',
-      data: log
+      data: log,
     });
-
   } catch (error) {
     console.error('Update maintenance error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 };
@@ -140,7 +138,7 @@ const addMaintenanceParts = async (req, res) => {
     if (!parts || !Array.isArray(parts)) {
       return res.status(400).json({
         success: false,
-        message: 'Parts array is required'
+        message: 'Parts array is required',
       });
     }
 
@@ -148,7 +146,7 @@ const addMaintenanceParts = async (req, res) => {
     if (!log) {
       return res.status(404).json({
         success: false,
-        message: 'Maintenance log not found'
+        message: 'Maintenance log not found',
       });
     }
 
@@ -159,14 +157,13 @@ const addMaintenanceParts = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Parts added to maintenance log',
-      data: log.partsReplaced
+      data: log.partsReplaced,
     });
-
   } catch (error) {
     console.error('Add parts error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 };
@@ -174,15 +171,24 @@ const addMaintenanceParts = async (req, res) => {
 // 4. Get Maintenance Logs with Filtering
 const getMaintenanceLogs = async (req, res) => {
   try {
-    const { manholeId, userId, status, type, fromDate, toDate } = req.query;
-
+    let { manholeId, userId, status, type, fromDate, toDate } = req.query;
     const filter = {};
-    if (manholeId) filter.manholeId = manholeId;
+
+    if (manholeId) {
+      const resolvedManholeId = await resolveManholeId(manholeId);
+      if (!resolvedManholeId) {
+        return res.status(404).json({
+          success: false,
+          message: 'Manhole not found',
+        });
+      }
+      filter.manholeId = resolvedManholeId;
+    }
+
     if (userId) filter.userId = userId;
     if (status) filter.status = status;
     if (type) filter.type = type;
 
-    // Date range filtering
     if (fromDate || toDate) {
       filter.scheduledDate = {};
       if (fromDate) filter.scheduledDate.$gte = new Date(fromDate);
@@ -191,27 +197,31 @@ const getMaintenanceLogs = async (req, res) => {
 
     const logs = await MaintenanceLog.find(filter)
       .sort({ scheduledDate: -1 })
-      .populate('manholeId', 'code location')
-      .populate('userId', 'name role');
+      .populate('manholeId', 'code')
+      .populate('userId', 'name');
+
+    // Transform the logs to match the desired structure
+    const maintenanceLogs = logs.map((log, index) => ({
+      id: index + 1, // Assuming `id` is sequential in the response
+      manhole: `#${log.manholeId.code}`,
+      manholeId: log.manholeId._id,
+      type: log.type,
+      technician: log.userId.name,
+      status: log.status,
+      date: log.scheduledDate.toISOString().split('T')[0], // Formats the date as "YYYY-MM-DD"
+    }));
 
     return res.status(200).json({
       success: true,
-      count: logs.length,
-      data: logs
+      maintenanceLogs,
     });
-
   } catch (error) {
     console.error('Get maintenance logs error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 };
 
-export {
-  createMaintenanceLog,
-  updateMaintenanceStatus,
-  addMaintenanceParts,
-  getMaintenanceLogs
-};
+export { createMaintenanceLog, updateMaintenanceStatus, addMaintenanceParts, getMaintenanceLogs };
