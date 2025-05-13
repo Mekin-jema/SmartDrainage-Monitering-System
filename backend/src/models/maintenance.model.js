@@ -1,8 +1,11 @@
 import mongoose from 'mongoose';
 
 const maintenanceLogSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
-  manholeId: mongoose.Schema.Types.ObjectId,
+  manholeId: {
+    type: String,
+    ref: 'Manhole',
+    required: true,
+  },
   userId: mongoose.Schema.Types.ObjectId,
   type: String,
   description: String,
@@ -10,13 +13,15 @@ const maintenanceLogSchema = new mongoose.Schema({
   scheduledDate: Date,
   actualStart: Date,
   actualEnd: Date,
-  partsReplaced: [{
-    name: String,
-    quantity: Number
-  }],
+  partsReplaced: [
+    {
+      name: String,
+      quantity: Number,
+    },
+  ],
   notes: String,
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
 });
 
 export default mongoose.model('MaintenanceLog', maintenanceLogSchema);
