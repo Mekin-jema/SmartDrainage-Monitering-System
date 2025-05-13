@@ -10,14 +10,16 @@ import useSensorsStore from "@/store/useSensorsStore";
 const Dashboard = () => {
 
   const { status, loading, error, fetchSystemStatus } = useManholeStore();
-  const { manholes, fetchManholes } = useSensorsStore()
+  const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
 
   console.log("sensors", manholes)
   useEffect(() => {
     fetchSystemStatus();
     fetchManholes();
+    fetchSensorTrends();
 
   }, []);
+  // console.log("sensors trends", sensorTrends)
 
   // Sample data structure that matches your schema with multiple manholes
   const [dashboardData, setDashboardData] = useState({
@@ -87,15 +89,7 @@ const Dashboard = () => {
         date: "2025-05-02"
       },
     ],
-    sensorTrends: [
-      { hour: "00:00", waterLevel: 2.1, gasLevel: 12, flowRate: 1.2, temperature: 28 },
-      { hour: "04:00", waterLevel: 2.3, gasLevel: 15, flowRate: 1.1, temperature: 29 },
-      { hour: "08:00", waterLevel: 2.8, gasLevel: 18, flowRate: 1.4, temperature: 30 },
-      { hour: "12:00", waterLevel: 3.2, gasLevel: 22, flowRate: 1.6, temperature: 32 },
-      { hour: "16:00", waterLevel: 3.5, gasLevel: 25, flowRate: 1.8, temperature: 34 },
-      { hour: "20:00", waterLevel: 3.1, gasLevel: 20, flowRate: 1.5, temperature: 31 },
-    ],
-
+    sensorTrends
   });
 
   // Updated color palette
