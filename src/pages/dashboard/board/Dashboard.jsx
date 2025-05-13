@@ -113,8 +113,36 @@ const Dashboard = () => {
     //   },
     // ],
 
-
     maintenanceLogs,
+    // maintenanceLogs: [
+    //   {
+    //     id: 1,
+    //     manhole: "#05",
+    //     manholeId: "mh005",
+    //     type: "Routine Check",
+    //     technician: "Abebe K.",
+    //     status: "completed",
+    //     date: "2025-04-28"
+    //   },
+    //   {
+    //     id: 2,
+    //     manhole: "#12",
+    //     manholeId: "mh001",
+    //     type: "Emergency Repair",
+    //     technician: "Mekdes T.",
+    //     status: "in-progress",
+    //     date: "2025-04-29"
+    //   },
+    //   {
+    //     id: 3,
+    //     manhole: "#22",
+    //     manholeId: "mh022",
+    //     type: "Sensor Replacement",
+    //     technician: "Yohannes A.",
+    //     status: "scheduled",
+    //     date: "2025-05-02"
+    //   },
+    // ],
     sensorTrends
   });
 

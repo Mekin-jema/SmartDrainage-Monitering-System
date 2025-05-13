@@ -109,143 +109,116 @@ const SewageSystemMap = () => {
   const {
     manholesData,   // List of manholes
     loading,    // Loading state
-    error,      // Error state
+    error, fetchSystemStatus,    // Error state
     fetchManholes // Action to fetch manholes
   } = useManholeStore();  // Accessing the Zustand store
   //import socket.io
 
 
-  
+
   // Socket.IO ref
- 
-  console.log(manholesData);
+
+  console.log("manholeData", manholesData);
   console.log("pipes", pipes);
+
+  useEffect(() => {
+    fetchManholes();
+    // fetchSystemStatus()
+  }, [])
   // Load initial data with elevation data for flow direction
   useEffect(() => {
-    const mockManholes = manholesData
+    // Enrich manhole data with default values
+    const enrichedManholes = manholesData.map((mh) => ({
+      ...mh,
+      connections: mh.connections || [], // Ensure connections exist
+      location: mh.location || [0, 0], // Default coordinates
+      elevation: mh.elevation ?? Math.floor(Math.random() * 100), // Default or random elevation
+      overflow_level: mh.overflow_level || "good",
+      cover_status: mh.cover_status || "closed",
+      lastInspection: mh.lastInspection || new Date().toISOString().split("T")[0],
+      zone: mh.zone || "A",
+      status: mh.status || "functional"
+    }));
 
-    const generatedPipes = [];
+    // Helper to find a manhole by ID
+    const getManhole = (id) => enrichedManholes.find((mh) => mh.id === id);
 
-    // Helper function to get manhole by ID
-    const getManhole = (id) => mockManholes.find(mh => mh.id === id);
-
-    // Helper function to determine blockage
+    // Determine if a pipe should be blocked
     const shouldBlock = (startId, endId) => {
-      const startMh = getManhole(startId);
-      const endMh = getManhole(endId);
+      const start = getManhole(startId);
+      const end = getManhole(endId);
+      if (!start || !end) return false;
 
-      // If either is overflowing, pipe is blocked
-      if (startMh.status === "overflowing" || endMh.status === "overflowing") {
-        return true;
-      }
+      const startStatus = start.status || "functional";
+      const endStatus = end.status || "functional";
+      const startOverflow = start.overflow_level || "good";
+      const endOverflow = end.overflow_level || "good";
 
-      // If both are damaged, pipe is blocked
-      if (startMh.status === "damaged" && endMh.status === "damaged") {
-        return true;
-      }
+      if (startStatus === "overflowing" || endStatus === "overflowing") return true;
+      if (startStatus === "damaged" && endStatus === "damaged") return true;
+      if ((startStatus === "damaged" && endOverflow === "risk") ||
+        (endStatus === "damaged" && startOverflow === "risk")) return true;
 
-      // If one is damaged and the other has risk overflow
-      if ((startMh.status === "damaged" && endMh.overflow_level === "risk") ||
-        (endMh.status === "damaged" && startMh.overflow_level === "risk")) {
-        return true;
-      }
-
-      // Random 10% chance for functional pipes to be blocked
-      if (Math.random() < 0.1 && startMh.status === "functional" && endMh.status === "functional") {
-        return true;
-      }
-
-      return false;
+      // 10% chance of random blockage for functional pipes
+      return Math.random() < 0.1 &&
+        startStatus === "functional" &&
+        endStatus === "functional";
     };
 
-    // Determine flow direction based on elevation
+    // Determine flow direction by elevation
     const getFlowDirection = (startId, endId) => {
-      const startMh = getManhole(startId);
-      const endMh = getManhole(endId);
+      const start = getManhole(startId);
+      const end = getManhole(endId);
+      if (!start || !end) return "bidirectional";
 
-      if (startMh.elevation > endMh.elevation) {
-        return "start_to_end";
-      } else if (startMh.elevation < endMh.elevation) {
-        return "end_to_start";
-      } else {
-        return "bidirectional"; // Equal elevation
-      }
+      if (start.elevation > end.elevation) return "start_to_end";
+      if (start.elevation < end.elevation) return "end_to_start";
+      return "bidirectional";
     };
 
-    mockManholes.forEach((mh) => {
-      mh.connections.forEach((connId) => {
-        // Ensure each pipe is only added once (undirected edge)
-        const existing = generatedPipes.find(
-          (pipe) =>
-            (pipe.start === mh.id && pipe.end === connId) ||
-            (pipe.start === connId && pipe.end === mh.id)
-        );
+    // Generate pipes from connections
+    const generatedPipes = [];
+    const seenPairs = new Set(); // To avoid duplicate pipes
 
-        if (!existing) {
+    enrichedManholes.forEach((mh) => {
+      mh.connections.forEach((connId) => {
+        const key = [mh.id, connId].sort().join("-");
+        if (!seenPairs.has(key)) {
+          seenPairs.add(key);
+
           generatedPipes.push({
             id: `p-${mh.id}-${connId}`,
             start: mh.id,
             end: connId,
             blockage: shouldBlock(mh.id, connId),
             flowDirection: getFlowDirection(mh.id, connId),
-            diameter: Math.floor(Math.random() * 300) + 100 // Random diameter between 100-400mm
+            diameter: Math.floor(Math.random() * 300) + 100, // 100–400mm
           });
         }
       });
     });
 
+    // Sample alerts
     const mockAlerts = [
-      {
-        id: "A1",
-        manholeId: "2",
-        alertType: "structural_damage",
-        alertLevel: "critical",
-        timestamp: "2023-06-10T08:30:00",
-      },
-      {
-        id: "A2",
-        manholeId: "3",
-        alertType: "overflow",
-        alertLevel: "warning",
-        timestamp: "2023-06-11T14:15:00",
-      },
-      {
-        id: "A3",
-        manholeId: "9",
-        alertType: "overflow",
-        alertLevel: "critical",
-        timestamp: "2023-06-12T11:00:00",
-      },
-      {
-        id: "A4",
-        manholeId: "5",
-        alertType: "cover_open",
-        alertLevel: "warning",
-        timestamp: "2023-06-09T09:45:00",
-      },
+      { id: "A1", manholeId: "2", alertType: "structural_damage", alertLevel: "critical", timestamp: "2023-06-10T08:30:00" },
+      { id: "A2", manholeId: "3", alertType: "overflow", alertLevel: "warning", timestamp: "2023-06-11T14:15:00" },
+      { id: "A3", manholeId: "9", alertType: "overflow", alertLevel: "critical", timestamp: "2023-06-12T11:00:00" },
+      { id: "A4", manholeId: "5", alertType: "cover_open", alertLevel: "warning", timestamp: "2023-06-09T09:45:00" },
     ];
 
+    // Sample workers
     const mockWorkers = [
-      {
-        id: "W1",
-        name: "John Doe",
-        status: "available",
-        location: [38.764, 9.007],
-      },
-      {
-        id: "W2",
-        name: "Jane Smith",
-        status: "available",
-        location: [38.763, 9.003],
-      },
+      { id: "W1", name: "John Doe", status: "available", location: [38.764, 9.007] },
+      { id: "W2", name: "Jane Smith", status: "available", location: [38.763, 9.003] },
     ];
 
-    setManholes(mockManholes);
-    setPipes(generatedPipes)
+    // Set states
+    setManholes(enrichedManholes);
+    setPipes(generatedPipes);
     setAlerts(mockAlerts);
     setWorkers(mockWorkers);
   }, []);
-  console.log("manholes", manholes)
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current) return;
