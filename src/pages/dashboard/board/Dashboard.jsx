@@ -79,6 +79,35 @@ const Dashboard = () => {
     },
     manholes,
     recentAlerts,
+    // recentAlerts: [
+    //   {
+    //     id: 1,
+    //     type: "High Water Level",
+    //     location: "Manhole #12",
+    //     manholeId: "mh001",
+    //     timestamp: "2025-04-30T08:15:00",
+    //     status: "pending",
+    //     severity: "warning"
+    //   },
+    //   {
+    //     id: 2,
+    //     type: "Fuel Leak Detected",
+    //     location: "Manhole #07",
+    //     manholeId: "mh002",
+    //     timestamp: "2025-04-30T07:30:00",
+    //     status: "assigned",
+    //     severity: "critical"
+    //   },
+    //   {
+    //     id: 3,
+    //     type: "Blockage Detected",
+    //     location: "Manhole #23",
+    //     manholeId: "mh003",
+    //     timestamp: "2025-04-29T16:45:00",
+    //     status: "resolved",
+    //     severity: "warning"
+    //   },
+    // ],
     maintenanceLogs: [
       {
         id: 1,
