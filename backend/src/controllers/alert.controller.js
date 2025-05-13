@@ -220,16 +220,15 @@ const addResolutionNotes = async (req, res) => {
 const getRecentAlerts = async (req, res) => {
   try {
     const alerts = await Alert.find()
-      .sort({ timestamp: -1 }) // Newest first
-      .limit(5)
-      .populate('manholeId', 'code location'); // We need manhole code & location
+      .sort({ createdAt: -1 }) // Most recent based on creation time
+      .limit(5);
 
     const formattedAlerts = alerts.map((alert, index) => ({
       id: index + 1,
-      type: alert.alertType.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-      location: alert.manholeId?.code ? `Manhole #${alert.manholeId.code}` : 'Unknown',
-      manholeId: alert.manholeId?._id?.toString() || 'unknown',
-      timestamp: alert.timestamp,
+      type: alert.alertType?.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+      location: alert.manholeId ? `Manhole #${alert.manholeId}` : 'Unknown',
+      manholeId: alert.manholeId || 'unknown',
+      timestamp: alert.createdAt,
       status: alert.status,
       severity: alert.alertLevel,
     }));
@@ -239,7 +238,7 @@ const getRecentAlerts = async (req, res) => {
       recentAlerts: formattedAlerts,
     });
   } catch (error) {
-    console.error('Get recent alerts error:', error);
+    console.error('Error fetching recent alerts:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',

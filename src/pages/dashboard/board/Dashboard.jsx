@@ -7,12 +7,15 @@ import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react
 import { useManholeStore } from "@/store/useManholeStore";
 import useSensorsStore from "@/store/useSensorsStore";
 import io from 'socket.io-client';
+import useAlertStore from "@/store/useAlertStore";
 
 
 const Dashboard = () => {
 
   const { status, loading, error, fetchSystemStatus } = useManholeStore();
   const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
+
+  const { recentAlerts, fetchRecentAlerts, } = useAlertStore()
 
   console.log("sensors", manholes)
   const socketRef = useRef(null);
@@ -22,6 +25,7 @@ const Dashboard = () => {
     fetchSystemStatus();
     fetchManholes();
     fetchSensorTrends();
+    fetchRecentAlerts();
     // Initialize Socket.IO connection
     socketRef.current = io('http://localhost:3000', {
       reconnection: true,
@@ -74,35 +78,7 @@ const Dashboard = () => {
       systemHealth: status.systemHealth, // percentage
     },
     manholes,
-    recentAlerts: [
-      {
-        id: 1,
-        type: "High Water Level",
-        location: "Manhole #12",
-        manholeId: "mh001",
-        timestamp: "2025-04-30T08:15:00",
-        status: "pending",
-        severity: "warning"
-      },
-      {
-        id: 2,
-        type: "Fuel Leak Detected",
-        location: "Manhole #07",
-        manholeId: "mh002",
-        timestamp: "2025-04-30T07:30:00",
-        status: "assigned",
-        severity: "critical"
-      },
-      {
-        id: 3,
-        type: "Blockage Detected",
-        location: "Manhole #23",
-        manholeId: "mh003",
-        timestamp: "2025-04-29T16:45:00",
-        status: "resolved",
-        severity: "warning"
-      },
-    ],
+    recentAlerts,
     maintenanceLogs: [
       {
         id: 1,
