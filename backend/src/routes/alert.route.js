@@ -12,7 +12,7 @@ const router = express.Router();
 
 // @route   POST /api/alerts
 // @desc    Create a new alert
-router.post('/', createAlert);
+router.post('/create-alert', createAlert);
 // @route   GET /api/alerts
 // @desc    Get alerts with optional filters
 router.get('/', getAlerts);
