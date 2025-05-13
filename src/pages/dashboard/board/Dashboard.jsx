@@ -8,16 +8,18 @@ import { useManholeStore } from "@/store/useManholeStore";
 import useSensorsStore from "@/store/useSensorsStore";
 import io from 'socket.io-client';
 import useAlertStore from "@/store/useAlertStore";
+import useMaintenanceStore from "@/store/usemantenanceStore";
 
 
 const Dashboard = () => {
 
   const { status, loading, error, fetchSystemStatus } = useManholeStore();
   const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
+  const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore()
+  console.log("maintenance logs", maintenanceLogs)
 
   const { recentAlerts, fetchRecentAlerts, } = useAlertStore()
 
-  console.log("sensors", manholes)
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ const Dashboard = () => {
     fetchManholes();
     fetchSensorTrends();
     fetchRecentAlerts();
+    fetchMaintenanceLogs()
     // Initialize Socket.IO connection
     socketRef.current = io('http://localhost:3000', {
       reconnection: true,
@@ -80,6 +83,7 @@ const Dashboard = () => {
     manholes,
     recentAlerts,
     // recentAlerts: [
+
     //   {
     //     id: 1,
     //     type: "High Water Level",
@@ -108,35 +112,9 @@ const Dashboard = () => {
     //     severity: "warning"
     //   },
     // ],
-    maintenanceLogs: [
-      {
-        id: 1,
-        manhole: "#05",
-        manholeId: "mh005",
-        type: "Routine Check",
-        technician: "Abebe K.",
-        status: "completed",
-        date: "2025-04-28"
-      },
-      {
-        id: 2,
-        manhole: "#12",
-        manholeId: "mh001",
-        type: "Emergency Repair",
-        technician: "Mekdes T.",
-        status: "in-progress",
-        date: "2025-04-29"
-      },
-      {
-        id: 3,
-        manhole: "#22",
-        manholeId: "mh022",
-        type: "Sensor Replacement",
-        technician: "Yohannes A.",
-        status: "scheduled",
-        date: "2025-05-02"
-      },
-    ],
+
+
+    maintenanceLogs,
     sensorTrends
   });
 
