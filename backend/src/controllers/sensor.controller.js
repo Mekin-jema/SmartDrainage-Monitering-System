@@ -61,6 +61,17 @@ const createReading = async (req, res) => {
         status: 'needs_attention',
       });
     }
+      const io = req.app.get('io');
+    if (io) {
+      io.emit('sensor-data', {
+        manholeId,
+        sensors,
+        status,
+        alertTypes,
+        timestamp: newReading.timestamp,
+      });
+    }
+    // Emit event to notify other services
 
     return res.status(201).json({
       success: true,
@@ -90,7 +101,8 @@ const getReadingsByManhole = async (req, res) => {
     const query = { manholeId };
     if (status) query.status = status;
 
-    // Time range filtering
+    // Time 
+    // range filtering
     if (timeRange && !isNaN(timeRange)) {
       const hoursAgo = new Date();
       hoursAgo.setHours(hoursAgo.getHours() - parseInt(timeRange));
