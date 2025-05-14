@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect, useRef } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   LineChart,
   Line,
@@ -31,7 +31,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 import {
   AlertCircle,
   HardHat,
@@ -44,23 +44,23 @@ import {
   XCircle,
   AlertTriangle,
   CheckCircle,
-} from "lucide-react";
-import { useManholeStore } from "@/store/useManholeStore";
+} from 'lucide-react';
+import { useManholeStore } from '@/store/useManholeStore';
 
 // Custom SVG Icons for manholes
 const ManholeIcon = ({ status }) => {
   const getIconProps = () => {
     switch (status) {
-      case "functional":
-        return { fill: "#10B981", stroke: "#059669" }; // Green
-      case "damaged":
-        return { fill: "#EF4444", stroke: "#DC2626" }; // Red
-      case "overflowing":
-        return { fill: "#8B5CF6", stroke: "#7C3AED" }; // Purple
-      case "under_maintenance":
-        return { fill: "#F59E0B", stroke: "#D97706" }; // Orange
+      case 'functional':
+        return { fill: '#10B981', stroke: '#059669' }; // Green
+      case 'damaged':
+        return { fill: '#EF4444', stroke: '#DC2626' }; // Red
+      case 'overflowing':
+        return { fill: '#8B5CF6', stroke: '#7C3AED' }; // Purple
+      case 'under_maintenance':
+        return { fill: '#F59E0B', stroke: '#D97706' }; // Orange
       default:
-        return { fill: "#6B7280", stroke: "#4B5563" }; // Gray
+        return { fill: '#6B7280', stroke: '#4B5563' }; // Gray
     }
   };
 
@@ -79,7 +79,8 @@ const ManholeIcon = ({ status }) => {
 };
 
 const SewageSystemMap = () => {
-  const style = "https://maps.geoapify.com/v1/styles/osm-carto/style.json?apiKey=0d3e5c9668f242409228bfa012c04031"
+  const style =
+    'https://maps.geoapify.com/v1/styles/osm-carto/style.json?apiKey=0d3e5c9668f242409228bfa012c04031';
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -94,9 +95,9 @@ const SewageSystemMap = () => {
   const [readings, setReadings] = useState([]);
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
-    status: "all",
-    alertLevel: "all",
-    zone: "all",
+    status: 'all',
+    alertLevel: 'all',
+    zone: 'all',
   });
   const [showCriticalOnly, setShowCriticalOnly] = useState(false);
   const [route, setRoute] = useState(null);
@@ -107,24 +108,23 @@ const SewageSystemMap = () => {
   const [editingPipe, setEditingPipe] = useState(null);
 
   const {
-    manholesData,   // List of manholes
-    loading,    // Loading state
-    error, fetchSystemStatus,    // Error state
-    fetchManholes // Action to fetch manholes
-  } = useManholeStore();  // Accessing the Zustand store
+    manholesData, // List of manholes
+    loading, // Loading state
+    error,
+    fetchSystemStatus, // Error state
+    fetchManholes, // Action to fetch manholes
+  } = useManholeStore(); // Accessing the Zustand store
   //import socket.io
-
-
 
   // Socket.IO ref
 
-  console.log("manholeData", manholesData);
-  console.log("pipes", pipes);
+  console.log('manholeData', manholesData);
+  console.log('pipes', pipes);
 
   useEffect(() => {
     fetchManholes();
     // fetchSystemStatus()
-  }, [])
+  }, []);
   // Load initial data with elevation data for flow direction
   useEffect(() => {
     // Enrich manhole data with default values
@@ -133,11 +133,11 @@ const SewageSystemMap = () => {
       connections: mh.connections || [], // Ensure connections exist
       location: mh.location || [0, 0], // Default coordinates
       elevation: mh.elevation ?? Math.floor(Math.random() * 100), // Default or random elevation
-      overflow_level: mh.overflow_level || "good",
-      cover_status: mh.cover_status || "closed",
-      lastInspection: mh.lastInspection || new Date().toISOString().split("T")[0],
-      zone: mh.zone || "A",
-      status: mh.status || "functional"
+      overflow_level: mh.overflow_level || 'good',
+      cover_status: mh.cover_status || 'closed',
+      lastInspection: mh.lastInspection || new Date().toISOString().split('T')[0],
+      zone: mh.zone || 'A',
+      status: mh.status || 'functional',
     }));
 
     // Helper to find a manhole by ID
@@ -149,31 +149,32 @@ const SewageSystemMap = () => {
       const end = getManhole(endId);
       if (!start || !end) return false;
 
-      const startStatus = start.status || "functional";
-      const endStatus = end.status || "functional";
-      const startOverflow = start.overflow_level || "good";
-      const endOverflow = end.overflow_level || "good";
+      const startStatus = start.status || 'functional';
+      const endStatus = end.status || 'functional';
+      const startOverflow = start.overflow_level || 'good';
+      const endOverflow = end.overflow_level || 'good';
 
-      if (startStatus === "overflowing" || endStatus === "overflowing") return true;
-      if (startStatus === "damaged" && endStatus === "damaged") return true;
-      if ((startStatus === "damaged" && endOverflow === "risk") ||
-        (endStatus === "damaged" && startOverflow === "risk")) return true;
+      if (startStatus === 'overflowing' || endStatus === 'overflowing') return true;
+      if (startStatus === 'damaged' && endStatus === 'damaged') return true;
+      if (
+        (startStatus === 'damaged' && endOverflow === 'risk') ||
+        (endStatus === 'damaged' && startOverflow === 'risk')
+      )
+        return true;
 
       // 10% chance of random blockage for functional pipes
-      return Math.random() < 0.1 &&
-        startStatus === "functional" &&
-        endStatus === "functional";
+      return Math.random() < 0.1 && startStatus === 'functional' && endStatus === 'functional';
     };
 
     // Determine flow direction by elevation
     const getFlowDirection = (startId, endId) => {
       const start = getManhole(startId);
       const end = getManhole(endId);
-      if (!start || !end) return "bidirectional";
+      if (!start || !end) return 'bidirectional';
 
-      if (start.elevation > end.elevation) return "start_to_end";
-      if (start.elevation < end.elevation) return "end_to_start";
-      return "bidirectional";
+      if (start.elevation > end.elevation) return 'start_to_end';
+      if (start.elevation < end.elevation) return 'end_to_start';
+      return 'bidirectional';
     };
 
     // Generate pipes from connections
@@ -182,7 +183,7 @@ const SewageSystemMap = () => {
 
     enrichedManholes.forEach((mh) => {
       mh.connections.forEach((connId) => {
-        const key = [mh.id, connId].sort().join("-");
+        const key = [mh.id, connId].sort().join('-');
         if (!seenPairs.has(key)) {
           seenPairs.add(key);
 
@@ -200,16 +201,40 @@ const SewageSystemMap = () => {
 
     // Sample alerts
     const mockAlerts = [
-      { id: "A1", manholeId: "2", alertType: "structural_damage", alertLevel: "critical", timestamp: "2023-06-10T08:30:00" },
-      { id: "A2", manholeId: "3", alertType: "overflow", alertLevel: "warning", timestamp: "2023-06-11T14:15:00" },
-      { id: "A3", manholeId: "9", alertType: "overflow", alertLevel: "critical", timestamp: "2023-06-12T11:00:00" },
-      { id: "A4", manholeId: "5", alertType: "cover_open", alertLevel: "warning", timestamp: "2023-06-09T09:45:00" },
+      {
+        id: 'A1',
+        manholeId: '2',
+        alertType: 'structural_damage',
+        alertLevel: 'critical',
+        timestamp: '2023-06-10T08:30:00',
+      },
+      {
+        id: 'A2',
+        manholeId: '3',
+        alertType: 'overflow',
+        alertLevel: 'warning',
+        timestamp: '2023-06-11T14:15:00',
+      },
+      {
+        id: 'A3',
+        manholeId: '9',
+        alertType: 'overflow',
+        alertLevel: 'critical',
+        timestamp: '2023-06-12T11:00:00',
+      },
+      {
+        id: 'A4',
+        manholeId: '5',
+        alertType: 'cover_open',
+        alertLevel: 'warning',
+        timestamp: '2023-06-09T09:45:00',
+      },
     ];
 
     // Sample workers
     const mockWorkers = [
-      { id: "W1", name: "John Doe", status: "available", location: [38.764, 9.007] },
-      { id: "W2", name: "Jane Smith", status: "available", location: [38.763, 9.003] },
+      { id: 'W1', name: 'John Doe', status: 'available', location: [38.764, 9.007] },
+      { id: 'W2', name: 'Jane Smith', status: 'available', location: [38.763, 9.003] },
     ];
 
     // Set states
@@ -230,24 +255,28 @@ const SewageSystemMap = () => {
       zoom: 15,
     });
 
-    map.addControl(new maplibregl.NavigationControl(), "top-left");
-    map.addControl(new maplibregl.FullscreenControl(), "top-left");
+    map.addControl(new maplibregl.NavigationControl(), 'top-left');
+    map.addControl(new maplibregl.FullscreenControl(), 'top-left');
     mapRef.current = map;
 
     // Handle map clicks for drawing mode
-    map.on("click", (e) => {
+    map.on('click', (e) => {
       if (flowDirectionMode && editingPipe) {
         // Toggle flow direction
-        setPipes(pipes.map(p => {
-          if (p.id === editingPipe.id) {
-            const newDirection =
-              p.flowDirection === "start_to_end" ? "end_to_start" :
-                p.flowDirection === "end_to_start" ? "bidirectional" :
-                  "start_to_end";
-            return { ...p, flowDirection: newDirection };
-          }
-          return p;
-        }));
+        setPipes(
+          pipes.map((p) => {
+            if (p.id === editingPipe.id) {
+              const newDirection =
+                p.flowDirection === 'start_to_end'
+                  ? 'end_to_start'
+                  : p.flowDirection === 'end_to_start'
+                    ? 'bidirectional'
+                    : 'start_to_end';
+              return { ...p, flowDirection: newDirection };
+            }
+            return p;
+          })
+        );
         setEditingPipe(null);
         setFlowDirectionMode(false);
         return;
@@ -272,21 +301,23 @@ const SewageSystemMap = () => {
               start: connectingManhole,
               end: clickedManhole.id,
               blockage: false,
-              flowDirection: "start_to_end", // Default flow direction
-              diameter: 200 // Default diameter
+              flowDirection: 'start_to_end', // Default flow direction
+              diameter: 200, // Default diameter
             };
             setPipes([...pipes, newPipe]);
 
             // Update manhole connections
-            setManholes(manholes.map(m => {
-              if (m.id === connectingManhole && !m.connections.includes(clickedManhole.id)) {
-                return { ...m, connections: [...m.connections, clickedManhole.id] };
-              }
-              if (m.id === clickedManhole.id && !m.connections.includes(connectingManhole)) {
-                return { ...m, connections: [...m.connections, connectingManhole] };
-              }
-              return m;
-            }));
+            setManholes(
+              manholes.map((m) => {
+                if (m.id === connectingManhole && !m.connections.includes(clickedManhole.id)) {
+                  return { ...m, connections: [...m.connections, clickedManhole.id] };
+                }
+                if (m.id === clickedManhole.id && !m.connections.includes(connectingManhole)) {
+                  return { ...m, connections: [...m.connections, connectingManhole] };
+                }
+                return m;
+              })
+            );
 
             setConnectingManhole(null);
           }
@@ -295,18 +326,25 @@ const SewageSystemMap = () => {
     });
 
     return () => map.remove();
-  }, [drawingMode, newManholeLocation, connectingManhole, flowDirectionMode, editingPipe, manholes]);
+  }, [
+    drawingMode,
+    newManholeLocation,
+    connectingManhole,
+    flowDirectionMode,
+    editingPipe,
+    manholes,
+  ]);
 
   // Find manhole at map point
   const findManholeAtPoint = (point) => {
     if (!mapRef.current) return null;
 
     const features = mapRef.current.queryRenderedFeatures(point, {
-      layers: ['manholes-layer']
+      layers: ['manholes-layer'],
     });
 
     if (features.length > 0) {
-      return manholes.find(m => m.id === features[0].properties.id);
+      return manholes.find((m) => m.id === features[0].properties.id);
     }
     return null;
   };
@@ -314,14 +352,22 @@ const SewageSystemMap = () => {
   const updateLayers = async (map) => {
     // Remove existing layers and sources
     const layersToRemove = [
-      'manholes-circle', 'manholes-status-icon', 'manholes-cover-status',
-      'manholes-code-label', 'pipes-line', 'pipes-arrows',
-      'pipes-blocked-highlight', 'manholes-popup-highlight', 'pipes-flow-direction',
-      'pipes-bidirectional-arrows', 'pipes-bidirectional-arrows-reverse',
-      'pipes-diameter-label', 'manholes-elevation-label'
+      'manholes-circle',
+      'manholes-status-icon',
+      'manholes-cover-status',
+      'manholes-code-label',
+      'pipes-line',
+      'pipes-arrows',
+      'pipes-blocked-highlight',
+      'manholes-popup-highlight',
+      'pipes-flow-direction',
+      'pipes-bidirectional-arrows',
+      'pipes-bidirectional-arrows-reverse',
+      'pipes-diameter-label',
+      'manholes-elevation-label',
     ];
 
-    layersToRemove.forEach(layer => {
+    layersToRemove.forEach((layer) => {
       if (map.getLayer(layer)) map.removeLayer(layer);
     });
 
@@ -329,66 +375,59 @@ const SewageSystemMap = () => {
     if (map.getSource('pipes')) map.removeSource('pipes');
 
     // Load pipes with flow direction information
-    const pipeFeatures = pipes.map(pipe => {
-      const start = manholes.find(m => m.id === pipe.start);
-      const end = manholes.find(m => m.id === pipe.end);
-      if (!start || !end) return null;
+    const pipeFeatures = pipes
+      .map((pipe) => {
+        const start = manholes.find((m) => m.id === pipe.start);
+        const end = manholes.find((m) => m.id === pipe.end);
+        if (!start || !end) return null;
 
-      const dx = end.location[0] - start.location[0];
-      const dy = end.location[1] - start.location[1];
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        const dx = end.location[0] - start.location[0];
+        const dy = end.location[1] - start.location[1];
+        const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
 
-      // Calculate points for flow direction indicators
-      const midPoint = [
-        start.location[0] + dx * 0.5,
-        start.location[1] + dy * 0.5
-      ];
-      const quarterPoint = [
-        start.location[0] + dx * 0.25,
-        start.location[1] + dy * 0.25
-      ];
-      const threeQuarterPoint = [
-        start.location[0] + dx * 0.75,
-        start.location[1] + dy * 0.75
-      ];
+        // Calculate points for flow direction indicators
+        const midPoint = [start.location[0] + dx * 0.5, start.location[1] + dy * 0.5];
+        const quarterPoint = [start.location[0] + dx * 0.25, start.location[1] + dy * 0.25];
+        const threeQuarterPoint = [start.location[0] + dx * 0.75, start.location[1] + dy * 0.75];
 
-      return {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [start.location, end.location]
-        },
-        properties: {
-          id: pipe.id,
-          blockage: pipe.blockage,
-          start: pipe.start,
-          end: pipe.end,
-          angle,
-          flowDirection: pipe.flowDirection,
-          midPoint: midPoint,
-          quarterPoint: quarterPoint,
-          threeQuarterPoint: threeQuarterPoint,
-          diameter: pipe.diameter,
-          startElevation: start.elevation,
-          endElevation: end.elevation
-        }
-      };
-    }).filter(Boolean);
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [start.location, end.location],
+          },
+          properties: {
+            id: pipe.id,
+            blockage: pipe.blockage,
+            start: pipe.start,
+            end: pipe.end,
+            angle,
+            flowDirection: pipe.flowDirection,
+            midPoint: midPoint,
+            quarterPoint: quarterPoint,
+            threeQuarterPoint: threeQuarterPoint,
+            diameter: pipe.diameter,
+            startElevation: start.elevation,
+            endElevation: end.elevation,
+          },
+        };
+      })
+      .filter(Boolean);
 
     map.addSource('pipes', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: pipeFeatures
-      }
+        features: pipeFeatures,
+      },
     });
 
     // Load manholes with elevation data
-    const manholeFeatures = manholes.map(m => ({
+    const manholeFeatures = manholes.map((m) => ({
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: m.location
+        coordinates: m.location,
       },
       properties: {
         id: m.id,
@@ -398,16 +437,16 @@ const SewageSystemMap = () => {
         cover_status: m.cover_status,
         last_inspection: m.last_inspection,
         flow_rate: m.flow_rate,
-        elevation: m.elevation
-      }
+        elevation: m.elevation,
+      },
     }));
 
     map.addSource('manholes', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: manholeFeatures
-      }
+        features: manholeFeatures,
+      },
     });
 
     // === Improved layer setup ===
@@ -418,25 +457,22 @@ const SewageSystemMap = () => {
       type: 'circle',
       source: 'manholes',
       paint: {
-        'circle-radius': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          10, 5,
-          15, 8,
-          20, 12
-        ],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
         'circle-color': [
           'case',
-          ['==', ['get', 'status'], 'functional'], '#10B981',
-          ['==', ['get', 'status'], 'damaged'], '#EF4444',
-          ['==', ['get', 'status'], 'overflowing'], '#8B5CF6',
-          ['==', ['get', 'status'], 'under_maintenance'], '#F59E0B',
-          '#6B7280'
+          ['==', ['get', 'status'], 'functional'],
+          '#10B981',
+          ['==', ['get', 'status'], 'damaged'],
+          '#EF4444',
+          ['==', ['get', 'status'], 'overflowing'],
+          '#8B5CF6',
+          ['==', ['get', 'status'], 'under_maintenance'],
+          '#F59E0B',
+          '#6B7280',
         ],
         'circle-stroke-color': '#fff',
-        'circle-stroke-width': 2
-      }
+        'circle-stroke-width': 2,
+      },
     });
 
     // Manhole code label (larger font)
@@ -446,23 +482,16 @@ const SewageSystemMap = () => {
       source: 'manholes',
       layout: {
         'text-field': ['get', 'code'],
-        'text-size': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          10, 10,
-          15, 12,
-          20, 14
-        ],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 10, 10, 15, 12, 20, 14],
         'text-offset': [0, 1.5],
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-        'text-allow-overlap': false
+        'text-allow-overlap': false,
       },
       paint: {
         'text-color': '#1F2937',
         'text-halo-color': '#FFFFFF',
-        'text-halo-width': 2
-      }
+        'text-halo-width': 2,
+      },
     });
 
     // Elevation label
@@ -475,13 +504,13 @@ const SewageSystemMap = () => {
         'text-size': 10,
         'text-offset': [0, -1.5],
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-        'text-allow-overlap': false
+        'text-allow-overlap': false,
       },
       paint: {
         'text-color': '#1F2937',
         'text-halo-color': '#FFFFFF',
-        'text-halo-width': 1
-      }
+        'text-halo-width': 1,
+      },
     });
 
     // Pipe line with variable width based on diameter
@@ -492,21 +521,27 @@ const SewageSystemMap = () => {
       paint: {
         'line-color': [
           'case',
-          ['==', ['get', 'blockage'], true], '#EF4444',
-          ['==', ['get', 'flowDirection'], 'bidirectional'], '#10B981',
-          '#3B82F6'
+          ['==', ['get', 'blockage'], true],
+          '#EF4444',
+          ['==', ['get', 'flowDirection'], 'bidirectional'],
+          '#10B981',
+          '#3B82F6',
         ],
         'line-width': [
           'interpolate',
           ['linear'],
           ['get', 'diameter'],
-          100, 2,
-          200, 3,
-          300, 4,
-          400, 5
+          100,
+          2,
+          200,
+          3,
+          300,
+          4,
+          400,
+          5,
         ],
-        'line-opacity': 0.8
-      }
+        'line-opacity': 0.8,
+      },
     });
 
     // Pipe diameter label
@@ -519,13 +554,13 @@ const SewageSystemMap = () => {
         'text-field': ['concat', ['get', 'diameter'], 'mm'],
         'text-size': 10,
         'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-        'text-rotation-alignment': 'map'
+        'text-rotation-alignment': 'map',
       },
       paint: {
         'text-color': '#1F2937',
         'text-halo-color': '#FFFFFF',
-        'text-halo-width': 1
-      }
+        'text-halo-width': 1,
+      },
     });
 
     // Flow direction indicators (more prominent)
@@ -540,9 +575,9 @@ const SewageSystemMap = () => {
         'icon-size': 0.8,
         'icon-rotate': ['get', 'angle'],
         'icon-allow-overlap': true,
-        'icon-pitch-alignment': 'viewport'
+        'icon-pitch-alignment': 'viewport',
       },
-      filter: ['==', ['get', 'flowDirection'], 'start_to_end']
+      filter: ['==', ['get', 'flowDirection'], 'start_to_end'],
     });
 
     // Reverse flow direction indicators
@@ -557,9 +592,9 @@ const SewageSystemMap = () => {
         'icon-size': 0.8,
         'icon-rotate': ['+', ['get', 'angle'], 180],
         'icon-allow-overlap': true,
-        'icon-pitch-alignment': 'viewport'
+        'icon-pitch-alignment': 'viewport',
       },
-      filter: ['==', ['get', 'flowDirection'], 'end_to_start']
+      filter: ['==', ['get', 'flowDirection'], 'end_to_start'],
     });
 
     // Bidirectional pipes - two sets of arrows
@@ -574,9 +609,9 @@ const SewageSystemMap = () => {
         'icon-size': 0.8,
         'icon-rotate': ['get', 'angle'],
         'icon-allow-overlap': true,
-        'icon-pitch-alignment': 'viewport'
+        'icon-pitch-alignment': 'viewport',
       },
-      filter: ['==', ['get', 'flowDirection'], 'bidirectional']
+      filter: ['==', ['get', 'flowDirection'], 'bidirectional'],
     });
 
     map.addLayer({
@@ -590,9 +625,9 @@ const SewageSystemMap = () => {
         'icon-size': 0.8,
         'icon-rotate': ['+', ['get', 'angle'], 180],
         'icon-allow-overlap': true,
-        'icon-pitch-alignment': 'viewport'
+        'icon-pitch-alignment': 'viewport',
       },
-      filter: ['==', ['get', 'flowDirection'], 'bidirectional']
+      filter: ['==', ['get', 'flowDirection'], 'bidirectional'],
     });
 
     // Highlight blocked pipes (more visible)
@@ -607,14 +642,18 @@ const SewageSystemMap = () => {
           'interpolate',
           ['linear'],
           ['get', 'diameter'],
-          100, 4,
-          200, 5,
-          300, 6,
-          400, 7
+          100,
+          4,
+          200,
+          5,
+          300,
+          6,
+          400,
+          7,
         ],
         'line-dasharray': [2, 2],
-        'line-opacity': 0.8
-      }
+        'line-opacity': 0.8,
+      },
     });
 
     // Highlight hovered manhole
@@ -627,9 +666,9 @@ const SewageSystemMap = () => {
         'circle-color': '#FACC15',
         'circle-opacity': 0.3,
         'circle-stroke-width': 2,
-        'circle-stroke-color': '#FACC15'
+        'circle-stroke-color': '#FACC15',
       },
-      filter: ['==', 'id', '']
+      filter: ['==', 'id', ''],
     });
 
     // Highlight hovered pipe
@@ -643,24 +682,28 @@ const SewageSystemMap = () => {
           'interpolate',
           ['linear'],
           ['get', 'diameter'],
-          100, 6,
-          200, 7,
-          300, 8,
-          400, 9
+          100,
+          6,
+          200,
+          7,
+          300,
+          8,
+          400,
+          9,
         ],
-        'line-opacity': 0.6
+        'line-opacity': 0.6,
       },
-      filter: ['==', 'id', '']
+      filter: ['==', 'id', ''],
     });
 
     // === Events ===
     map.on('click', 'manholes-circle', (e) => {
-      const manhole = manholes.find(m => m.id === e.features[0].properties.id);
+      const manhole = manholes.find((m) => m.id === e.features[0].properties.id);
       if (manhole) handleManholeClick(manhole);
     });
 
     map.on('click', 'pipes-line', (e) => {
-      const pipe = pipes.find(p => p.id === e.features[0].properties.id);
+      const pipe = pipes.find((p) => p.id === e.features[0].properties.id);
       if (pipe) {
         setSelectedPipe(pipe);
         setSelectedManhole(null);
@@ -728,24 +771,24 @@ const SewageSystemMap = () => {
 
     // Fetch readings and logs for this manhole
     const mockReadings = [
-      { timestamp: "2023-06-01T10:00", waterLevel: 30, methaneLevel: 5, temperature: 25 },
-      { timestamp: "2023-06-01T12:00", waterLevel: 45, methaneLevel: 7, temperature: 26 },
-      { timestamp: "2023-06-01T14:00", waterLevel: 60, methaneLevel: 8, temperature: 27 },
+      { timestamp: '2023-06-01T10:00', waterLevel: 30, methaneLevel: 5, temperature: 25 },
+      { timestamp: '2023-06-01T12:00', waterLevel: 45, methaneLevel: 7, temperature: 26 },
+      { timestamp: '2023-06-01T14:00', waterLevel: 60, methaneLevel: 8, temperature: 27 },
     ];
     setReadings(mockReadings);
 
     const mockLogs = [
       {
-        timestamp: "2023-05-15T09:30",
-        workerId: "W1",
-        action: "routine_inspection",
-        notes: "No issues found",
+        timestamp: '2023-05-15T09:30',
+        workerId: 'W1',
+        action: 'routine_inspection',
+        notes: 'No issues found',
       },
       {
-        timestamp: "2023-04-20T11:15",
-        workerId: "W2",
-        action: "repair",
-        notes: "Replaced damaged cover",
+        timestamp: '2023-04-20T11:15',
+        workerId: 'W2',
+        action: 'repair',
+        notes: 'Replaced damaged cover',
       },
     ];
     setLogs(mockLogs);
@@ -753,7 +796,7 @@ const SewageSystemMap = () => {
 
   // Handle alert click
   const handleAlertClick = (alert) => {
-    const manhole = manholes.find(m => m.id === alert.manholeId);
+    const manhole = manholes.find((m) => m.id === alert.manholeId);
     if (manhole) handleManholeClick(manhole);
   };
 
@@ -767,33 +810,34 @@ const SewageSystemMap = () => {
       try {
         const data = JSON.parse(event.target.result);
 
-        if (data.type === "FeatureCollection") {
+        if (data.type === 'FeatureCollection') {
           // Process GeoJSON
           const newManholes = [];
           const newPipes = [];
 
-          data.features.forEach(feature => {
-            if (feature.geometry.type === "Point") {
+          data.features.forEach((feature) => {
+            if (feature.geometry.type === 'Point') {
               newManholes.push({
                 id: feature.properties.id || `mh-${newManholes.length + 1}`,
                 code: feature.properties.code || `MH-${newManholes.length + 1}`,
                 location: feature.geometry.coordinates,
                 elevation: feature.properties.elevation || 0,
-                status: feature.properties.status || "functional",
-                zone: feature.properties.zone || "A",
-                lastInspection: feature.properties.lastInspection || new Date().toISOString().split('T')[0],
-                cover_status: feature.properties.cover_status || "closed",
-                overflow_level: feature.properties.overflow_level || "good",
-                connections: feature.properties.connections || []
+                status: feature.properties.status || 'functional',
+                zone: feature.properties.zone || 'A',
+                lastInspection:
+                  feature.properties.lastInspection || new Date().toISOString().split('T')[0],
+                cover_status: feature.properties.cover_status || 'closed',
+                overflow_level: feature.properties.overflow_level || 'good',
+                connections: feature.properties.connections || [],
               });
-            } else if (feature.geometry.type === "LineString") {
+            } else if (feature.geometry.type === 'LineString') {
               newPipes.push({
                 id: feature.properties.id || `p-${newPipes.length + 1}`,
                 start: feature.properties.start,
                 end: feature.properties.end,
                 blockage: feature.properties.blockage || false,
-                flowDirection: feature.properties.flowDirection || "start_to_end",
-                diameter: feature.properties.diameter || 200
+                flowDirection: feature.properties.flowDirection || 'start_to_end',
+                diameter: feature.properties.diameter || 200,
               });
             }
           });
@@ -802,7 +846,7 @@ const SewageSystemMap = () => {
           setPipes(newPipes);
         }
       } catch (error) {
-        console.error("Error parsing GeoJSON:", error);
+        console.error('Error parsing GeoJSON:', error);
       }
     };
     reader.readAsText(file);
@@ -811,7 +855,7 @@ const SewageSystemMap = () => {
   // Generate optimal route
   const generateRoute = () => {
     // Simple implementation - in a real app you'd use a proper routing algorithm
-    const routeCoordinates = manholes.map(m => m.location);
+    const routeCoordinates = manholes.map((m) => m.location);
 
     const mockRoute = {
       coordinates: routeCoordinates,
@@ -860,15 +904,15 @@ const SewageSystemMap = () => {
 
   // Filter manholes
   const filteredManholes = manholes.filter((manhole) => {
-    if (filters.status !== "all" && manhole.status !== filters.status) return false;
-    if (filters.zone !== "all" && manhole.zone !== filters.zone) return false;
+    if (filters.status !== 'all' && manhole.status !== filters.status) return false;
+    if (filters.zone !== 'all' && manhole.zone !== filters.zone) return false;
     return true;
   });
 
   // Filter alerts
   const filteredAlerts = alerts.filter((alert) => {
-    if (showCriticalOnly && alert.alertLevel !== "critical") return false;
-    if (filters.alertLevel !== "all" && alert.alertLevel !== filters.alertLevel) return false;
+    if (showCriticalOnly && alert.alertLevel !== 'critical') return false;
+    if (filters.alertLevel !== 'all' && alert.alertLevel !== filters.alertLevel) return false;
     return !alert.resolved;
   });
 
@@ -881,12 +925,12 @@ const SewageSystemMap = () => {
       code: `MH-${manholes.length + 1}`,
       location: [newManholeLocation.lng, newManholeLocation.lat],
       elevation: 0, // Default elevation
-      status: "functional",
-      zone: "A",
+      status: 'functional',
+      zone: 'A',
       lastInspection: new Date().toISOString().split('T')[0],
-      cover_status: "closed",
-      overflow_level: "good",
-      connections: []
+      cover_status: 'closed',
+      overflow_level: 'good',
+      connections: [],
     };
 
     setManholes([...manholes, newManhole]);
@@ -937,7 +981,11 @@ const SewageSystemMap = () => {
           <div className="absolute top-4 left-4 bg-background p-4 rounded-md shadow-md z-10 border">
             <h3 className="font-bold mb-2">Flow Direction Mode</h3>
             <p>Click on a pipe to change its flow direction</p>
-            <Button variant="destructive" onClick={() => setFlowDirectionMode(false)} className="mt-2">
+            <Button
+              variant="destructive"
+              onClick={() => setFlowDirectionMode(false)}
+              className="mt-2"
+            >
               Cancel
             </Button>
           </div>
@@ -1030,16 +1078,14 @@ const SewageSystemMap = () => {
                 >
                   <CardHeader className="p-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">
-                        {manhole.code}
-                      </CardTitle>
+                      <CardTitle className="text-sm font-medium">{manhole.code}</CardTitle>
                       <Badge
                         variant={
-                          manhole.status === "functional"
-                            ? "success"
-                            : manhole.status === "damaged"
-                              ? "destructive"
-                              : "default"
+                          manhole.status === 'functional'
+                            ? 'success'
+                            : manhole.status === 'damaged'
+                              ? 'destructive'
+                              : 'default'
                         }
                       >
                         {manhole.status}
@@ -1047,16 +1093,16 @@ const SewageSystemMap = () => {
                     </div>
                     <div className="flex items-center mt-1 text-xs text-muted-foreground">
                       <span className="inline-flex items-center mr-3">
-                        {manhole.cover_status === "open" ? (
+                        {manhole.cover_status === 'open' ? (
                           <span className="text-destructive">✕ Open</span>
                         ) : (
                           <span className="text-success">✓ Closed</span>
                         )}
                       </span>
                       <span>
-                        {manhole.overflow_level === "good" ? (
+                        {manhole.overflow_level === 'good' ? (
                           <span className="text-success">Good</span>
-                        ) : manhole.overflow_level === "risk" ? (
+                        ) : manhole.overflow_level === 'risk' ? (
                           <span className="text-warning">Risk</span>
                         ) : (
                           <span className="text-destructive">Overflow</span>
@@ -1102,14 +1148,10 @@ const SewageSystemMap = () => {
                     <CardHeader className="p-3">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium">
-                          {manhole?.code || "Unknown"} - {alert.alertType}
+                          {manhole?.code || 'Unknown'} - {alert.alertType}
                         </CardTitle>
                         <Badge
-                          variant={
-                            alert.alertLevel === "critical"
-                              ? "destructive"
-                              : "warning"
-                          }
+                          variant={alert.alertLevel === 'critical' ? 'destructive' : 'warning'}
                         >
                           {alert.alertLevel}
                         </Badge>
@@ -1136,16 +1178,14 @@ const SewageSystemMap = () => {
                 <Card key={worker.id} className="hover:bg-accent">
                   <CardHeader className="p-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">
-                        {worker.name}
-                      </CardTitle>
+                      <CardTitle className="text-sm font-medium">{worker.name}</CardTitle>
                       <Badge
                         variant={
-                          worker.status === "available"
-                            ? "success"
-                            : worker.status === "assigned"
-                              ? "warning"
-                              : "destructive"
+                          worker.status === 'available'
+                            ? 'success'
+                            : worker.status === 'assigned'
+                              ? 'warning'
+                              : 'destructive'
                         }
                       >
                         {worker.status}
@@ -1168,11 +1208,7 @@ const SewageSystemMap = () => {
           <div className="border-t p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold">{selectedManhole.code}</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedManhole(null)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setSelectedManhole(null)}>
                 Close
               </Button>
             </div>
@@ -1201,7 +1237,7 @@ const SewageSystemMap = () => {
                 <div>
                   <Label>Cover</Label>
                   <div>
-                    {selectedManhole.cover_status === "open" ? (
+                    {selectedManhole.cover_status === 'open' ? (
                       <span className="text-destructive">Open ✕</span>
                     ) : (
                       <span className="text-success">Closed ✓</span>
@@ -1211,9 +1247,9 @@ const SewageSystemMap = () => {
                 <div>
                   <Label>Overflow Level</Label>
                   <div>
-                    {selectedManhole.overflow_level === "good" ? (
+                    {selectedManhole.overflow_level === 'good' ? (
                       <span className="text-success">Good</span>
-                    ) : selectedManhole.overflow_level === "risk" ? (
+                    ) : selectedManhole.overflow_level === 'risk' ? (
                       <span className="text-warning">Risk</span>
                     ) : (
                       <span className="text-destructive">Overflow</span>
@@ -1225,15 +1261,19 @@ const SewageSystemMap = () => {
               <div>
                 <Label>Connected Manholes</Label>
                 <div className="mt-2 space-y-1">
-                  {selectedManhole.connections.map(connId => {
-                    const connManhole = manholes.find(m => m.id === connId);
-                    const pipe = pipes.find(p =>
-                      (p.start === selectedManhole.id && p.end === connId) ||
-                      (p.start === connId && p.end === selectedManhole.id)
+                  {selectedManhole.connections.map((connId) => {
+                    const connManhole = manholes.find((m) => m.id === connId);
+                    const pipe = pipes.find(
+                      (p) =>
+                        (p.start === selectedManhole.id && p.end === connId) ||
+                        (p.start === connId && p.end === selectedManhole.id)
                     );
 
                     return connManhole ? (
-                      <div key={connId} className="flex items-center justify-between text-sm p-2 bg-accent rounded">
+                      <div
+                        key={connId}
+                        className="flex items-center justify-between text-sm p-2 bg-accent rounded"
+                      >
                         <div>
                           <span className="font-medium">{connManhole.code}</span>
                           <span className="mx-2">→</span>
@@ -1245,9 +1285,7 @@ const SewageSystemMap = () => {
                             )}
                           </span>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {pipe?.diameter}mm
-                        </div>
+                        <div className="text-xs text-muted-foreground">{pipe?.diameter}mm</div>
                       </div>
                     ) : null;
                   })}
@@ -1263,11 +1301,7 @@ const SewageSystemMap = () => {
                       <XAxis dataKey="timestamp" />
                       <YAxis />
                       <Tooltip />
-                      <Line
-                        type="monotone"
-                        dataKey="waterLevel"
-                        stroke="#3b82f6"
-                      />
+                      <Line type="monotone" dataKey="waterLevel" stroke="#3b82f6" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -1312,11 +1346,15 @@ const SewageSystemMap = () => {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>From:</span>
-                <span>{manholes.find(m => m.id === selectedPipe.start)?.code || selectedPipe.start}</span>
+                <span>
+                  {manholes.find((m) => m.id === selectedPipe.start)?.code || selectedPipe.start}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>To:</span>
-                <span>{manholes.find(m => m.id === selectedPipe.end)?.code || selectedPipe.end}</span>
+                <span>
+                  {manholes.find((m) => m.id === selectedPipe.end)?.code || selectedPipe.end}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Diameter:</span>
@@ -1325,9 +1363,11 @@ const SewageSystemMap = () => {
               <div className="flex justify-between">
                 <span>Flow Direction:</span>
                 <span>
-                  {selectedPipe.flowDirection === "start_to_end" ? "From start to end" :
-                    selectedPipe.flowDirection === "end_to_start" ? "From end to start" :
-                      "Bidirectional"}
+                  {selectedPipe.flowDirection === 'start_to_end'
+                    ? 'From start to end'
+                    : selectedPipe.flowDirection === 'end_to_start'
+                      ? 'From end to start'
+                      : 'Bidirectional'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -1345,12 +1385,14 @@ const SewageSystemMap = () => {
                   variant="outline"
                   className="flex-1"
                   onClick={() => {
-                    setPipes(pipes.map(p =>
-                      p.id === selectedPipe.id ? { ...p, blockage: !p.blockage } : p
-                    ));
+                    setPipes(
+                      pipes.map((p) =>
+                        p.id === selectedPipe.id ? { ...p, blockage: !p.blockage } : p
+                      )
+                    );
                   }}
                 >
-                  {selectedPipe.blockage ? "Mark as Clear" : "Mark as Blocked"}
+                  {selectedPipe.blockage ? 'Mark as Clear' : 'Mark as Blocked'}
                 </Button>
                 <Button
                   variant="outline"

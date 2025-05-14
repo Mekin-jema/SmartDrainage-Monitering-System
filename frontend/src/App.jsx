@@ -8,6 +8,7 @@ import DashboardMainPage from "./pages/dashboard/drainx-dashboard";
 import NotFoundError from "./pages/error/404";
 import Dashboard from "./pages/dashboard/board/Dashboard";
 import SensorsData from "./pages/dashboard/sensor-data/SensorsData";
+// import SensorsData from "./pages/dashboard/A_web_socket/senserData/sensorData.jsx"
 import Manholes from "./pages/dashboard/manholes/Manholes";
 import Alerts from "./pages/dashboard/alerts/Alerts";
 import Users from "./pages/dashboard/users/Users";
@@ -111,8 +112,8 @@ const router = createBrowserRouter([
     // </AuthenticatedUser>
   },
   {
-    path:"/sensor", element:
-    <Table />
+    path: "/sensor", element:
+      <Table />
   },
   {
     path: "/veri>fy-email", element:

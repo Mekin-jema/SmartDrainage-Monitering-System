@@ -8,19 +8,22 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ThemeProvider } from "@/pages/dashboard/theme-provider";
 import { Toaster } from "./components/ui/toaster";
 // import MapComponent from "./pages/demo";
+import { SocketProvider } from "./pages/dashboard/A_web_socket/useContext/SocketContext";
+// import { SensorDataProvider } from "./pages/dashboard/A_web_socket/useContext/SensorDataContext";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider  storageKey="vite-ui-theme">
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <ThemeProvider storageKey="vite-ui-theme">
+        <SocketProvider>
           <App />
           {/* <MapComponent/> */}
-          <Toaster/>
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
+        </SocketProvider>
+        {/* <MapComponent/> */}
+        <Toaster />
+      </ThemeProvider>
+    </PersistGate>
+  </Provider>
   // </StrictMode>
 );
-
-
