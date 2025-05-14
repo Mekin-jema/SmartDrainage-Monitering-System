@@ -5,10 +5,10 @@
   "license": "ISC",
   "author": "abdu",
   "type": "module",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js",
+    "start": "nodemon src/api/server.js",
     "build": "echo \"no build needed\""
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
