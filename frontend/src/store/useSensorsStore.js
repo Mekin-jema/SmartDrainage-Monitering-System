@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_END_POINT = 'http://localhost:3000/api/v1/sensors';
+const API_END_POINT = 'https://my-backend-zeta-liard.vercel.app';
 axios.defaults.withCredentials = true;
 
 const useSensorsStore = create(

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 // Define the API endpoint for manholesData
-const API_END_POINT = 'http://localhost:3000/api/v1/manholes';
+const API_END_POINT = 'https://my-backend-zeta-liard.vercel.app';
 axios.defaults.withCredentials = true;
 
 export const useManholeStore = create(

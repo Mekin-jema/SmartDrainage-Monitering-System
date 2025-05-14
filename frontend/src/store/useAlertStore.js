@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_ALERT_ENDPOINT = 'http://localhost:3000/api/v1/alerts';
+const API_ALERT_ENDPOINT = 'https://my-backend-zeta-liard.vercel.app';
 axios.defaults.withCredentials = true;
 
 const useAlertStore = create(
