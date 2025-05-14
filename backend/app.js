@@ -18,51 +18,51 @@ const port = process.env.PORT || 3000;
 const sensorData = [];
 
 // MQTT Configuration
-const MQTT_BROKER_URL =
-  process.env.MQTT_BROKER_URL || "mqtt://broker.hivemq.com";
-const MQTT_TOPIC = process.env.MQTT_TOPIC || "drainage/sensor-data";
+// const MQTT_BROKER_URL =
+//   process.env.MQTT_BROKER_URL || "mqtt://broker.hivemq.com";
+// const MQTT_TOPIC = process.env.MQTT_TOPIC || "drainage/sensor-data";
 
-const mqttOptions = {
-  clientId: `nodejs-server_${Math.random().toString(16).substring(2, 8)}`,
-  clean: true,
-  connectTimeout: 4000,
-  reconnectPeriod: 1000,
-};
-const mockData = [];
+// const mqttOptions = {
+//   clientId: `nodejs-server_${Math.random().toString(16).substring(2, 8)}`,
+//   clean: true,
+//   connectTimeout: 4000,
+//   reconnectPeriod: 1000,
+// };
+// const mockData = [];
 
-const mqttClient = mqtt.connect(MQTT_BROKER_URL, mqttOptions);
+// const mqttClient = mqtt.connect(MQTT_BROKER_URL, mqttOptions);
 
-mqttClient.on("connect", () => {
-  console.log(`MQTT Connected to: ${MQTT_BROKER_URL}`);
-  mqttClient.subscribe(MQTT_TOPIC, { qos: 1 }, (err) => {
-    if (err) console.error("MQTT Subscribe Error:", err);
-    else console.log(`Subscribed to Topic: "${MQTT_TOPIC}"`);
-  });
-});
+// mqttClient.on("connect", () => {
+//   console.log(`MQTT Connected to: ${MQTT_BROKER_URL}`);
+//   mqttClient.subscribe(MQTT_TOPIC, { qos: 1 }, (err) => {
+//     if (err) console.error("MQTT Subscribe Error:", err);
+//     else console.log(`Subscribed to Topic: "${MQTT_TOPIC}"`);
+//   });
+// });
 
-mqttClient.on("error", (err) => console.error("MQTT Connection Error:", err));
-mqttClient.on("close", () => console.log("MQTT Connection Closed"));
-mqttClient.on("reconnect", () => console.log("MQTT Reconnecting..."));
+// mqttClient.on("error", (err) => console.error("MQTT Connection Error:", err));
+// mqttClient.on("close", () => console.log("MQTT Connection Closed"));
+// mqttClient.on("reconnect", () => console.log("MQTT Reconnecting..."));
 
-// Handle incoming MQTT messages
-mqttClient.on("message", async (topic, message) => {
-  try {
-    const data = JSON.parse(message.toString());
+// // Handle incoming MQTT messages
+// mqttClient.on("message", async (topic, message) => {
+//   try {
+//     const data = JSON.parse(message.toString());
 
-    // Format timestamp using date-fns
-    const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss"); // Customize this as needed
+//     // Format timestamp using date-fns
+//     const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss"); // Customize this as needed
 
-    const timestampedData = {
-      ...data,
-      timestamp, // Using the custom formatted timestamp
-    };
-    mockData.push(timestampedData);
+//     const timestampedData = {
+//       ...data,
+//       timestamp, // Using the custom formatted timestamp
+//     };
+//     mockData.push(timestampedData);
 
-    // console.log("Received sensor data:", mockData);
-  } catch (error) {
-    console.error("Error processing MQTT message:", error.message);
-  }
-});
+//     // console.log("Received sensor data:", mockData);
+//   } catch (error) {
+//     console.error("Error processing MQTT message:", error.message);
+//   }
+// });
 
 // Basic route
 app.get("/", (req, res) => {

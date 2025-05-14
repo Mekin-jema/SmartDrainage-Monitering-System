@@ -1,7 +1,7 @@
 import express from "express";
 import mqtt from "mqtt";
-import db from "./configure/db.confige.js";
-import router from "./routes/index.js";
+import db from "./src/configure/db.confige.js";
+import router from "./src/routes/index.js";
 import cors from "cors";
 import { Server } from "socket.io";
 import { createServer } from "http";
