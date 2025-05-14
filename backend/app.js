@@ -104,7 +104,7 @@ app.use(
     origin: ["https://final-project-v3.vercel.app", "http://localhost:5173"], // Frontend URL
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    // credentials: true,
   })
 );
 
