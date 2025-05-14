@@ -74,14 +74,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "*",
-
+    origin: ["https://final-project-v1-cajg.vercel.app"], // ✅ allow your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
-
 app.use("/api/v1", router);
 
 // Handle exit
