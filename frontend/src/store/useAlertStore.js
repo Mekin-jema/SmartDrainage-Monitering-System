@@ -18,7 +18,7 @@ const useAlertStore = create(
         set({ loading: true, error: null });
         try {
           const queryParams = new URLSearchParams(filters).toString();
-          const response = await axios.get(`${API_ALERT_ENDPOINT}?${queryParams}`);
+          const response = await axios.get(`${API_ALERT_ENDPOINT}/recent`);
           if (response.data.success) {
             set({ alerts: response.data.data, loading: false });
           } else {
