@@ -1,10 +1,13 @@
-"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+
 } from "@tanstack/react-table";
 
 import {
@@ -17,126 +20,196 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { useManholeStore } from "@/store/useManholeStore";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, ChevronLeft, ChevronRight, Search, AlertCircle, CheckCircle2, Wrench, Gauge, Calendar } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// 🧪 Mock Manholes Data
-const manholes = [
-  {
-    _id: "1",
-    code: "MH-001",
-    location: {
-      coordinates: [38.7635, 9.0301],
-      address: "Addis Ababa, Bole",
-      zone: "Zone A",
-    },
-    installedDate: new Date("2020-05-20"),
-    lastInspection: new Date("2025-03-10"),
-    status: "functional",
-    notes: "Installed near school",
-  },
-  {
-    _id: "2",
-    code: "MH-002",
-    location: {
-      coordinates: [38.7540, 9.0234],
-      address: "Addis Ababa, Yeka",
-      zone: "Zone B",
-    },
-    installedDate: new Date("2021-03-15"),
-    lastInspection: new Date("2025-02-01"),
-    status: "damaged",
-    notes: "Cover broken, needs replacement",
-  },
-  {
-    _id: "3",
-    code: "MH-003",
-    location: {
-      coordinates: [38.7610, 9.0268],
-      address: "Addis Ababa, Kirkos",
-      zone: "Zone C",
-    },
-    installedDate: new Date("2019-08-10"),
-    lastInspection: new Date("2025-01-10"),
-    status: "under_maintenance",
-    notes: "Pipe repair ongoing",
-  },
-];
 
-// 🏷️ Status Badge UI
-const StatusBadge = ({ status }) => {
-  const colors = {
-    functional: "bg-green-100 text-green-800",
-    damaged: "bg-red-100 text-red-800",
-    under_maintenance: "bg-yellow-100 text-yellow-800",
-  };
-  const label = {
-    functional: "Functional",
-    damaged: "Damaged",
-    under_maintenance: "Under Maintenance",
-  };
-
-  return <Badge className={colors[status]}>{label[status]}</Badge>;
+const statusIcons = {
+  functional: <CheckCircle2 className="h-4 w-4 mr-1" />,
+  damaged: <AlertCircle className="h-4 w-4 mr-1" />,
+  maintenance: <Wrench className="h-4 w-4 mr-1" />,
 };
 
-// 📄 Table Columns
+const overflowColors = {
+  good: "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200",
+  moderate: "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200",
+  overflow: "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200",
+  unknown: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200",
+};
+
 const columns = [
   {
     header: "Code",
     accessorKey: "code",
+    cell: ({ row }) => (
+      <div className="font-medium text-primary">
+        #{row.getValue("code")}
+      </div>
+    ),
   },
   {
     header: "Zone",
-    accessorKey: "location.zone",
-    cell: ({ row }) => row.original.location.zone,
-  },
-  {
-    header: "Address",
-    accessorKey: "location.address",
-    cell: ({ row }) => row.original.location.address,
-  },
-  {
-    header: "Coordinates",
-    accessorKey: "location.coordinates",
-    cell: ({ row }) =>
-      row.original.location.coordinates.map((val) => val.toFixed(4)).join(", "),
-  },
-  {
-    header: "Installed",
-    accessorKey: "installedDate",
-    cell: ({ getValue }) => format(new Date(getValue()), "yyyy-MM-dd"),
-  },
-  {
-    header: "Last Inspection",
-    accessorKey: "lastInspection",
-    cell: ({ getValue }) => format(new Date(getValue()), "yyyy-MM-dd"),
+    accessorKey: "zone",
+    cell: ({ row }) => (
+      <Badge variant="outline" className="border-primary/20">
+        {row.getValue("zone")}
+      </Badge>
+    ),
   },
   {
     header: "Status",
     accessorKey: "status",
-    cell: ({ getValue }) => <StatusBadge status={getValue()} />,
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+      return (
+        <div className="flex items-center">
+          {statusIcons[row.original.status]}
+          <Badge
+            variant={
+              row.original.status === "functional"
+                ? "success"
+                : row.original.status === "damaged"
+                  ? "destructive"
+                  : "warning"
+            }
+            className="capitalize"
+          >
+            {status}
+          </Badge>
+        </div>
+      );
+    },
   },
   {
-    header: "Notes",
-    accessorKey: "notes",
+    header: "Cover",
+    accessorKey: "cover_status",
+    cell: ({ row }) => (
+      <Badge
+        variant={row.original.cover_status === "closed" ? "secondary" : "outline"}
+        className={row.original.cover_status === "open" ? "border-rose-200 text-rose-800 dark:border-rose-800 dark:text-rose-200" : ""}
+      >
+        {row.original.cover_status === "closed" ? "Secured" : "Unsecured"}
+      </Badge>
+    ),
+  },
+  {
+    header: "Overflow",
+    accessorKey: "overflow_level",
+    cell: ({ row }) => {
+      const level = row.getValue("overflow_level");
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className={`flex items-center px-3 py-1 rounded-full ${overflowColors[row.original.overflow_level]}`}>
+                <Gauge className="h-3 w-3 mr-2" />
+                <span className="text-xs font-medium capitalize">{level}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Water level status</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    header: "Elevation",
+    accessorKey: "elevation",
+    cell: ({ row }) => (
+      <div className="text-right font-mono">
+        {row.getValue("elevation")}m
+      </div>
+    ),
+  },
+  {
+    header: "Last Inspection",
+    accessorKey: "lastInspection",
+    cell: ({ getValue }) => (
+      <div className="flex items-center text-sm">
+        <Calendar className="h-4 w-4 mr-2 opacity-70" />
+        {format(new Date(getValue()), "MMM d, yyyy")}
+      </div>
+    ),
   },
 ];
 
-const Manholes = () => {
+export default function ManholeTable() {
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [manholes, setManholes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { fetchManholes, manholesData } = useManholeStore();
+  console.log("manholes data ", manholesData);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await fetchManholes();
+        setManholes(manholesData);
+      } catch (error) {
+        console.error("Failed to fetch manholes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, [fetchManholes]);
+
   const table = useReactTable({
     data: manholes,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+    },
   });
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Manholes Overview</h2>
-      <div className="rounded-md border">
+    <Card className="p-4 bg-background">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Manhole Monitoring System</h2>
+        <div className="relative w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search manholes..."
+            value={globalFilter ?? ""}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-lg border overflow-hidden shadow-sm">
         <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
-                {group.headers.map((header) => (
-                  <TableHead key={header.id}>
+          <TableHeader className="bg-muted/50">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="font-semibold">
                     {flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
@@ -144,9 +217,23 @@ const Manholes = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-10 w-full" />
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-muted/50 transition-colors"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -156,16 +243,60 @@ const Manholes = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center">
-                  No manholes found.
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-    </div>
-  );
-};
 
-export default Manholes;
+      <div className="flex items-center justify-between mt-4">
+        <div className="text-sm text-muted-foreground">
+          Showing {table.getRowModel().rows.length} of {manholes.length} manholes
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="ml-2">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </Card>
+  );
+}
