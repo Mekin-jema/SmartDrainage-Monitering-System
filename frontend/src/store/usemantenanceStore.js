@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
-
-const MAINTENANCE_API = 'https://my-backend-zeta-liard.vercel.app'; // Adjust endpoint as needed
+// Adjust endpoint as needed
+const API_ALERT_ENDPOINT = `${import.meta.env.VITE_API_URL}/api/v1/maintenance`;
 axios.defaults.withCredentials = true;
 
 const useMaintenanceStore = create(

@@ -3,7 +3,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const API_END_POINT = 'https://my-backend-zeta-liard.vercel.app';
+const API_END_POINT = `${import.meta.env.VITE_API_URL}/api/v1/auth`;
+
 axios.defaults.withCredentials = true;
 
 export const useUserStore = create()(
