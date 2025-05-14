@@ -13,10 +13,15 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 const httpServer = createServer(app);
+
 const io = new Server(httpServer, {
   cors: {
     credentials: true,
-    origin: "http://localhost:5173", // Frontend URL
+    origin: [
+      "http://localhost:5173",
+      "https://final-project-v3.vercel.app",
+      "https://final-project-v1-8lce.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
@@ -96,10 +101,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: [
-      "https://final-project-v1-8lce.vercel.app",
-      "http://localhost:5173",
-    ], // Frontend URL
+    origin: ["https://final-project-v3.vercel.app", "http://localhost:5173"], // Frontend URL
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
