@@ -161,7 +161,47 @@ export const useUserStore = create()(
           set({ loading: false });
         }
       },
+      // ...inside the persist((set, get) => ({ ... })) block:
+
+      getAllUsers: async () => {
+        try {
+          set({ loading: true });
+          const response = await axios.get(`${API_END_POINT}/get-all-users`);
+          if (response.data.success) {
+            // Optionally, you can store it in the state (e.g., users list)
+            set({ users: response.data.users });
+          } else {
+            toast.error(response.data.message || 'Failed to fetch users');
+          }
+        } catch (error) {
+          toast.error(
+            error?.response?.data?.message || 'Something went wrong while fetching users'
+          );
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      deleteUser: async (userId) => {
+        try {
+          set({ loading: true });
+          const response = await axios.delete(`${API_END_POINT}/user/${userId}`);
+          if (response.data.success) {
+            toast.success(response.data.message);
+            // Re-fetch users list if needed
+            const updatedUsers = (await axios.get(`${API_END_POINT}/users`)).data.users;
+            set({ users: updatedUsers });
+          } else {
+            toast.error(response.data.message || 'Delete failed');
+          }
+        } catch (error) {
+          toast.error(error?.response?.data?.message || 'Something went wrong while deleting user');
+        } finally {
+          set({ loading: false });
+        }
+      },
     }),
+
     {
       name: 'user-storage',
       storage: createJSONStorage(() => localStorage),
