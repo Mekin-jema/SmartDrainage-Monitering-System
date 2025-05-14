@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_END_POINT = `${import.meta.env.VITE_API_URL}/sensors`;
 // axios.defaults.withCredentials = true;
-
+// fix the error: "Network Error" in axios
 const useSensorsStore = create(
   persist(
     (set) => ({
