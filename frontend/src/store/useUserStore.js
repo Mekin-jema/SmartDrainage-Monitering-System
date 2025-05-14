@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 const API_END_POINT = `${import.meta.env.VITE_API_URL}/auth`;
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 export const useUserStore = create()(
   persist(
