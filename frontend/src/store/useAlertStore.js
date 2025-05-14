@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_ALERT_ENDPOINT = `${import.meta.env.VITE_API_URL}/api/v1/alerts`;
+const API_ALERT_ENDPOINT = `${import.meta.env.VITE_API_URL}/alerts`;
 axios.defaults.withCredentials = true;
 
 const useAlertStore = create(

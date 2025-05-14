@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_END_POINT = `${import.meta.env.VITE_API_URL}/api/v1/sensors`;
+const API_END_POINT = `${import.meta.env.VITE_API_URL}/sensors`;
 axios.defaults.withCredentials = true;
 
 const useSensorsStore = create(

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 // Adjust endpoint as needed
-const API_ALERT_ENDPOINT = `${import.meta.env.VITE_API_URL}/api/v1/maintenance`;
+const API_ALERT_ENDPOINT = `${import.meta.env.VITE_API_URL}/maintenances`;
 axios.defaults.withCredentials = true;
 
 const useMaintenanceStore = create(
