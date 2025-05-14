@@ -6,10 +6,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  PaginationState,
+
 } from "@tanstack/react-table";
 import {
   Table,
@@ -171,19 +168,18 @@ const types = {
   emergency: { label: "Emergency", color: "bg-red-100 text-red-800" },
   preventive: { label: "Preventive", color: "bg-orange-100 text-orange-800" },
 };
-
-export const MaintenanceLogsTable = () => {
+const MaintenanceLogsTable = () => {
   const { toast } = useToast();
-  const [columnFilters, setColumnFilters] = useState < ColumnFiltersState > ([]);
-  const [sorting, setSorting] = useState < SortingState > ([]);
-  const [pagination, setPagination] = useState < PaginationState > ({
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const columns = useMemo < ColumnDef < MaintenanceLog > [] > (
+  const columns = useMemo(
     () => [
       {
         accessorKey: "manhole",
@@ -582,3 +578,5 @@ export const MaintenanceLogsTable = () => {
     </div>
   );
 };
+
+export default MaintenanceLogsTable
