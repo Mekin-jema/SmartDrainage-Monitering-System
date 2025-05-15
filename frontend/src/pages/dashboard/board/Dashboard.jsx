@@ -167,7 +167,6 @@ const Dashboard = () => {
     primary: "#2563eb", // Vibrant blue
     secondary: "#ea580c", // Orange
     success: "#16a34a", // Green
-    warning: "#d97706", // Amber
     danger: "#dc2626", // Red
     info: "#0284c7", // Sky blue
 
