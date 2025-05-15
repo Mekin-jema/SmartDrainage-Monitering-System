@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_END_POINT = `${import.meta.env.VITE_API_URL}/sensors`;
+const API_END_POINT = `/api/sensors`;
 // axios.defaults.withCredentials = true;
 // fix the error: "Network Error" in axios
 const useSensorsStore = create(

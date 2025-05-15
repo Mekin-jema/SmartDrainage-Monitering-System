@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 // Define the API endpoint for manholesData
-const API_END_POINT = `${import.meta.env.VITE_API_URL}/manholes`;
+const API_END_POINT = `/api/manholes`;
 // axios.defaults.withCredentials = true;
 
 export const useManholeStore = create(
