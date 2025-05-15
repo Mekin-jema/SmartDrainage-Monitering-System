@@ -12,13 +12,25 @@ import useMaintenanceStore from "@/store/usemantenanceStore";
 
 
 const Dashboard = () => {
+  // Initialize with default values to prevent undefined errors
+  const [dashboardData, setDashboardData] = useState({
+    systemStatus: {
+      totalManholes: 0,
+      monitoredManholes: 0,
+      criticalIssues: 0,
+      maintenanceOngoing: 0,
+      systemHealth: 0,
+    },
+    manholes: [],
+    recentAlerts: [],
+    maintenanceLogs: [],
+    sensorTrends: []
+  });
 
-  const { status, loading, error, fetchSystemStatus } = useManholeStore();
-  const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore()
-  const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore()
-  console.log("maintenance logs", maintenanceLogs)
-
-  const { recentAlerts, fetchRecentAlerts, } = useAlertStore()
+  const { status, fetchSystemStatus } = useManholeStore();
+  const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore();
+  const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
+  const { recentAlerts, fetchRecentAlerts } = useAlertStore();
 
   const socketRef = useRef(null);
 
@@ -28,7 +40,8 @@ const Dashboard = () => {
     fetchManholes();
     fetchSensorTrends();
     fetchRecentAlerts();
-    fetchMaintenanceLogs()
+    fetchMaintenanceLogs();
+
     // Initialize Socket.IO connection
     socketRef.current = io('http://localhost:3000', {
       reconnection: true,
@@ -36,7 +49,6 @@ const Dashboard = () => {
       reconnectionDelay: 1000,
     });
 
-    // Socket.IO event handlers
     const socket = socketRef.current;
 
     socket.on('connect', () => {
@@ -48,119 +60,45 @@ const Dashboard = () => {
       fetchSystemStatus();
       fetchManholes();
       fetchSensorTrends();
+    });
 
+    socket.on('disconnect', () => {
+      console.log('Socket.IO disconnected');
+    });
 
+    socket.on('connect_error', (error) => {
+      console.error('Socket.IO connection error:', error.message);
+    });
 
-
-      socket.on('disconnect', () => {
-        console.log('Socket.IO disconnected');
-      });
-
-      socket.on('connect_error', (error) => {
-        console.error('Socket.IO connection error:', error.message);
-      });
-
-
-      // Cleanup on unmount
-      return () => {
-        if (socketRef.current) {
-          socketRef.current.disconnect();
-        }
-      };
-    })
-  }, []);
-  // console.log("sensors trends", sensorTrends)
-
-  // Sample data structure that matches your schema with multiple manholes
-  const [dashboardData, setDashboardData] = useState({
-    systemStatus: {
-      totalManholes: status.totalManholes,
-      monitoredManholes: status.monitoredManholes,
-      criticalIssues: status.criticalIssues,
-      maintenanceOngoing: status.maintenanceOngoing,
-      systemHealth: status.systemHealth, // percentage
-    },
-    manholes,
-    recentAlerts,
-    // recentAlerts: [
-
-    //   {
-    //     id: 1,
-    //     type: "High Water Level",
-    //     location: "Manhole #12",
-    //     manholeId: "mh001",
-    //     timestamp: "2025-04-30T08:15:00",
-    //     status: "pending",
-    //     severity: "warning"
-    //   },
-    //   {
-    //     id: 2,
-    //     type: "Fuel Leak Detected",
-    //     location: "Manhole #07",
-    //     manholeId: "mh002",
-    //     timestamp: "2025-04-30T07:30:00",
-    //     status: "assigned",
-    //     severity: "critical"
-    //   },
-    //   {
-    //     id: 3,
-    //     type: "Blockage Detected",
-    //     location: "Manhole #23",
-    //     manholeId: "mh003",
-    //     timestamp: "2025-04-29T16:45:00",
-    //     status: "resolved",
-    //     severity: "warning"
-    //   },
-    // ],
-
-    maintenanceLogs,
-    // maintenanceLogs: [
-    //   {
-    //     id: 1,
-    //     manhole: "#05",
-    //     manholeId: "mh005",
-    //     type: "Routine Check",
-    //     technician: "Abebe K.",
-    //     status: "completed",
-    //     date: "2025-04-28"
-    //   },
-    //   {
-    //     id: 2,
-    //     manhole: "#12",
-    //     manholeId: "mh001",
-    //     type: "Emergency Repair",
-    //     technician: "Mekdes T.",
-    //     status: "in-progress",
-    //     date: "2025-04-29"
-    //   },
-    //   {
-    //     id: 3,
-    //     manhole: "#22",
-    //     manholeId: "mh022",
-    //     type: "Sensor Replacement",
-    //     technician: "Yohannes A.",
-    //     status: "scheduled",
-    //     date: "2025-05-02"
-    //   },
-    // ],
-    sensorTrends
-  });
+    // Cleanup on unmount
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, [fetchSystemStatus, fetchManholes, fetchSensorTrends, fetchRecentAlerts, fetchMaintenanceLogs]);
 
   useEffect(() => {
-    setDashboardData({
+    // Update dashboard data when any of the dependent data changes
+    setDashboardData(prev => ({
+      ...prev,
       systemStatus: {
-        totalManholes: status.totalManholes,
-        monitoredManholes: status.monitoredManholes,
-        criticalIssues: status.criticalIssues,
-        maintenanceOngoing: status.maintenanceOngoing,
-        systemHealth: status.systemHealth,
+        totalManholes: status?.totalManholes || 0,
+        monitoredManholes: status?.monitoredManholes || 0,
+        criticalIssues: status?.criticalIssues || 0,
+        maintenanceOngoing: status?.maintenanceOngoing || 0,
+        systemHealth: status?.systemHealth || 0,
       },
-      manholes,
-      recentAlerts,
-      maintenanceLogs,
-      sensorTrends,
-    });
+      manholes: manholes || [],
+      recentAlerts: recentAlerts || [],
+      maintenanceLogs: maintenanceLogs || [],
+      sensorTrends: sensorTrends || []
+    }));
   }, [status, manholes, recentAlerts, maintenanceLogs, sensorTrends]);
+
+  // Rest of your component code remains the same...
+  // (All your helper functions, COLORS object, component rendering, etc.)
+
 
   // Updated color palette
   const COLORS = {
