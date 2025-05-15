@@ -5,11 +5,12 @@
   "license": "ISC",
   "author": "abdu",
   "type": "module",
-  "main": "app.js",
+  "main": "backend/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
-    "build": "echo \"no build needed\""
+    "dev": "nodemon backend/app.js",
+    "start": "node backend/app.js",
+    "build": "npm install && npm install --prefix backend && npm run build --prefix backend"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

@@ -120,7 +120,7 @@ process.on("SIGINT", () => {
 (async () => {
   try {
     await db();
-    httpServer.listen(5000, () =>
+    httpServer.listen(port, () =>
       console.log(`Server running on http://localhost:${port}`)
     );
   } catch (error) {

@@ -1,42 +1,51 @@
-import mongoose from 'mongoose';
-import Alert from '../models/alert.model.js';
-import User from '../models/user.model.js';
-import assignWorkerToAlert from '../helpers/assignWork.js';
+import mongoose from "mongoose";
+import Alert from "../models/alert.model.js";
+import User from "../models/user.model.js";
+import assignWorkerToAlert from "../helpers/assignWork.js";
 // Alert Levels and Types Configuration
-const ALERT_LEVELS = ['low', 'medium', 'high', 'critical'];
+const ALERT_LEVELS = ["low", "medium", "high", "critical"];
 const ALERT_TYPES = [
-  'sewage_overflow',
-  'gas_leak',
-  'blockage',
-  'sensor_failure',
-  'maintenance_required',
+  "sewage_overflow",
+  "gas_leak",
+  "blockage",
+  "sensor_failure",
+  "maintenance_required",
 ];
-const ALERT_STATUSES = ['open', 'assigned', 'in_progress', 'resolved', 'closed'];
+const ALERT_STATUSES = [
+  "open",
+  "assigned",
+  "in_progress",
+  "resolved",
+  "closed",
+];
 
 // 1. Create New Alert
 const createAlert = async (req, res) => {
   try {
-    const { manholeId, sensorId, alertType, alertLevel, description } = req.body;
+    const { manholeId, sensorId, alertType, alertLevel, description } =
+      req.body;
 
     // Validate input
     if (!manholeId || !alertType || !alertLevel) {
       return res.status(400).json({
         success: false,
-        message: 'Manhole ID, alert type and level are required',
+        message: "Manhole ID, alert type and level are required",
       });
     }
 
     if (!ALERT_TYPES.includes(alertType)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid alert type. Valid types: ${ALERT_TYPES.join(', ')}`,
+        message: `Invalid alert type. Valid types: ${ALERT_TYPES.join(", ")}`,
       });
     }
 
     if (!ALERT_LEVELS.includes(alertLevel)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid alert level. Valid levels: ${ALERT_LEVELS.join(', ')}`,
+        message: `Invalid alert level. Valid levels: ${ALERT_LEVELS.join(
+          ", "
+        )}`,
       });
     }
 
@@ -47,29 +56,29 @@ const createAlert = async (req, res) => {
       sensorId,
       alertType,
       alertLevel,
-      description: description || `${alertType.replace('_', ' ')} detected`,
+      description: description || `${alertType.replace("_", " ")} detected`,
       timestamp: new Date(),
-      status: 'open',
+      status: "open",
       actions: [],
     });
 
     await newAlert.save();
 
     // Automatically assign to available worker if critical
-    if (alertLevel === 'critical') {
+    if (alertLevel === "critical") {
       await assignWorkerToAlert(newAlert._id);
     }
 
     return res.status(201).json({
       success: true,
-      message: 'Alert created successfully',
+      message: "Alert created successfully",
       data: newAlert,
     });
   } catch (error) {
-    console.error('Create alert error:', error);
+    console.error("Create alert error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
@@ -82,7 +91,7 @@ const updateAlertStatus = async (req, res) => {
     if (!ALERT_STATUSES.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid status. Valid statuses: ${ALERT_STATUSES.join(', ')}`,
+        message: `Invalid status. Valid statuses: ${ALERT_STATUSES.join(", ")}`,
       });
     }
 
@@ -90,33 +99,33 @@ const updateAlertStatus = async (req, res) => {
     if (!alert) {
       return res.status(404).json({
         success: false,
-        message: 'Alert not found',
+        message: "Alert not found",
       });
     }
 
     // Verify worker is assigned if trying to update
-    if (status !== 'open' && !alert.assignedWorkerId) {
+    if (status !== "open" && !alert.assignedWorkerId) {
       return res.status(400).json({
         success: false,
-        message: 'Alert must be assigned before status update',
+        message: "Alert must be assigned before status update",
       });
     }
 
     // Add action log
     alert.actions.push({
       workerId,
-      action: 'status_update',
-      notes: `Status changed to ${status}. ${notes || ''}`,
+      action: "status_update",
+      notes: `Status changed to ${status}. ${notes || ""}`,
       timestamp: new Date(),
     });
 
     alert.status = status;
 
     // If resolved, update worker status
-    if (status === 'resolved') {
+    if (status === "resolved") {
       const worker = await User.findById(alert.assignedWorkerId);
       if (worker) {
-        worker.status.availability = 'available';
+        worker.status.availability = "available";
         await worker.save();
       }
     }
@@ -125,14 +134,14 @@ const updateAlertStatus = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Alert status updated',
+      message: "Alert status updated",
       data: alert,
     });
   } catch (error) {
-    console.error('Update alert error:', error);
+    console.error("Update alert error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
@@ -155,8 +164,8 @@ const getAlerts = async (req, res) => {
 
     const alerts = await Alert.find(filter)
       .sort({ timestamp: -1 })
-      .populate('assignedWorkerId', 'name phone status')
-      .populate('manholeId', 'code location');
+      .populate("assignedWorkerId", "name phone status")
+      .populate("manholeId", "code location");
 
     return res.status(200).json({
       success: true,
@@ -164,10 +173,10 @@ const getAlerts = async (req, res) => {
       data: alerts,
     });
   } catch (error) {
-    console.error('Get alerts error:', error);
+    console.error("Get alerts error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
@@ -181,7 +190,7 @@ const addResolutionNotes = async (req, res) => {
     if (!notes) {
       return res.status(400).json({
         success: false,
-        message: 'Resolution notes are required',
+        message: "Resolution notes are required",
       });
     }
 
@@ -189,14 +198,14 @@ const addResolutionNotes = async (req, res) => {
     if (!alert) {
       return res.status(404).json({
         success: false,
-        message: 'Alert not found',
+        message: "Alert not found",
       });
     }
 
     alert.resolutionNotes = notes;
     alert.actions.push({
       workerId,
-      action: 'resolution_notes',
+      action: "resolution_notes",
       notes: `Resolution notes added`,
       timestamp: new Date(),
     });
@@ -205,14 +214,14 @@ const addResolutionNotes = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Resolution notes added',
+      message: "Resolution notes added",
       data: alert,
     });
   } catch (error) {
-    console.error('Add notes error:', error);
+    console.error("Add notes error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
@@ -225,9 +234,11 @@ const getRecentAlerts = async (req, res) => {
 
     const formattedAlerts = alerts.map((alert, index) => ({
       id: index + 1,
-      type: alert.alertType?.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-      location: alert.manholeId ? `Manhole #${alert.manholeId}` : 'Unknown',
-      manholeId: alert.manholeId || 'unknown',
+      type: alert.alertType
+        ?.replace(/_/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase()),
+      location: alert.manholeId ? `Manhole #${alert.manholeId}` : "Unknown",
+      manholeId: alert.manholeId || "unknown",
       timestamp: alert.createdAt,
       status: alert.status,
       severity: alert.alertLevel,
@@ -238,10 +249,10 @@ const getRecentAlerts = async (req, res) => {
       recentAlerts: formattedAlerts,
     });
   } catch (error) {
-    console.error('Error fetching recent alerts:', error.message);
+    console.error("Error fetching recent alerts:", error.message);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
     });
   }
 };
