@@ -23,11 +23,8 @@ app.get("/{*any}", (req, res) => {
 const io = new Server(httpServer, {
   cors: {
     credentials: true,
-    origin: [
-      "http://localhost:5173",
-      "https://final-project-v3.vercel.app",
-      "https://final-project-v1-8lce.vercel.app",
-    ],
+    origin: "*",
+
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
@@ -105,14 +102,7 @@ app.get("/", (req, res) => {
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: ["https://final-project-v3.vercel.app", "http://localhost:5173"], // Frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    // credentials: true,
-  })
-);
+app.use(cors());
 
 app.use("/api/v1", router);
 

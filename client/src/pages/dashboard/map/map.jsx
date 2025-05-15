@@ -26,7 +26,7 @@ import CategoryScroll from "@/pages/dashboard/map/poi-buttons";
 import { variablelStyles } from "@/pages/dashboard/map/map-styles/variable-style";
 import MapStyles from "@/pages/dashboard/map/map-style-popup";
 import { addUpdatedValhalla } from "./utils/add-updated-valhalla";
-import "../../dashboard/map/Popup/style.css";
+import "./Popup/style.css";
 import { getRouteInfo } from "./api";
 import { removePOILayerFromMap } from "./utils/remove-poi-layer";
 
@@ -111,7 +111,7 @@ const Map = () => {
     };
     layerSwitcher.appendChild(satelliteButton);
     mapInstance.current.addControl(
-      { onAdd: () => layerSwitcher, onRemove: () => {} },
+      { onAdd: () => layerSwitcher, onRemove: () => { } },
       "bottom-right"
     );
 
@@ -285,9 +285,8 @@ const Map = () => {
       />
 
       <div
-        className={`fixed top-24 ${
-          state === "collapsed" ? "md:left-[60px]" : "md:left-[300px]"
-        } left-0  flex  z-10 items-center `}
+        className={`fixed top-24 ${state === "collapsed" ? "md:left-[60px]" : "md:left-[300px]"
+          } left-0  flex  z-10 items-center `}
       >
         {/* <SidebarTrigger className="ml-2" /> */}
         {toggleGeocoding ? (
