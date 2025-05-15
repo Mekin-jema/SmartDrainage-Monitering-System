@@ -7,13 +7,19 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import dotenv from "dotenv";
 import { format } from "date-fns"; // Import format from date-fns
-
+import path from "path";
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 const httpServer = createServer(app);
 
+const __dirname = path.resolve();
+
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 const io = new Server(httpServer, {
   cors: {
     credentials: true,

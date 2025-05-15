@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon backend/app.js",
     "start": "node backend/app.js",
-    "build": "npm install && npm install --prefix backend && npm run build --prefix backend"
+    "build": "npm install && npm install --prefix clinent && npm run build --prefix clinent"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
