@@ -17,7 +17,7 @@ const httpServer = createServer(app);
 const __dirname = path.resolve();
 
 app.use(express.static(path.join(__dirname, "/client/dist")));
-app.get("*", (req, res) => {
+app.get("/{*any}", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });
 const io = new Server(httpServer, {
