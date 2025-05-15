@@ -91,9 +91,6 @@ mqttClient.on("message", async (topic, message) => {
 
 // Optional: Emit mock data every 5 seconds (useful for testing frontend without MQTT)
 // Basic route
-app.get("/", (req, res) => {
-  res.send("Hello from the server");
-});
 
 // Middleware
 app.use(express.json());
