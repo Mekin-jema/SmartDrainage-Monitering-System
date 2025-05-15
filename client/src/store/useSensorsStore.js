@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_END_POINT = `/api/sensors`;
+const API_END_POINT = `/api/v1/sensors`;
 // axios.defaults.withCredentials = true;
 // fix the error: "Network Error" in axios
 const useSensorsStore = create(
@@ -16,7 +16,7 @@ const useSensorsStore = create(
       fetchManholes: async () => {
         set({ loading: true, error: null });
         try {
-          const response = await axios.get(`${API_END_POINT}/get-all-sernsor-readings`);
+          const response = await axios.get(`${API_END_POINT}/get-all-sensor-readings`);
           if (response.data.success) {
             set({ manholes: response.data.manholes, loading: false });
           } else {

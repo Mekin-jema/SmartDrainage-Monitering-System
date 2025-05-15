@@ -93,10 +93,12 @@ const columns = [
     accessorKey: "role",
     cell: (info) => {
       const value = info.getValue();
-      const colorClass = roleColors[value] || roleColors.default;
+      // Ensure value is a string
+      const roleValue = typeof value === 'string' ? value : 'default';
+      const colorClass = roleColors[roleValue] || roleColors.default;
       return (
         <Badge className={`${colorClass} text-white dark:text-gray-100`}>
-          {value.charAt(0).toUpperCase() + value.slice(1)}
+          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
         </Badge>
       );
     },
@@ -106,10 +108,12 @@ const columns = [
     accessorKey: "status",
     cell: (info) => {
       const value = info.getValue();
-      const colorClass = statusColors[value] || statusColors.default;
+      // Ensure value is a string
+      const statusValue = typeof value === 'string' ? value : 'default';
+      const colorClass = statusColors[statusValue] || statusColors.default;
       return (
         <Badge className={`${colorClass} text-white dark:text-gray-100`}>
-          {value.charAt(0).toUpperCase() + value.slice(1)}
+          {statusValue.charAt(0).toUpperCase() + statusValue.slice(1)}
         </Badge>
       );
     },
@@ -163,24 +167,29 @@ export default function UsersTable() {
   const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { getAllUsers, user } = useUserStore();
-  console.log("user", user);
+  const { getAllUsers, users: storeUsers } = useUserStore(); // Changed from 'user' to 'users'
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        await getAllUsers();
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    try {
-      setLoading(true);
-      getAllUsers();
-      setUsers(user);
-    } catch (err) {
-      setError(err.message || "Failed to fetch user data");
-    } finally {
-      setLoading(false);
+    fetchUsers();
+  }, [getAllUsers]);
+
+  useEffect(() => {
+    if (storeUsers) {
+      setUsers(storeUsers);
     }
+  }, [storeUsers]);
 
-  }, []);
-
-  console.log("users", users);
   const table = useReactTable({
     data: users,
     columns,

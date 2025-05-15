@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import axios from 'axios';
 import { toast } from 'sonner';
 
-const API_END_POINT = `/api/auth`;
+const API_END_POINT = `/api/v1/auth`;
 
 // axios.defaults.withCredentials = true;
 
