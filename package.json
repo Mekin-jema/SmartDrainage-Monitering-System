@@ -5,11 +5,10 @@
   "license": "ISC",
   "author": "abdu",
   "type": "module",
-  "main": "backend/app.js",
+  "main": "api/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon backend/app.js",
-    "start": "node backend/app.js",
+    "dev": "nodemon api/app.js",
+    "start": "node api/app.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },
   "dependencies": {
