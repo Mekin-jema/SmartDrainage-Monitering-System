@@ -39,6 +39,7 @@ import { useEffect } from "react";
 import EmailVerified from "./components/auth/Email-verified";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import ResetPassword from "./components/auth/Reset-password";
+import WorkerDashboard from "./pages/dashboard/worker-task/worker-dashboard";
 
 
 
@@ -59,6 +60,12 @@ const AuthenticatedUser = ({ children }) => {
   if (isAuthenticated && user?.isVerified) {
     return <Navigate to="/" replace />
   }
+  return children;
+};
+const WorkerRoute = ({ children }) => {
+  const { user, isAuthenticated } = useUserStore();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== "worker") return <Navigate to="/" replace />;
   return children;
 };
 
@@ -163,10 +170,20 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
+      { path: "worker-dashboard", element: <WorkerDashboard /> },
     ],
   },
 
+  {
+    path: "/worker-dashboard",
+    element: (
+      <WorkerRoute>
+        <WorkerDashboard />
+      </WorkerRoute>
+    )
+  }
 
+  ,
   // Error handling route
   {
     path: "/404",

@@ -279,3 +279,33 @@ export const deleteUser = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// controllers/userController.js
+
+export const getAssignedTasksForWorker = async (req, res) => {
+  try {
+    const userId = req.id; // Authenticated worker ID
+
+    const worker = await User.findById(userId).select("fullname assignments");
+
+    if (!worker) {
+      return res.status(404).json({ message: "Worker not found" });
+    }
+
+    if (!worker.assignments || worker.assignments.length === 0) {
+      return res.status(200).json({
+        message: "No assignments found",
+        tasks: [],
+      });
+    }
+
+    res.status(200).json({
+      worker: worker.fullname,
+      totalTasks: worker.assignments.length,
+      tasks: worker.assignments,
+    });
+  } catch (error) {
+    console.error("Error fetching assignments:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -26,7 +26,7 @@ const Login = () => {
   const [pending, setPending] = useState(false);
   const navigate = useNavigate()
   const { toast } = useToast();
-  const { login, loading } = useUserStore();
+  const { login, loading, user } = useUserStore();
   // const router = useRouter();
   const form = useForm
     // <LoginFormValues>
@@ -40,11 +40,17 @@ const Login = () => {
     });
   const onSubmit = async (data) => {
     try {
-      await login(data);
       form.reset();
-      navigate("/dashboard");
+
+      if (user?.role === "admin") {
+        navigate("/dashboard");
+      } else if (user?.role === "worker") {
+        navigate("/worker-dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error("Login error:", error);
     }
   };
 

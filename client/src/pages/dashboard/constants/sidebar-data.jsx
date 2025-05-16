@@ -48,9 +48,9 @@ export const sidebarData = {
           icon: Users,
         },
         {
-          title:"Map",
-          url:"/dashboard/map",
-          icon:MapPin,
+          title: "Map",
+          url: "/dashboard/map",
+          icon: MapPin,
         },
         {
           title: "Maintenance Logs",
@@ -61,6 +61,11 @@ export const sidebarData = {
           title: "Repairs & Inspection",
           url: "/dashboard/repairs",
           icon: Wrench,
+        },
+        {
+          title: "Assignments",
+          url: "dashboard/worker-dashboard",
+          icon: Users,
         },
         {
           title: "System Settings",
