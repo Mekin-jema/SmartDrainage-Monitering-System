@@ -74,7 +74,7 @@ const RenderDirectionDetail = ({ map, route }) => {
   };
 
   return (
-    <Card className="z-20 flex flex-col shadow-lg  rounded-lg  w-full">
+    <Card className="z-[1000] flex flex-col shadow-lg  rounded-lg  w-full">
       <CardHeader className="p-4 border-b">
         <CardTitle className="text-lg font-semibold">Via Africa Venue</CardTitle>
         <CardDescription className="text-sm text-gray-300">
@@ -100,15 +100,14 @@ const RenderDirectionDetail = ({ map, route }) => {
               return (
                 <div
                   key={idx}
-                  className={`py-4 hover:cursor-pointertransition-colors ${
-                    waypoints.some(
-                      (wp) =>
-                        wp.latitude === step.maneuver.location[1] &&
-                        wp.longitude === step.maneuver.location[0]
-                    )
+                  className={`py-4 hover:cursor-pointertransition-colors ${waypoints.some(
+                    (wp) =>
+                      wp.latitude === step.maneuver.location[1] &&
+                      wp.longitude === step.maneuver.location[0]
+                  )
                       ? "bg-blue-50 dark:bg-blue-900"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => handleStepClick(step)}
                 >
                   <div className="flex items-center gap-2 mb-1 px-4">
@@ -129,7 +128,7 @@ const RenderDirectionDetail = ({ map, route }) => {
             {/* Destination Step */}
             <div className="py-4 hover:cursor-pointer  transition-colors">
               <div className="flex items-center gap-2 mb-1 px-4">
-              
+
                 <span className="text-sm">
                   {steps[steps.length - 1]?.name}
                 </span>

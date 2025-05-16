@@ -38,7 +38,7 @@ export const signup = async (req, res) => {
     });
     generateToken(res, user);
 
-    await sendVerificationEmail(email, verificationToken);
+    // await sendVerificationEmail(email, verificationToken);
 
     const userWithoutPassword = await User.findOne({ email }).select(
       "-password"

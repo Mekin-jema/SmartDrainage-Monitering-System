@@ -64,10 +64,10 @@ const AuthenticatedUser = ({ children }) => {
 
 const AdminRoute = ({ children }) => {
   const { user, isAuthenticated } = useUserStore();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-  if (!user?.admin) {
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/login" replace />
+  // }
+  if (!user?.role) {
     return <Navigate to="/" replace />
   }
 
@@ -145,9 +145,9 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      //  <AdminRoute> 
-      <DashboardMainPage />
-      // </AdminRoute>
+      <AdminRoute>
+        <DashboardMainPage />
+      </AdminRoute>
 
     ),
 

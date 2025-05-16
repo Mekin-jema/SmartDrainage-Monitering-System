@@ -19,7 +19,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-  const { signup,loading } = useUserStore();
+  const { signup, loading } = useUserStore();
   console.log("loading", loading);
   const navigate = useNavigate(); // ✅ FIXED: added missing hook
 
@@ -37,7 +37,7 @@ const Signup = () => {
     try {
       await signup(data);
       form.reset();
-      navigate("/verify-email");
+      navigate("/login");
     } catch (error) {
       console.error("Signup error:", error);
     }
