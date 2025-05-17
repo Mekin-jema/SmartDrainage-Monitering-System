@@ -5,9 +5,9 @@
   "license": "ISC",
   "author": "abdu",
   "type": "module",
-  "main": "api/app.js",
+  "main": "api/server.js",
   "scripts": {
-    "dev": "nodemon api/app.js",
+    "dev": "nodemon api/server.js",
     "start": "node api/app.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client"
   },

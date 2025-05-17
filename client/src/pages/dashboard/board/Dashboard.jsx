@@ -914,7 +914,7 @@ const Dashboard = () => {
                   dataKey="temperature"
                   stroke={COLORS.warning}
                   strokeWidth={2}
-                  name="Flow Rate (m/s)"
+                  name="Tempreture (0°C)"
                   dot={{ r: 4, fill: COLORS.success }}
                 />
               </LineChart>

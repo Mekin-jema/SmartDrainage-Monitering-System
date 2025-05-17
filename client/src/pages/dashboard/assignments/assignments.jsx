@@ -408,13 +408,6 @@ const AdminDashboard = () => {
                         Welcome back, {user?.name || "Admin"}
                     </p>
                 </div>
-                <Button variant="outline" size="icon" onClick={toggleTheme}>
-                    {theme === "dark" ? (
-                        <Sun className="h-5 w-5" />
-                    ) : (
-                        <Moon className="h-5 w-5" />
-                    )}
-                </Button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
