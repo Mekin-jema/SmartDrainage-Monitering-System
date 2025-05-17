@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 // import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +27,10 @@ const Login = () => {
   const navigate = useNavigate()
   const { toast } = useToast();
   const { login, loading, user } = useUserStore();
+
+
+
+
   // const router = useRouter();
   const form = useForm
     // <LoginFormValues>
@@ -41,14 +45,15 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       form.reset();
-
-      if (user?.role === "admin") {
-        navigate("/dashboard");
-      } else if (user?.role === "worker") {
-        navigate("/worker-dashboard");
-      } else {
-        navigate("/");
-      }
+       await login(data);
+        if (user?.role === "admin") {
+    navigate("/dashboard");
+  } else if (user?.role === "worker") {
+    navigate("/worker-dashboard");
+  } else if (user) {
+    navigate("/");
+  }
+    
     } catch (error) {
       console.error("Login error:", error);
     }

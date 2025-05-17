@@ -40,6 +40,7 @@ import EmailVerified from "./components/auth/Email-verified";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import ResetPassword from "./components/auth/Reset-password";
 import WorkerDashboard from "./pages/dashboard/worker-task/worker-dashboard";
+import AdminDashboard from "./pages/dashboard/assignments/assignments";
 
 
 
@@ -71,10 +72,11 @@ const WorkerRoute = ({ children }) => {
 
 const AdminRoute = ({ children }) => {
   const { user, isAuthenticated } = useUserStore();
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" replace />
-  // }
-  if (!user?.role) {
+  console.log("user", user);
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  if (!user?.role === "admin") {
     return <Navigate to="/" replace />
   }
 
@@ -170,7 +172,7 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
-      { path: "worker-dashboard", element: <WorkerDashboard /> },
+      { path: "admin-dashboard", element: <AdminDashboard /> },
     ],
   },
 

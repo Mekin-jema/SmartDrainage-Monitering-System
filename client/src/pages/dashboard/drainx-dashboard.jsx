@@ -10,7 +10,7 @@ export default function DashboardMainPage() {
       <SearchProvider className="">
         <AppSidebar />
         <SidebarInset className="ml-3  ">
-          <div className=" rounded-xl mt-2 dark:border-gray-700 border-2 sticky ">
+          <div className=" rounded-xl mt-2 dark:border-gray-700 border-2 sticky p-3 ">
             <Header />
             <Outlet />
           </div>

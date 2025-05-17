@@ -64,7 +64,7 @@ export const sidebarData = {
         },
         {
           title: "Assignments",
-          url: "dashboard/worker-dashboard",
+          url: "/dashboard/admin-dashboard",
           icon: Users,
         },
         {
