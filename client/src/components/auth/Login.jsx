@@ -46,13 +46,14 @@ const Login = () => {
     try {
       form.reset();
        await login(data);
-        if (user?.role === "admin") {
-    navigate("/dashboard");
-  } else if (user?.role === "worker") {
-    navigate("/worker-dashboard");
-  } else if (user) {
-    navigate("/");
-  }
+       navigate("/dashboard");
+  //       if (user?.role === "admin") {
+  //   navigate("/dashboard");
+  // } else if (user?.role === "worker") {
+  //   navigate("/worker-dashboard");
+  // } else if (user) {
+  //   navigate("/");
+  // }
     
     } catch (error) {
       console.error("Login error:", error);

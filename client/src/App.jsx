@@ -45,14 +45,17 @@ import AdminDashboard from "./pages/dashboard/assignments/assignments";
 
 
 const ProtectedRoutes = ({ children }) => {
-  const { isAuthenticated, user } = useUserStore();
+  const { isAuthenticated, user,isCheckingAuth } = useUserStore();
+    if (isCheckingAuth) {
+    return <Loading />;
+  }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!user?.isVerified) {
-    return <Navigate to="/verify-email" replace />;
-  }
+  // if (!user?.isVerified) {
+  //   return <Navigate to="/verify-email" replace />;
+  // }
   return children;
 };
 const AuthenticatedUser = ({ children }) => {
@@ -63,22 +66,26 @@ const AuthenticatedUser = ({ children }) => {
   }
   return children;
 };
-const WorkerRoute = ({ children }) => {
-  const { user, isAuthenticated } = useUserStore();
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role !== "worker") return <Navigate to="/" replace />;
-  return children;
-};
+// const WorkerRoute = ({ children }) => {
+//   const { user, isAuthenticated } = useUserStore();
+//   if (!isAuthenticated) return <Navigate to="/login" replace />;
+//   if (user?.role !== "worker") return <Navigate to="/" replace />;
+//   return children;
+// };
 
 const AdminRoute = ({ children }) => {
-  const { user, isAuthenticated } = useUserStore();
+  const { user, isAuthenticated,isCheckingAuth } = useUserStore();
+    if (isCheckingAuth) {
+    return <Loading />; // or null/spinner
+  }
+
   console.log("user", user);
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  if (!user?.role === "admin") {
-    return <Navigate to="/" replace />
-  }
+if (user?.role !== "admin") {
+  return <Navigate to="/" replace />;
+}
 
   return children;
 }
@@ -117,7 +124,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup", element:
-      // <AuthenticatedUser>
+      <AuthenticatedUser>
       <Signup />
     // </AuthenticatedUser>
   },
@@ -155,16 +162,25 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <AdminRoute>
+      <ProtectedRoutes>
+
         <DashboardMainPage />
-      </AdminRoute>
+      </ProtectedRoutes>
+
 
     ),
 
 
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: "sensor-readings", element: <SensorsData /> },
+      { index: true, element:
+        
+        <Dashboard />
+   
+     },
+      { path: "sensor-readings", element: <AdminRoute>
+        <SensorsData />
+        </AdminRoute>
+      },
       { path: "manholes", element: <Manholes /> },
       { path: "alerts", element: <Alerts /> },
       { path: "users", element: <Users /> },
@@ -174,17 +190,18 @@ const router = createBrowserRouter([
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
       { path: "admin-dashboard", element: <AdminDashboard /> },
+      
+  {
+    path: "worker-dashboard",
+    element: (
+      // <WorkerRoute>
+        <WorkerDashboard />
+      // </WorkerRoute>
+    )
+  }
     ],
   },
 
-  {
-    path: "/worker-dashboard",
-    element: (
-      <WorkerRoute>
-        <WorkerDashboard />
-      </WorkerRoute>
-    )
-  }
 
   ,
   // Error handling route

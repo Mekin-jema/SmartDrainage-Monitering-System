@@ -17,12 +17,15 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 // import { useSearch } from "@/context/search-context";
-import { sidebarData } from "@/pages/dashboard/constants/sidebar-data";
+import { getSidebarData } from "@/pages/dashboard/constants/sidebar-data";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { useSearch } from "@/context/search-context";
+import { useUserStore } from "@/store/useUserStore";
 
 export function CommandMenu() {
   const navigate = useNavigate();
+  const {user}=useUserStore()
+  const sidebarData = getSidebarData(user);
   const { setTheme } = useTheme();
   const { open, setOpen } = useSearch();
 
