@@ -69,7 +69,7 @@ const ManholeIcon = ({ status }) => {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="10" fill={fill} stroke={stroke} strokeWidth="2" />
-      <circle cx="12" cy="12" r="6" fill={fill} stroke={stroke} strokeWidth="1" />
+      <circle cx="12" cy="12" r="6" fill={fill} stroke={stroke} strokeWidth="2" />
       <line x1="12" y1="2" x2="12" y2="6" stroke={stroke} strokeWidth="2" />
       <line x1="12" y1="18" x2="12" y2="22" stroke={stroke} strokeWidth="2" />
       <line x1="2" y1="12" x2="6" y2="12" stroke={stroke} strokeWidth="2" />
@@ -251,9 +251,18 @@ const SewageSystemMap = () => {
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: style,
-      center: [38.7636, 9.0054],
+      center: [38.764006, 9.037890],
       zoom: 15,
     });
+
+    map.flyTo({
+      center: [38.764006, 9.037890],
+      zoom: 15,
+      speed: 7,
+      curve: 1,'animate': true,
+      easing(t) {
+        return t; 
+      }  })
 
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
     map.addControl(new maplibregl.FullscreenControl(), 'top-left');
