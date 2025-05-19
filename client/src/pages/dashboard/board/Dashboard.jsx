@@ -33,6 +33,7 @@ const Dashboard = () => {
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
 
   const socketRef = useRef(null);
+  console.log("maintainceLogs", maintenanceLogs);
 
   useEffect(() => {
     // Fetch initial data
@@ -883,7 +884,7 @@ const Dashboard = () => {
                 />
                 <XAxis dataKey="hour" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
-                <Tooltip content={<CustomTooltip />} />
+             f
                 <Legend />
                 <Line
                   type="monotone"

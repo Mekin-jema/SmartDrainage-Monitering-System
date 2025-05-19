@@ -169,59 +169,62 @@ const addMaintenanceParts = async (req, res) => {
 };
 
 // 4. Get Maintenance Logs with Filtering
+// 4. Get Maintenance Logs with Filtering
+// 4. Get Maintenance Logs with Filtering
 const getMaintenanceLogs = async (req, res) => {
   try {
-    let { manholeId, userId, status, type, fromDate, toDate } = req.query;
+    const { status, type, dateFrom, dateTo } = req.query;
+
     const filter = {};
-
-    if (manholeId) {
-      const resolvedManholeId = await resolveManholeId(manholeId);
-      if (!resolvedManholeId) {
-        return res.status(404).json({
-          success: false,
-          message: 'Manhole not found',
-        });
-      }
-      filter.manholeId = resolvedManholeId;
-    }
-
-    if (userId) filter.userId = userId;
     if (status) filter.status = status;
     if (type) filter.type = type;
-
-    if (fromDate || toDate) {
+    if (dateFrom || dateTo) {
       filter.scheduledDate = {};
-      if (fromDate) filter.scheduledDate.$gte = new Date(fromDate);
-      if (toDate) filter.scheduledDate.$lte = new Date(toDate);
+      if (dateFrom) filter.scheduledDate.$gte = new Date(dateFrom);
+      if (dateTo) filter.scheduledDate.$lte = new Date(dateTo);
     }
 
     const logs = await MaintenanceLog.find(filter)
       .sort({ scheduledDate: -1 })
-      .populate('manholeId', 'code')
-      .populate('userId', 'name');
+.populate('userId', 'fullname')
 
-    // Transform the logs to match the desired structure
+    // Technician who created the log
+       // Assigned worker
+       console.log('logs:', logs);
+
     const maintenanceLogs = logs.map((log, index) => ({
-      id: index + 1, // Assuming `id` is sequential in the response
-      manhole: `#${log.manholeId.code}`,
-      manholeId: log.manholeId._id,
+    
+      id: index + 1,
+      code: log.code || `#MH-${String(index + 1).padStart(3, '0')}`,
+      manholeId: log.manholeId,
       type: log.type,
-      technician: log.userId.name,
       status: log.status,
-      date: log.scheduledDate.toISOString().split('T')[0], // Formats the date as "YYYY-MM-DD"
+      date: log.scheduledDate?.toISOString().split('T')[0] || 'N/A',
+      description: log.description || '',
+      assignedTo: log.userId?.fullname || 'Unassigned',
+      createdBy: log.userId?.fullname || 'Unknown',
+      createdAt: log.createdAt?.toISOString() || new Date().toISOString(),
+      updatedAt: log.updatedAt?.toISOString() || new Date().toISOString(),
+   actualStart: log.actualStart ? new Date(log.actualStart).toISOString() : null,
+actualEnd: log.actualEnd ? new Date(log.actualEnd).toISOString() : null,
+      partsReplaced: log.partsReplaced || [],
+      notes: log.notes || ''
     }));
 
     return res.status(200).json({
       success: true,
       maintenanceLogs,
+      count: maintenanceLogs.length
     });
   } catch (error) {
     console.error('Get maintenance logs error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
+
 
 export { createMaintenanceLog, updateMaintenanceStatus, addMaintenanceParts, getMaintenanceLogs };

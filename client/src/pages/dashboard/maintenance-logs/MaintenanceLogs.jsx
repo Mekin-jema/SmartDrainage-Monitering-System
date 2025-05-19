@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -66,94 +66,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useUserStore } from "@/store/useUserStore";
+import useMaintenanceStore from "@/store/usemantenanceStore";
 
 // Updated mock data structure
-const maintenanceLogs = [
-  {
-    id: 1,
-    manhole: "#MH-004",
-    manholeId: "6822618bad9fa0404078909c",
-    type: "emergency",
-    status: "scheduled",
-    date: "2025-05-01",
-    description: "Emergency repair due to structural damage",
-    assignedTo: "Tech-001",
-    createdAt: "2025-04-30T09:00:00",
-    updatedAt: "2025-04-30T09:30:00",
-  },
-  {
-    id: 2,
-    manhole: "#MH-007",
-    manholeId: "6822618bad9fa0404078909d",
-    type: "routine",
-    status: "in_progress",
-    date: "2025-05-02",
-    description: "Routine inspection and cleaning",
-    assignedTo: "Tech-002",
-    createdAt: "2025-04-28T14:00:00",
-    updatedAt: "2025-05-01T10:15:00",
-  },
-  {
-    id: 3,
-    manhole: "#MH-012",
-    manholeId: "6822618bad9fa0404078909e",
-    type: "preventive",
-    status: "completed",
-    date: "2025-04-25",
-    description: "Preventive maintenance for gas detection system",
-    assignedTo: "Tech-003",
-    createdAt: "2025-04-20T08:00:00",
-    updatedAt: "2025-04-25T16:45:00",
-  },
-  {
-    id: 4,
-    manhole: "#MH-009",
-    manholeId: "6822618bad9fa0404078909f",
-    type: "emergency",
-    status: "scheduled",
-    date: "2025-05-05",
-    description: "Emergency response to reported flooding",
-    assignedTo: "Tech-001",
-    createdAt: "2025-05-01T15:30:00",
-    updatedAt: "2025-05-01T15:30:00",
-  },
-  {
-    id: 5,
-    manhole: "#MH-003",
-    manholeId: "6822618bad9fa040407890a0",
-    type: "routine",
-    status: "pending",
-    date: "2025-05-10",
-    description: "Monthly structural integrity check",
-    assignedTo: "Tech-004",
-    createdAt: "2025-04-30T11:00:00",
-    updatedAt: "2025-04-30T11:00:00",
-  },
-  {
-    id: 6,
-    manhole: "#MH-015",
-    manholeId: "6822618bad9fa040407890a1",
-    type: "preventive",
-    status: "in_progress",
-    date: "2025-05-03",
-    description: "Valve replacement and system check",
-    assignedTo: "Tech-002",
-    createdAt: "2025-04-29T13:00:00",
-    updatedAt: "2025-05-03T09:20:00",
-  },
-  {
-    id: 7,
-    manhole: "#MH-001",
-    manholeId: "6822618bad9fa040407890a2",
-    type: "emergency",
-    status: "completed",
-    date: "2025-04-28",
-    description: "Immediate repair of cracked lid",
-    assignedTo: "Tech-005",
-    createdAt: "2025-04-27T16:45:00",
-    updatedAt: "2025-04-28T14:30:00",
-  },
-];
+
 
 
 const statuses = {
@@ -178,16 +94,22 @@ const MaintenanceLogsTable = () => {
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+    const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
+
+    useEffect(()=>{
+      fetchMaintenanceLogs();
+    },[])
+
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "manhole",
-        header: "Manhole",
+        accessorKey: "code",
+        header: "Code",
         cell: ({ row }) => (
           <div className="font-medium">
             <Tooltip>
-              <TooltipTrigger>{row.getValue("manhole")}</TooltipTrigger>
+              <TooltipTrigger>{row.getValue("code")}</TooltipTrigger>
               <TooltipContent>
                 <p>ID: {row.original.manholeId}</p>
               </TooltipContent>

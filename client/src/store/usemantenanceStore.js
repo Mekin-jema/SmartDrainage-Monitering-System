@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 // Adjust endpoint as needed
-const API_ALERT_ENDPOINT = `/api/maintenances`;
+const API_ALERT_ENDPOINT = `/api/v1/maintenances`;
 // axios.defaults.withCredentials = true;
 
 const useMaintenanceStore = create(
@@ -16,7 +16,7 @@ const useMaintenanceStore = create(
       fetchMaintenanceLogs: async (filters = {}) => {
         set({ loading: true, error: null });
         try {
-          const response = await axios.get(`${MAINTENANCE_API}/get`, { params: filters });
+          const response = await axios.get(`${API_ALERT_ENDPOINT}/get`, { params: filters });
           if (response.data.success) {
             set({ maintenanceLogs: response.data.maintenanceLogs, loading: false });
           } else {

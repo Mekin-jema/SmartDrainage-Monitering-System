@@ -9,7 +9,8 @@ import db from "./src/configure/db.confige.js";
 import { createReading } from "./src/controllers/sensor.controller.js";
 // import getAllSensorReadings from "./src/helpers/getAllSensorData.js";
 import getLatestReading from "./src/helpers/getLatestReading.js";
-import manholeModel from "./src/models/manhole.model.js";
+import maintenanceModel from "./src/models/maintenance.model.js";
+// import manholeModel from "./src/models/manhole.model.js";
 dotenv.config();
 
 const app = express();
@@ -328,6 +329,154 @@ const  data = [
   },
 
 ];
+const mockMaintenanceLogs = [
+  {
+    manholeId: "6829b797fd147734102d3c18", // MH-001
+    code: "MH-001",
+    userId: "6829007cc84f9ff55d7e3beb", // mek1234@gmail.com (worker)
+    type: "emergency",
+    description: "Emergency repair due to structural damage",
+    status: "completed",
+    scheduledDate: new Date("2025-05-01"),
+    actualStart: new Date("2025-05-01T08:30:00"),
+    actualEnd: new Date("2025-05-01T10:45:00"),
+    partsReplaced: [
+      { name: "Concrete Seal", quantity: 2 },
+      { name: "Reinforcement Bars", quantity: 4 }
+    ],
+    notes: "Found significant cracks in the chamber walls. Required immediate repair."
+  },
+  {
+    manholeId: "6829b798fd147734102d3c1e", // MH-007
+    code: "MH-007",
+    userId: "6826e38d3b3a9f810d65918d", // john11@email.com (worker)
+    type: "routine",
+    description: "Monthly inspection and cleaning",
+    status: "in_progress",
+    scheduledDate: new Date("2025-05-02"),
+    actualStart: new Date("2025-05-02T09:00:00"),
+    partsReplaced: [],
+    notes: "Standard cleaning in progress. Found minor debris buildup."
+  },
+  {
+    manholeId: "6829b798fd147734102d3c22", // MH-012
+    code: "MH-012",
+    userId: "6826ddaf00caa12139ffb3a1", // jem@gmail.com (worker)
+    type: "preventive",
+    description: "Gas detection system maintenance",
+    status: "completed",
+    scheduledDate: new Date("2025-04-25"),
+    actualStart: new Date("2025-04-25T07:00:00"),
+    actualEnd: new Date("2025-04-25T09:30:00"),
+    partsReplaced: [
+      { name: "Methane Sensor", quantity: 1 },
+      { name: "Battery Pack", quantity: 2 }
+    ],
+    notes: "Calibrated all sensors and replaced aging components."
+  },
+  {
+    manholeId: "6829b798fd147734102d3c1d", // MH-009
+    code: "MH-009",
+    userId: "6829007cc84f9ff55d7e3beb", // mek1234@gmail.com (worker)
+    type: "emergency",
+    description: "Flooding emergency response",
+    status: "scheduled",
+    scheduledDate: new Date("2025-05-05"),
+    partsReplaced: [],
+    notes: "Reported by neighborhood residents. Requires pump truck."
+  },
+  {
+    manholeId: "6829b797fd147734102d3c1a", // MH-003
+    code: "MH-003",
+    userId: "6826f013602c88dc0c672fc5", // ali@gmail.com (worker)
+    type: "routine",
+    description: "Structural integrity check",
+    status: "pending",
+    scheduledDate: new Date("2025-05-10"),
+    partsReplaced: [],
+    notes: "Part of quarterly inspection cycle"
+  },
+  {
+    manholeId: "6829b798fd147734102d3c25", // MH-015
+    code: "MH-015",
+    userId: "6826e38d3b3a9f810d65918d", // john11@email.com (worker)
+    type: "preventive",
+    description: "Valve system overhaul",
+    status: "in_progress",
+    scheduledDate: new Date("2025-05-03"),
+    actualStart: new Date("2025-05-03T08:15:00"),
+    partsReplaced: [
+      { name: "Control Valve", quantity: 1 },
+      { name: "Pressure Gauge", quantity: 1 }
+    ],
+    notes: "Upgrading to new valve model for better flow control"
+  },
+  {
+    manholeId: "6829b797fd147734102d3c18", // MH-001
+    code: "MH-001",
+    userId: "68265ed390ae650ffdb5234f", // john1234@email.com (worker)
+    type: "emergency",
+    description: "Cracked lid replacement",
+    status: "completed",
+    scheduledDate: new Date("2025-04-28"),
+    actualStart: new Date("2025-04-28T06:00:00"),
+    actualEnd: new Date("2025-04-28T08:30:00"),
+    partsReplaced: [
+      { name: "Manhole Cover", quantity: 1 },
+      { name: "Sealing Compound", quantity: 1 }
+    ],
+    notes: "Replaced damaged 24-inch cover with new composite model"
+  },
+  {
+    manholeId: "6829b798fd147734102d3c1c", // MH-005
+    code: "MH-005",
+    userId: "6826ddaf00caa12139ffb3a1", // jem@gmail.com (worker)
+    type: "routine",
+    description: "Debris removal and pipe inspection",
+    status: "completed",
+    scheduledDate: new Date("2025-04-30"),
+    actualStart: new Date("2025-04-30T10:00:00"),
+    actualEnd: new Date("2025-04-30T12:30:00"),
+    partsReplaced: [],
+    notes: "Removed 15kg of sediment. Pipes in good condition."
+  },
+  {
+    manholeId: "6829b798fd147734102d3c24", // MH-014 (Note: Original was MH-018 which doesn't exist, using closest available)
+    code: "MH-018",
+    userId: "6826f013602c88dc0c672fc5", // ali@gmail.com (worker)
+    type: "preventive",
+    description: "Pump motor maintenance",
+    status: "scheduled",
+    scheduledDate: new Date("2025-05-15"),
+    partsReplaced: [],
+    notes: "Annual pump service scheduled"
+  },
+  {
+    manholeId: "6829b798fd147734102d3c21", // MH-011 (Note: Original was MH-022 which doesn't exist, using closest available)
+    code: "MH-022",
+    userId: "68265ed390ae650ffdb5234f", // john1234@email.com (worker)
+    type: "emergency",
+    description: "Sewage backup clearance",
+    status: "completed",
+    scheduledDate: new Date("2025-04-27"),
+    actualStart: new Date("2025-04-27T14:00:00"),
+    actualEnd: new Date("2025-04-27T17:45:00"),
+    partsReplaced: [
+      { name: "Pipe Seal", quantity: 3 }
+    ],
+    notes: "Major blockage cleared. Found roots infiltrating pipe."
+  }
+];
+
+
+
+// maintenanceModel.insertMany(mockMaintenanceLogs)
+//   .then(() => {
+//     console.log("Mock data inserted successfully");
+//   })
+//   .catch((error) => {
+//     console.error("Error inserting mock data:", error);
+//   });
 
 // manholeModel.insertMany(data)
 //   .then(() => {
