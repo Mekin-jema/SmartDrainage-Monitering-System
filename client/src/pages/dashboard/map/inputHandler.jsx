@@ -83,7 +83,7 @@ const AddressBox = ({ route, setToggleGeocoding, profile, setProfile }) => {
   };
 
   return (
-    <Card className="fixed p-0 left-0 top-0 z-50 w-[430px] h-screen rounded-[5px] dark:bg-inherit  overflow-hidden">
+    <Card className="fixed p-0 left-0 top-0 z-[9999] 0 w-[430px] h-screen rounded-[5px] dark:bg-green-800  overflow-visible">
       <motion.div
         initial={{ x: -500, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}

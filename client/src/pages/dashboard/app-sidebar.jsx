@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }) {
           : "bg-[hsl(var(--card))] dark:bg-[hsl(var(--popover))]"
       } text-foreground rounded-xl border-border border ${
         state.collapsed ? "w-20" : "w-64"
-      } transition-all duration-300 shadow-light dark:shadow-dark bg-foreground/90 `}
+      } transition-all duration-300 shadow-light dark:shadow-dark bg-foreground/90  `}
     >
       <SidebarHeader className="flex items-center justify-between px-4 py-2">
         <SidebarMenu>

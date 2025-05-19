@@ -285,8 +285,9 @@ const Map = () => {
       />
 
       <div
+        style={{ zIndex: 9999 }}
         className={`fixed top-24 ${state === "collapsed" ? "md:left-[60px]" : "md:left-[300px]"
-          } left-0  flex  z-[100000] items-center `}
+          } left-0  flex  z-[9999] items-center `}
       >
         {/* <SidebarTrigger className="ml-2" /> */}
         {toggleGeocoding ? (
