@@ -252,7 +252,7 @@ const Dashboard = () => {
     };
 
     return (
-      <Card className="hover:shadow-lg transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg text-gray-900 dark:text-white">
@@ -516,7 +516,7 @@ const Dashboard = () => {
 
       {/* System Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow  dark:bg-inherit bg-slate-200">
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -533,7 +533,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -556,7 +556,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -590,7 +590,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -628,7 +628,7 @@ const Dashboard = () => {
       {/* Enhanced Charts Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Water Level Status Card with Advanced Features */}
-        <Card className="hover:shadow-lg transition-shadow group">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -702,7 +702,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Gas Level Status Card with Interactive Features */}
-        <Card className="hover:shadow-lg transition-shadow group">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -784,7 +784,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Temperature Status Card with Enhanced Visualization */}
-        <Card className="hover:shadow-lg transition-shadow group">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -863,7 +863,7 @@ const Dashboard = () => {
 
 
       {/* Sensor Trends */}
-      <Card className="hover:shadow-lg transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">
             Sensor Trends (Last 24h)
@@ -926,7 +926,7 @@ const Dashboard = () => {
       {/* Alerts and Maintenance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Alerts */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">
               Recent Alerts
@@ -987,7 +987,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Maintenance Logs */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">
               Maintenance Activities
@@ -1053,7 +1053,7 @@ const Dashboard = () => {
       </div>
 
       {/* Map Visualization */}
-      <Card className="hover:shadow-lg transition-shadow">
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">
             Manhole Locations

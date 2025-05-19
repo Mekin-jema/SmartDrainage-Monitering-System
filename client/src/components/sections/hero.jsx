@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useTheme } from "@/pages/dashboard/theme-provider";
 
 export const HeroSection = () => {
-  const [theme, setTheme] = useState("light");
+   const {theme}=useTheme()
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") || "light";
-    setTheme(storedTheme);
-  }, []);
+  // useEffect(() => {
+  //   const storedTheme = localStorage.getItem("theme") || "light";
+  //   setTheme(storedTheme);
+  // }, []);
 
   return (
     <section className="container w-full">
@@ -66,7 +67,7 @@ export const HeroSection = () => {
             width={1200}
             height={1200}
             className="w-full md:w-[1200px] mx-auto rounded-lg relative border border-t-2 border-secondary border-t-primary/30"
-            src={theme === "light" ? "./light.png" : "./dark.png"}
+            src={theme === "dark" ? "/dark.png" : "/light.png"}
             alt="SmartDrainX Dashboard"
           />
           <div className="absolute bottom-0 left-0 w-full h-20 md:h-28 bg-gradient-to-b from-background/0 via-background/50 to-background rounded-lg"></div>

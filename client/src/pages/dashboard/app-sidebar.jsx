@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }) {
           : "bg-[hsl(var(--card))] dark:bg-[hsl(var(--popover))]"
       } text-foreground rounded-xl border-border border ${
         state.collapsed ? "w-20" : "w-64"
-      } transition-all duration-300 shadow-light dark:shadow-dark bg-muted-foreground`}
+      } transition-all duration-300 shadow-light dark:shadow-dark bg-foreground/90 `}
     >
       <SidebarHeader className="flex items-center justify-between px-4 py-2">
         <SidebarMenu>
@@ -46,8 +46,8 @@ export function AppSidebar({ ...props }) {
                 </div>
                 {!state.collapsed && (
                   <div className="grid flex-1 text-left text-sm leading-tight ml-2">
-                    <span className="truncate font-semibold">SmartDrainX</span>
-                    <span className="truncate text-xs">Enterprise</span>
+                    <span className="truncate font-semibold text-white">SmartDrainX</span>
+                    <span className="truncate text-xs text-white">Enterprise</span>
                   </div>
                 )}
               </a>
