@@ -82,11 +82,7 @@ export const getSidebarData = (user) => {
             url: "/dashboard/maintenance",
             icon: ClipboardCheck,
           },
-          {
-            title: "Repairs & Inspection",
-            url: "/dashboard/repairs",
-            icon: Wrench,
-          },
+      
           {
             title: "Assignments",
             url: "/dashboard/admin-dashboard",
