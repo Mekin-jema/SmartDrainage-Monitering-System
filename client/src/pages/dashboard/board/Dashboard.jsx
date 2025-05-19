@@ -995,60 +995,63 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {dashboardData.maintenanceLogs.map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <div
-                    className={`p-2 rounded-full ${log.status === "completed"
-                      ? "bg-green-100 dark:bg-green-900/30"
-                      : log.status === "in-progress"
-                        ? "bg-blue-100 dark:bg-blue-900/30"
-                        : "bg-gray-100 dark:bg-gray-800"
-                      }`}
-                  >
-                    {log.status === "completed" ? (
-                      <CheckCircle className="text-green-600 dark:text-green-400" />
-                    ) : log.status === "in-progress" ? (
-                      <Activity className="text-blue-600 dark:text-blue-400" />
-                    ) : (
-                      <HardHat className="text-gray-600 dark:text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-gray-900 dark:text-white">
-                        {log.type}
-                      </h3>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${log.status === "completed"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : log.status === "in-progress"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                          }`}
-                      >
-                        {log.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Manhole {log.manhole} • {log.technician}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      Scheduled: {log.date}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-              >
-                View Maintenance Schedule
-              </Button>
-            </div>
+       <div className="space-y-4">
+  {dashboardData.maintenanceLogs.slice(0, 4).map((log) => (
+    <div
+      key={log.id}
+      className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+    >
+      <div
+        className={`p-2 rounded-full ${
+          log.status === "completed"
+            ? "bg-green-100 dark:bg-green-900/30"
+            : log.status === "in-progress"
+            ? "bg-blue-100 dark:bg-blue-900/30"
+            : "bg-gray-100 dark:bg-gray-800"
+        }`}
+      >
+        {log.status === "completed" ? (
+          <CheckCircle className="text-green-600 dark:text-green-400" />
+        ) : log.status === "in-progress" ? (
+          <Activity className="text-blue-600 dark:text-blue-400" />
+        ) : (
+          <HardHat className="text-gray-600 dark:text-gray-400" />
+        )}
+      </div>
+      <div className="flex-1">
+        <div className="flex justify-between items-center">
+          <h3 className="font-medium text-gray-900 dark:text-white">
+            {log.type}
+          </h3>
+          <span
+            className={`text-xs px-2 py-1 rounded-full ${
+              log.status === "completed"
+                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                : log.status === "in-progress"
+                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+            }`}
+          >
+            {log.status}
+          </span>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Manhole {log.manhole} • {log.technician}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-500">
+          Scheduled: {log.date}
+        </p>
+      </div>
+    </div>
+  ))}
+  <Button
+    variant="outline"
+    className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+  >
+    View Maintenance Schedule
+  </Button>
+</div>
+
           </CardContent>
         </Card>
       </div>
