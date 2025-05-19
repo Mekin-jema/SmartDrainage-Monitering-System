@@ -14,6 +14,12 @@ export const useUserStore = create()(
       isAuthenticated: false,
       isCheckingAuth: true,
       loading: false,
+         userOverview: {
+        totalUsers: 0,
+        totalUsersLabel: 'All system users',
+        activeWorkers: 0,
+        activeWorkersLabel: 'Active Workers',
+      },
 
       signup: async (input) => {
         try {
@@ -200,8 +206,30 @@ export const useUserStore = create()(
           set({ loading: false });
         }
       },
+
+      fetchUserOverview: async () => {
+        set({ loading: true, error: null });
+        try {
+          const response = await axios.get(`${API_END_POINT}/overview`);
+          if (response.data.success) {
+            set({ userOverview: response.data.data });
+          } else {
+            set({ error: response.data.message || 'Failed to fetch user overview' });
+            toast.error(response.data.message || 'Failed to fetch user overview');
+          }
+        } catch (error) {
+          const message = error?.response?.data?.message || 'Something went wrong';
+          set({ error: message });
+          toast.error(message);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
     }),
 
+
+   
     {
       name: 'user-storage',
       storage: createJSONStorage(() => localStorage),

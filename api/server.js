@@ -10,6 +10,7 @@ import { createReading } from "./src/controllers/sensor.controller.js";
 // import getAllSensorReadings from "./src/helpers/getAllSensorData.js";
 import getLatestReading from "./src/helpers/getLatestReading.js";
 import maintenanceModel from "./src/models/maintenance.model.js";
+import taskModel from "./src/models/task.model.js";
 // import manholeModel from "./src/models/manhole.model.js";
 dotenv.config();
 
@@ -484,4 +485,74 @@ const mockMaintenanceLogs = [
 //   })
 //   .catch((error) => {
 //     console.error("Error inserting data:", error);
+//   });
+
+
+const mockTasks = [
+  {
+    code: "MH-101",
+    description: "Inspect and clean the drainage system",
+    status: "pending",
+    priority: "high",
+    location: "Addis Ketema, Sector 3",
+    assignedDate: "2025-05-10",
+    dueDate: "2025-05-15",
+    progress: 0,
+    assignedTo: "68230e5633d1f39f8414aba5", // user-1
+  },
+  {
+    code: "MH-202",
+    description: "Report overflow and check gas levels",
+    status: "in-progress",
+    priority: "medium",
+    location: "Kirkos Sub-city, Zone B",
+    assignedDate: "2025-05-11",
+    dueDate: "2025-05-16",
+    progress: 45,
+    assignedTo: "68230e5633d1f39f8414aba5", // user-1
+  },
+  {
+    code: "MH-303",
+    description: "Routine maintenance check and seal cracks",
+    status: "completed",
+    priority: "low",
+    location: "Bole Michael, Block D",
+    assignedDate: "2025-05-12",
+    dueDate: "2025-05-14",
+    progress: 100,
+    assignedTo: "682656c9674b0bc0820a6759", // user-2
+  },
+  {
+    code: "MH-404",
+    description: "Install new sensors and test functionality",
+    status: "in-progress",
+    priority: "high",
+    location: "Yeka Sub-city, Zone 4",
+    assignedDate: "2025-05-13",
+    dueDate: "2025-05-18",
+    progress: 30,
+    assignedTo: "6826572d674b0bc0820a675d", // user-3
+  },
+  {
+    code: "MH-505",
+    description: "Clear debris from main drainage line",
+    status: "pending",
+    priority: "medium",
+    location: "Lideta Sub-city, Block A",
+    assignedDate: "2025-05-14",
+    dueDate: "2025-05-20",
+    progress: 0,
+    assignedTo: "68230e5633d1f39f8414aba5", // user-1 again
+  },
+];
+
+
+
+// taskModel.insertMany(mockTasks)
+//   .then(() => {
+//     console.log("Mock tasks inserted successfully");
+//   })
+//   .catch((error) => {
+//     console.error("Error inserting mock tasks:", error);
+
 //   });

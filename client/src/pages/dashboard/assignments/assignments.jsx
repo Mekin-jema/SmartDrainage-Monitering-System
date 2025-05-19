@@ -60,7 +60,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import useTaskStore from "@/store/useTaskStore";
 
 // Mock data for users and tasks
 const mockUsers = [
@@ -69,7 +69,7 @@ const mockUsers = [
         name: "John Doe",
         email: "john@example.com",
         role: "worker",
-        tasksAssigned: 5,
+        assignments: 5,
         status: "active",
     },
     {
@@ -77,7 +77,7 @@ const mockUsers = [
         name: "Jane Smith",
         email: "jane@example.com",
         role: "supervisor",
-        tasksAssigned: 3,
+        assignments: 3,
         status: "active",
     },
     {
@@ -85,7 +85,7 @@ const mockUsers = [
         name: "Mike Johnson",
         email: "mike@example.com",
         role: "worker",
-        tasksAssigned: 2,
+        assignments: 2,
         status: "inactive",
     },
     {
@@ -93,68 +93,11 @@ const mockUsers = [
         name: "Sarah Williams",
         email: "sarah@example.com",
         role: "admin",
-        tasksAssigned: 0,
+        assignments: 0,
         status: "active",
     },
 ];
 
-const mockTasks = [
-    {
-        id: "MH-101",
-        description: "Inspect and clean the drainage system",
-        status: "pending",
-        priority: "high",
-        location: "Addis Ketema, Sector 3",
-        assignedDate: "2025-05-10",
-        dueDate: "2025-05-15",
-        progress: 0,
-        assignedTo: "user-1",
-    },
-    {
-        id: "MH-202",
-        description: "Report overflow and check gas levels",
-        status: "in-progress",
-        priority: "medium",
-        location: "Kirkos Sub-city, Zone B",
-        assignedDate: "2025-05-11",
-        dueDate: "2025-05-16",
-        progress: 45,
-        assignedTo: "user-1",
-    },
-    {
-        id: "MH-303",
-        description: "Routine maintenance check and seal cracks",
-        status: "completed",
-        priority: "low",
-        location: "Bole Michael, Block D",
-        assignedDate: "2025-05-12",
-        dueDate: "2025-05-14",
-        progress: 100,
-        assignedTo: "user-2",
-    },
-    {
-        id: "MH-404",
-        description: "Install new sensors and test functionality",
-        status: "in-progress",
-        priority: "high",
-        location: "Yeka Sub-city, Zone 4",
-        assignedDate: "2025-05-13",
-        dueDate: "2025-05-18",
-        progress: 30,
-        assignedTo: "user-3",
-    },
-    {
-        id: "MH-505",
-        description: "Clear debris from main drainage line",
-        status: "pending",
-        priority: "medium",
-        location: "Lideta Sub-city, Block A",
-        assignedDate: "2025-05-14",
-        dueDate: "2025-05-20",
-        progress: 0,
-        assignedTo: "user-1",
-    },
-];
 
 const statuses = {
     pending: { label: "Pending", icon: Clock, color: "bg-yellow-500" },
@@ -181,10 +124,10 @@ const roles = {
 
 const taskColumns = [
     {
-        accessorKey: "id",
-        header: "Manhole ID",
+        accessorKey: "code",
+        header: "Manhole Code",
         cell: ({ row }) => (
-            <div className="font-medium">🧱 {row.getValue("id")}</div>
+            <div className="font-medium">🧱 {row.getValue("code")}</div>
         ),
     },
     {
@@ -300,7 +243,7 @@ const userColumns = [
         },
     },
     {
-        accessorKey: "tasksAssigned",
+        accessorKey: "assignments",
         header: "Tasks Assigned",
     },
 ];
@@ -308,7 +251,7 @@ const userColumns = [
 const AdminDashboard = () => {
     const { user } = useUserStore();
     const { theme, setTheme } = useTheme();
-    const [tasks, setTasks] = useState([]);
+    const [task, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -318,10 +261,17 @@ const AdminDashboard = () => {
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
 
+       const {userOverview, fetchUserOverview}=useUserStore();
+      const  {fetchTasksOverviewWithList,  overview,tasks }=useTaskStore();
+    console.log("userOverview",userOverview);
+
     useEffect(() => {
+
+        fetchUserOverview()
+        fetchTasksOverviewWithList()
         const fetchMockData = () => {
             setTimeout(() => {
-                setTasks(mockTasks);
+                setTasks(tasks);
                 setUsers(mockUsers);
                 setLoading(false);
             }, 1000);
@@ -338,8 +288,8 @@ const AdminDashboard = () => {
     }, [user]);
 
     const filteredTasks = selectedUser === "all" 
-        ? tasks 
-        : tasks.filter(task => task.assignedTo === selectedUser);
+        ? task
+        : task.filter(task => task.assignedTo === selectedUser);
 
     const taskTable = useReactTable({
         data: filteredTasks,
@@ -417,23 +367,24 @@ const AdminDashboard = () => {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{users.length}</div>
+                        <div className="text-2xl font-bold">{userOverview. totalUsers}</div>
                         <p className="text-xs text-muted-foreground">
                             All system users
                         </p>
                     </CardContent>
                 </Card>
 
+
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Workers</CardTitle>
                         <Badge variant="outline" className="text-sm">
-                            {users.filter(u => u.role === "worker" && u.status === "active").length}
+                            {userOverview. activeWorkers}
                         </Badge>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {users.filter(u => u.role === "worker" && u.status === "active").length}
+                                {userOverview. activeWorkers}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Available for tasks
@@ -445,11 +396,11 @@ const AdminDashboard = () => {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
                         <Badge variant="outline" className="text-sm">
-                            {tasks.length}
+                            {task.length}
                         </Badge>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{tasks.length}</div>
+                        <div className="text-2xl font-bold">{task.length}</div>
                         <p className="text-xs text-muted-foreground">
                             All assigned tasks
                         </p>
@@ -463,7 +414,7 @@ const AdminDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {tasks.filter(t => t.status === "completed").length}
+                            {task.filter(t => t.status === "completed").length}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Finished tasks
@@ -474,8 +425,8 @@ const AdminDashboard = () => {
 
             <div className="flex space-x-4">
                 <Button
-                    variant={activeTab === "tasks" ? "default" : "outline"}
-                    onClick={() => setActiveTab("tasks")}
+                    variant={activeTab === "task" ? "default" : "outline"}
+                    onClick={() => setActiveTab("task")}
                 >
                     Task Management
                 </Button>
@@ -487,7 +438,7 @@ const AdminDashboard = () => {
                 </Button>
             </div>
 
-            {activeTab === "tasks" ? (
+            {activeTab === "task" ? (
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">

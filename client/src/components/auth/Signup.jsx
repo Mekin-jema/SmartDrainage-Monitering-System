@@ -20,7 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const { signup, loading } = useUserStore();
-  console.log("loading", loading);
+  // console.log("loading", loading);
   const navigate = useNavigate(); // ✅ FIXED: added missing hook
 
   const form = useForm({

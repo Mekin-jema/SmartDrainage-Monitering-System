@@ -4,6 +4,7 @@ import {
   forgotPassword,
   getAllUsers,
   getAssignedTasksForWorker,
+  getUserOverview,
   login,
   logout,
   resetPassword,
@@ -18,6 +19,7 @@ const router = express.Router();
 router.route("/check-auth").get(isAuthenticated, checkAuth);
 router.route("/get-all-users").get(getAllUsers);
 router.get("/my-assignments", isAuthenticated, getAssignedTasksForWorker);
+router.get("/overview",getUserOverview );
 
 router.route("/signup").post(signup);
 router.route("/login").post(login);

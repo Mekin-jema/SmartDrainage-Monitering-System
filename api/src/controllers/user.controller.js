@@ -309,3 +309,32 @@ export const getAssignedTasksForWorker = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+
+export const getUserOverview = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+
+    const activeWorkers = await User.countDocuments({
+      role: 'worker',
+      'status.availability': 'available',
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalUsers,
+        totalUsersLabel: "All system users",
+        activeWorkers,
+        activeWorkersLabel: "Active Workers"
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user overview:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve user overview',
+    });
+  }
+};

@@ -33,7 +33,6 @@ const Dashboard = () => {
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
 
   const socketRef = useRef(null);
-  console.log("maintainceLogs", maintenanceLogs);
 
   useEffect(() => {
     // Fetch initial data

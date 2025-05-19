@@ -254,7 +254,6 @@ const AlertsTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
-  console.log(recentAlerts);
 
   useEffect(() => {
     const loadData = async () => {

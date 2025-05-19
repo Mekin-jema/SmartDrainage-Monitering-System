@@ -118,8 +118,6 @@ const SewageSystemMap = () => {
 
   // Socket.IO ref
 
-  console.log('manholeData', manholesData);
-  console.log('pipes', pipes);
 
   useEffect(() => {
     fetchManholes();

@@ -269,7 +269,6 @@ const updateLayers = async (map, manholes, pipes) => {
                 map.setPaintProperty('manholes-popup-highlight', 'circle-opacity', 0.7);
 
                 // You can add your popup logic here
-                console.log('Clicked manhole:', feature.properties);
             }
         });
 

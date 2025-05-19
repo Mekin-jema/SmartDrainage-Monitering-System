@@ -45,7 +45,6 @@ export const ContactSection = () => {
   const onSubmit = (values
     
   ) => {
-    console.log("Form Submitted:", values);
     // Optional: use mailto to send message
     // const mailToLink = `mailto:leomirandadev@gmail.com?subject=Contact Message&body=Hello, I'm ${values.firstName} ${values.lastName}. My email is ${values.email}. %0D%0A${values.message}`;
     // window.location.href = mailToLink;

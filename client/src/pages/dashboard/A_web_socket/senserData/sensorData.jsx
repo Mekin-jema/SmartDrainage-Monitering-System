@@ -91,7 +91,6 @@ const SensorsData = () => {
     if (!socket) return;
 
     const handleSensorData = (data) => {
-      console.log("Received sensor data:", data);
 
       setSensorReadings((prev) => {
         const exists = prev.find((item) => item._id === data._id);

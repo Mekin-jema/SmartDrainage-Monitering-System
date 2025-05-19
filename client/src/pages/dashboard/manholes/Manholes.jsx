@@ -154,7 +154,6 @@ export default function ManholeTable() {
   const [isLoading, setIsLoading] = useState(true);
 
   const { fetchManholes, manholesData } = useManholeStore();
-  console.log("manholes data ", manholesData);
 
   useEffect(() => {
     const loadData = async () => {

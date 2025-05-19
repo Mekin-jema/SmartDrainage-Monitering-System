@@ -12,7 +12,6 @@ import SensorsData from "./pages/dashboard/A_web_socket/senserData/sensorData1.j
 import Manholes from "./pages/dashboard/manholes/Manholes";
 import Alerts from "./pages/dashboard/alerts/Alerts";
 import Users from "./pages/dashboard/users/Users";
-import RepairsInspection from "./pages/dashboard/repairs-inspection/RepairsInspection";
 import Docs from "./pages/dashboard/docs/Docs";
 import MaintenanceLogs from "./pages/dashboard/maintenance-logs/MaintenanceLogs";
 import SettingsPage from "./pages/dashboard/settings/Settings";
@@ -60,7 +59,6 @@ const ProtectedRoutes = ({ children }) => {
 };
 const AuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useUserStore();
-  console.log("user", user);
   if (isAuthenticated && user?.isVerified) {
     return <Navigate to="/" replace />
   }
@@ -79,7 +77,6 @@ const AdminRoute = ({ children }) => {
     return <Loading />; // or null/spinner
   }
 
-  console.log("user", user);
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
@@ -185,7 +182,6 @@ const router = createBrowserRouter([
       { path: "alerts", element: <Alerts /> },
       { path: "users", element: <Users /> },
       { path: "maintenance", element: <MaintenanceLogs /> },
-      { path: "repairs", element: <RepairsInspection /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
