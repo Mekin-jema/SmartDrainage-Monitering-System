@@ -115,7 +115,7 @@ const Login = () => {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={pending}>
-                  {pending ? (
+                  {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Please wait...
