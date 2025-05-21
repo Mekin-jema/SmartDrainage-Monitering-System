@@ -58,12 +58,20 @@ const columns = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    accessorKey: "timestamp",
-    cell: (info) => (
-      <span className="text-foreground">
-        {format(new Date(info.getValue()), "yyyy-MM-dd HH:mm:ss")}
-      </span>
-    ),
+    accessorKey: "createdAt",
+    cell: (info) => {
+  const rawValue = info.getValue();
+  const date = new Date(rawValue);
+
+  return (
+    <span className="text-foreground">
+      {isNaN(date.getTime())
+        ? "Invalid date"
+        : format(date, "yyyy-MM-dd HH:mm:ss")}
+    </span>
+  );
+}
+
   },
   {
     header: "Sewage Level (cm)",
@@ -121,11 +129,14 @@ const columns = [
 
 export default function SensorTable() {
   const [sensorReadings, setSensorReadings] = useState([]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const { manholes, fetchManholes } = useSensorsStore();
 const socketRef = useRef(null);
+
+console.log("Sensor Readings:", sensorReadings);
 
   useEffect(() => {
     // Fetch initial data

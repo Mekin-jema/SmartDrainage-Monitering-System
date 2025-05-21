@@ -1,11 +1,12 @@
 import Sensor from '../models/sensor.model.js';
 
-const getLatestReading = async (limit = 10) => {
+const getLatestReading = async (limit = 30) => {
   try {
     const latestReadings = await Sensor.find()
-      .sort({ timestamp: -1 })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .lean();
+
 
     const processedReadings = latestReadings.map(reading => {
       const { manholeId, sensors, thresholds, timestamp } = reading;

@@ -190,7 +190,6 @@ const getMaintenanceLogs = async (req, res) => {
 
     // Technician who created the log
        // Assigned worker
-       console.log('logs:', logs);
 
     const maintenanceLogs = logs.map((log, index) => ({
     

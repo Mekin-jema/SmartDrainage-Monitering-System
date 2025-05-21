@@ -159,10 +159,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoutes>
+      // <ProtectedRoutes>
 
         <DashboardMainPage />
-      </ProtectedRoutes>
+      // </ProtectedRoutes>
 
 
     ),
@@ -174,9 +174,11 @@ const router = createBrowserRouter([
         <Dashboard />
    
      },
-      { path: "sensor-readings", element: <AdminRoute>
+      { path: "sensor-readings", 
+      element:
+      //  <AdminRoute>
         <SensorsData />
-        </AdminRoute>
+        // </AdminRoute>
       },
       { path: "manholes", element: <Manholes /> },
       { path: "alerts", element: <Alerts /> },

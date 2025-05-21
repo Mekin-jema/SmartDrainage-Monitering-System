@@ -29,6 +29,12 @@ const useSensorsStore = create(
           });
         }
       },
+updateManholes: (newData) => {
+  set((state) => ({
+    manholes: newData, // Or do deduplication/merge here
+  }));
+}
+,
 
       fetchSensorTrends: async () => {
         set({ loading: true, error: null });

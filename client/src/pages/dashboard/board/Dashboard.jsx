@@ -32,7 +32,7 @@ const Dashboard = () => {
   const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
 
-  const socketRef = useRef(null);
+
 
   useEffect(() => {
     // Fetch initial data
@@ -42,41 +42,10 @@ const Dashboard = () => {
     fetchRecentAlerts();
     fetchMaintenanceLogs();
 
-    // Initialize Socket.IO connection
-    socketRef.current = io('http://localhost:3000', {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
 
-    const socket = socketRef.current;
 
-    socket.on('connect', () => {
-      console.log('Socket.IO connected');
-    });
 
-    socket.on('sensor-data', (data) => {
-      console.log('Received sensor data:', data);
-      fetchSystemStatus();
-      fetchManholes();
-      fetchSensorTrends();
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Socket.IO disconnected');
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('Socket.IO connection error:', error.message);
-    });
-
-    // Cleanup on unmount
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, [fetchSystemStatus, fetchManholes, fetchSensorTrends, fetchRecentAlerts, fetchMaintenanceLogs]);
+  }, []);
 
   useEffect(() => {
     // Update dashboard data when any of the dependent data changes
@@ -94,7 +63,7 @@ const Dashboard = () => {
       maintenanceLogs: maintenanceLogs || [],
       sensorTrends: sensorTrends || []
     }));
-  }, [status, manholes, recentAlerts, maintenanceLogs, sensorTrends]);
+  }, [manholes]);
 
   // Rest of your component code remains the same...
   // (All your helper functions, COLORS object, component rendering, etc.)
@@ -121,6 +90,7 @@ const Dashboard = () => {
   };
 
 
+
   // Calculate sensor statistics based on actual manhole data
   const calculateSensorStats = () => {
     const stats = {
@@ -134,6 +104,7 @@ const Dashboard = () => {
       // Water level analysis
       if (!manhole.sensors.sewageLevel) {
         // Sensor missing or not reporting
+        console.log(`Sensor data missing for manhole ${manhole.manholeId}`);
       } else {
         const percentage = (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100;
         if (percentage > 90) {
@@ -256,7 +227,7 @@ const Dashboard = () => {
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg text-gray-900 dark:text-white">
-              {manhole.name}
+              {`MH-${manhole.manholeId}`}
             </CardTitle>
             <div className="flex items-center gap-2">
               <span
@@ -617,12 +588,23 @@ const Dashboard = () => {
           Critical Manholes
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dashboardData.manholes
-            .filter(manhole => manhole.status === "critical")
-            .slice(0, 3) // Show only top 3 critical manholes
-            .map(manhole => (
-              <ManholeStatusCard key={manhole.manholeId} manhole={manhole} />
-            ))}
+{Object.values(
+  dashboardData.manholes.reduce((acc, curr) => {
+    const id = curr.manholeId;
+
+    // Only consider critical status
+    if (curr.status === "critical") {
+      if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
+        acc[id] = curr; // keep the most recent critical
+      }
+    }
+
+    return acc;
+  }, {})
+).map(manhole => (
+  <ManholeStatusCard key={manhole._id} manhole={manhole} />
+))}
+
         </div>
       </div>
       {/* Enhanced Charts Dashboard */}

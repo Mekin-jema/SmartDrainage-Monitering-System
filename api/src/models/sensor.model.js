@@ -7,10 +7,7 @@ const sensorReadingSchema = new mongoose.Schema(
       ref: 'Manhole',
       required: true,
     },
-    timestamp: {
-      type: Date,
-      default: Date.now,
-    },
+
     sensors: {
       sewageLevel: Number,
       methaneLevel: Number,

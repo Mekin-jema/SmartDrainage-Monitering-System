@@ -175,7 +175,7 @@ export const useUserStore = create()(
           const response = await axios.get(`${API_END_POINT}/get-all-users`);
           if (response.data.success) {
             // Optionally, you can store it in the state (e.g., users list)
-            set({ users: response.data.users });
+            set({ user: response.data.users });
           } else {
             toast.error(response.data.message || 'Failed to fetch users');
           }

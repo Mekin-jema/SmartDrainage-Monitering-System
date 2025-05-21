@@ -72,8 +72,9 @@ mqttClient.on("message", async(topic, message) => {
   try {
     const data = {
       ...JSON.parse(message.toString()),
-      timestamp: new Date().toISOString()
+   
     };
+    console.log("Received message:", data);
 
     // Update cache
     sensorDataCache.push(data);
@@ -83,11 +84,10 @@ mqttClient.on("message", async(topic, message) => {
 
     // Broadcast to all clients
     await createReading(data); // Save to DB
-    console.log("New sensor data:", data);
       // const result = await getAllSensorReadings();
-      const result = await getLatestReading(data);
+      const result = await getLatestReading();
+      console.log("Latest sensor data:", result);
       io.emit("sensorData", (result));
-      console.log("Latest sensor data:", result.data);
   
   } catch (error) {
     console.error("Message processing error:", error);

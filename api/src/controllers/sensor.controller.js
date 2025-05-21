@@ -160,7 +160,6 @@ const createReading = async (data) => {
       thresholds: defaultThresholds,
       status,
       alertTypes: alertTypes.length ? alertTypes : ["none"],
-      timestamp: new Date(timestamp),
       lastCalibration: new Date() // Default to now
     });
 

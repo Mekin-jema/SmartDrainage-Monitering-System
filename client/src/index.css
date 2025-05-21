@@ -22,13 +22,13 @@ html {
     --primary: 200 100% 8%; /* Deep blue */
     --primary-foreground: 0 0% 98%; /* Off-white */
 
-    --secondary: 30 70% 55%; /* Vibrant orange */
+    --secondary: 200 15% 40%; /* Vibrant orange */
     --secondary-foreground: 0 0% 100%; /* White */
 
     --muted: 200 20% 96%; /* Very light blue-gray */
     --muted-foreground: 200 15% 40%;
 
-    --accent: 30 70% 55%; /* Orange accent */
+    --accent:  200 15% 40%; /* Orange accent */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%; /* Bright red */
@@ -60,7 +60,7 @@ html {
     --muted: 210 30% 20%; /* Dark blue-gray */
     --muted-foreground: 210 20% 70%;
 
-    --accent: 30 70% 50%; /* Slightly darker orange */
+    --accent: 200 15% 40%; /* Slightly darker orange */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 50%; /* Darker red */

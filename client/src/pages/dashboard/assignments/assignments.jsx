@@ -63,40 +63,7 @@ import {
 import useTaskStore from "@/store/useTaskStore";
 
 // Mock data for users and tasks
-const mockUsers = [
-    {
-        id: "user-1",
-        name: "John Doe",
-        email: "john@example.com",
-        role: "worker",
-        assignments: 5,
-        status: "active",
-    },
-    {
-        id: "user-2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "supervisor",
-        assignments: 3,
-        status: "active",
-    },
-    {
-        id: "user-3",
-        name: "Mike Johnson",
-        email: "mike@example.com",
-        role: "worker",
-        assignments: 2,
-        status: "inactive",
-    },
-    {
-        id: "user-4",
-        name: "Sarah Williams",
-        email: "sarah@example.com",
-        role: "admin",
-        assignments: 0,
-        status: "active",
-    },
-];
+
 
 
 const statuses = {
@@ -249,7 +216,6 @@ const userColumns = [
 ];
 
 const AdminDashboard = () => {
-    const { user } = useUserStore();
     const { theme, setTheme } = useTheme();
     const [task, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
@@ -260,32 +226,22 @@ const AdminDashboard = () => {
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
-
+    
+    const { user,getAllUsers } = useUserStore();
+    console.log("user",user);
        const {userOverview, fetchUserOverview}=useUserStore();
-      const  {fetchTasksOverviewWithList,  overview,tasks }=useTaskStore();
-    console.log("userOverview",userOverview);
+      const  {fetchTasksOverviewWithList, tasks }=useTaskStore();
 
     useEffect(() => {
+         getAllUsers()
 
         fetchUserOverview()
         fetchTasksOverviewWithList()
-        const fetchMockData = () => {
-            setTimeout(() => {
-                setTasks(tasks);
-                setUsers(mockUsers);
-                setLoading(false);
-            }, 1000);
-        };
+            setTasks(tasks);
+                setUsers(user);
 
-        if (user?._id) {
-            try {
-                fetchMockData();
-            } catch (err) {
-                setError("Failed to load data. Please try again later.");
-                setLoading(false);
-            }
-        }
-    }, [user]);
+   
+    },[]);
 
     const filteredTasks = selectedUser === "all" 
         ? task
@@ -329,13 +285,13 @@ const AdminDashboard = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="flex items-center justify-center h-screen">
+    //             <Loader2 className="h-12 w-12 animate-spin text-primary" />
+    //         </div>
+    //     );
+    // }
 
     if (error) {
         return (
