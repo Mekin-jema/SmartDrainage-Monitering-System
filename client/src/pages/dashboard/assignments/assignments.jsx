@@ -118,10 +118,10 @@ const AdminDashboard = () => {
     const [selectedUser, setSelectedUser] = useState("all");
 
     const { user, getAllUsers } = useUserStore();
+    console.log("user", user);
     const { userOverview, fetchUserOverview } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
-    console.log("tasks", tasks);
-    console.log("task", task);
+
 
     useEffect(() => {
     
@@ -242,7 +242,7 @@ const AdminDashboard = () => {
 
     const userColumns = React.useMemo(() => [
         {
-            accessorKey: "name",
+            accessorKey: "fullname",
             header: "Name",
         },
         {
@@ -270,15 +270,38 @@ const AdminDashboard = () => {
                 const status = getUserStatusInfo(statusValue);
                 return (
                     <Badge className={status.color}>
-                        {status.label}
+                        {statusValue.availability}
+
                     </Badge>
                 );
             },
         },
-        {
-            accessorKey: "assignments",
-            header: "Tasks Assigned",
-        },
+{
+  accessorKey: "assignments",
+  header: "Tasks Assigned",
+  cell: ({ row }) => {
+    const assignments = row.getValue("assignments") || [];
+
+    if (!Array.isArray(assignments) || assignments.length === 0) {
+      return <span>No tasks</span>;
+    }
+
+    return (
+      <div className="flex flex-col gap-1">
+        {assignments.map((task) => (
+          <Badge key={task._id} className="w-fit bg-gray-400">
+            <div className="text-left">
+              <div>{task.task}</div>
+              <div className="text-xs opacity-70">
+                {format(new Date(task.date), "PPP")}
+              </div>
+            </div>
+          </Badge>
+        ))}
+      </div>
+    );
+  },
+}
     ], []);
 
     const filteredTasks = selectedUser === "all"
@@ -607,9 +630,9 @@ const AdminDashboard = () => {
                         <div className="flex items-center py-4">
                             <Input
                                 placeholder="Filter users..."
-                                value={(userTable.getColumn("name")?.getFilterValue() ?? "")}
+                                value={(userTable.getColumn("fullname")?.getFilterValue() ?? "")}
                                 onChange={(event) =>
-                                    userTable.getColumn("name")?.setFilterValue(event.target.value)
+                                    userTable.getColumn("fullname")?.setFilterValue(event.target.value)
                                 }
                                 className="max-w-sm"
                             />
