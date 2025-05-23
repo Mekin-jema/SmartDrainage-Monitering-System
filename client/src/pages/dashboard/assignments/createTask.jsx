@@ -28,6 +28,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
+import useTaskStore from "@/store/useTaskStore";
 
 // Zod validation schema
 const taskSchema = z.object({
@@ -57,6 +58,8 @@ const defaultValues = {
 
 export function CreateTaskForm({ users = [] }) {
 
+
+  const { createTask } = useTaskStore()
   console.log("Users:", users);
   const form = useForm({
     resolver: zodResolver(taskSchema),
@@ -66,11 +69,24 @@ export function CreateTaskForm({ users = [] }) {
   function onSubmit(values) {
     console.log("Submitted Task:", values);
     // Handle form submission (e.g., API call)
+    createTask(values)
+      .then((res) => {
+        if (res.success) {
+          form.reset();
+          alert("Task created successfully");
+        } else {
+          alert(res.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error creating task:", error);
+        alert("Failed to create task");
+      });
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6  md:max-w-[800px] mx-auto">
+    <Form {...form} className="md:max-w-[400px] mx-auto md:h-[300px]">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6  ">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
