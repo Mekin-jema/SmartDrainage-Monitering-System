@@ -6,7 +6,6 @@ node_modules/
 
 # Ignore environment variable files
 .env
-.env.local
 
 # Ignore build output
 dist/
