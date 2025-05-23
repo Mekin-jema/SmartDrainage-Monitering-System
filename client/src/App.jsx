@@ -45,8 +45,8 @@ import { CreateTaskForm } from "./pages/dashboard/assignments/createTask";
 
 
 const ProtectedRoutes = ({ children }) => {
-  const { isAuthenticated, user,isCheckingAuth } = useUserStore();
-    if (isCheckingAuth) {
+  const { isAuthenticated, user, isCheckingAuth } = useUserStore();
+  if (isCheckingAuth) {
     return <Loading />;
   }
   if (!isAuthenticated) {
@@ -73,17 +73,17 @@ const AuthenticatedUser = ({ children }) => {
 // };
 
 const AdminRoute = ({ children }) => {
-  const { user, isAuthenticated,isCheckingAuth } = useUserStore();
-    if (isCheckingAuth) {
+  const { user, isAuthenticated, isCheckingAuth } = useUserStore();
+  if (isCheckingAuth) {
     return <Loading />; // or null/spinner
   }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-if (user?.role !== "admin") {
-  return <Navigate to="/" replace />;
-}
+  if (user?.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 }
@@ -116,14 +116,14 @@ const router = createBrowserRouter([
 
   {
     path: "/login", element:
-     <AuthenticatedUser>
-      <Login />
-    </AuthenticatedUser>
+      <AuthenticatedUser>
+        <Login />
+      </AuthenticatedUser>
   },
   {
     path: "/signup", element:
       <AuthenticatedUser>
-      <Signup />
+        <Signup />
     // </AuthenticatedUser>
   },
   {
@@ -160,25 +160,30 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      // <ProtectedRoutes>
+      <ProtectedRoutes>
 
-        <DashboardMainPage />
-      // </ProtectedRoutes>
+        <AdminRoute>
+
+          <DashboardMainPage />
+        </AdminRoute>
+      </ProtectedRoutes>
 
 
     ),
 
 
     children: [
-      { index: true, element:
-        
-        <Dashboard />
-   
-     },
-      { path: "sensor-readings", 
-      element:
-      //  <AdminRoute>
-        <SensorsData />
+      {
+        index: true, element:
+
+          <Dashboard />
+
+      },
+      {
+        path: "sensor-readings",
+        element:
+          //  <AdminRoute>
+          <SensorsData />
         // </AdminRoute>
       },
       { path: "manholes", element: <Manholes /> },
@@ -188,29 +193,31 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
-      { path: "admin-dashboard", element: <AdminDashboard  />, children:[{
-        path: "create-task", element: <CreateTaskForm /> },
-      ],
+      {
+        path: "admin-dashboard", element: <AdminDashboard />, children: [{
+          path: "create-task", element: <CreateTaskForm />
+        },
+        ],
 
-      
+
 
 
       },
-      
-  {
-    path: "worker-dashboard",
-    element: (
-      // <WorkerRoute>
-        <WorkerDashboard />
-      // </WorkerRoute>
-    )
-  }
+
+      {
+        path: "worker-dashboard",
+        element: (
+          // <WorkerRoute>
+          <WorkerDashboard />
+          // </WorkerRoute>
+        )
+      }
     ],
   },
 
 
   {
-    path:"/create-task",
+    path: "/create-task",
     element: <CreateTaskForm />
   }
 
