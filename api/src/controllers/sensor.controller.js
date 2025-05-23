@@ -99,101 +99,90 @@ const createReading = async (data) => {
     const {
       manholeId,
       sewageLevel,
-      flowRate,
-      // Default sensor values
+      flowRate = 455,
       methaneLevel = 0,
       temperature = 25,
       humidity = 50,
-      batteryLevel = 100
+      batteryLevel = 100,
     } = data;
 
     // Validate required fields
-    if (!manholeId || sewageLevel === undefined || flowRate === undefined) {
+    if (!manholeId || sewageLevel == null || flowRate == null) {
       throw new Error('Manhole ID, sewageLevel, and flowRate are required');
     }
 
-    // Find matching manhole
+    // Fetch manhole
     const manhole = await Manhole.findOne({ id: manholeId });
-    if (!manhole) {
-      throw new Error(`Manhole ${manholeId} not found`);
-    }
+    if (!manhole) throw new Error(`Manhole ${manholeId} not found`);
 
-    // Default thresholds (adjust as needed)
-    const defaultThresholds = {
-      maxDistance: 100,    // cm (sewage level)
-      maxGas: 500,         // ppm (methane)
-      minFlow: 5,          // cm/s (flow rate)
-      maxTemp: 40,         // °C
-      minBattery: 20       // %
+    // Default thresholds
+    const thresholds = {
+      maxDistance: 100,
+      maxGas: 500,
+      minFlow: 5,
+      maxTemp: 40,
+      minBattery: 20,
     };
 
-    // Create sensor object
-    const sensors = {
-      sewageLevel,
-      flowRate,
-      methaneLevel,
-      temperature,
-      humidity,
-      batteryLevel
-    };
+    // Sensor values
+    const sensors = { sewageLevel, flowRate, methaneLevel, temperature, humidity, batteryLevel };
 
-    // Determine alerts based on thresholds
+    // Alert evaluation
     const alertTypes = [];
-    if (sewageLevel > defaultThresholds.maxDistance) alertTypes.push("high_sewage_level");
-    if (methaneLevel > defaultThresholds.maxGas) alertTypes.push("high_methane");
-    if (flowRate < defaultThresholds.minFlow) alertTypes.push("low_flow");
-    if (temperature > defaultThresholds.maxTemp) alertTypes.push("high_temperature");
-    if (batteryLevel < defaultThresholds.minBattery) alertTypes.push("low_battery");
+    if (sewageLevel > thresholds.maxDistance) alertTypes.push("high_sewage_level");
+    if (methaneLevel > thresholds.maxGas) alertTypes.push("high_methane");
+    if (flowRate < thresholds.minFlow) alertTypes.push("low_flow");
+    if (temperature > thresholds.maxTemp) alertTypes.push("high_temperature");
+    if (batteryLevel < thresholds.minBattery) alertTypes.push("low_battery");
 
-    // Determine overall status
-    let status = "normal";
-    if (alertTypes.length > 0) {
-      status = alertTypes.some(a => ["high_methane", "high_sewage_level"].includes(a)) 
-        ? "critical" 
-        : "warning";
+    // Determine status based on alerts
+    let status = "functional";
+    if (alertTypes.includes("high_sewage_level")) {
+      status = "overflowing";
+    } else if (alertTypes.includes("high_methane")) {
+      status = "critical";
+    } else if (alertTypes.length > 0) {
+      status = "warning";
     }
 
-    // Create and save new reading
+    // Create and save reading
     const newReading = new SensorReading({
       manholeId,
       sensors,
-      thresholds: defaultThresholds,
-      status,
+      thresholds,
       alertTypes: alertTypes.length ? alertTypes : ["none"],
-      lastCalibration: new Date() // Default to now
+      lastCalibration: new Date(),
     });
 
     await newReading.save();
 
-    // Update manhole status if critical
-    if (status === "critical") {
-      await Manhole.findOneAndUpdate(
-        { id: manholeId },
-        { 
-          lastInspection: new Date(),
-          status: "needs_attention"
-        }
-      );
-    }
+    // Update manhole status and inspection date
+    await Manhole.findOneAndUpdate(
+      { id: manholeId },
+      {
+        lastInspection: new Date(),
+        status,
+      }
+    );
 
     // Return success response
     return {
       success: true,
       data: {
         ...newReading.toObject(),
-        manholeLocation: manhole.location // Example additional manhole data
-      }
+        manholeLocation: manhole.location,
+      },
     };
-
   } catch (error) {
     console.error("Error creating reading:", error.message);
     return {
       success: false,
       message: error.message,
-      error: process.env.NODE_ENV === "development" ? error.stack : undefined
+      error: process.env.NODE_ENV === "development" ? error.stack : undefined,
     };
   }
 };
+
 // 2. Get Readings by Manhole (Optimized)
 const getReadingsByManhole = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-function XIcon(props: React.SVGProps<SVGSVGElement> | undefined) {
+function XIcon(props) {
   return (
     <svg
       width="18px"

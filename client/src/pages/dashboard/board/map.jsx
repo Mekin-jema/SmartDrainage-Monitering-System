@@ -49,12 +49,16 @@ import { useManholeStore } from '@/store/useManholeStore';
 
 // Custom SVG Icons for manholes
 const ManholeIcon = ({ status }) => {
+  console.log('Rendering ManholeIcon with status:', status);
   const getIconProps = () => {
     switch (status) {
       case 'functional':
         return { fill: '#10B981', stroke: '#059669' }; // Green
-      case 'damaged':
-        return { fill: '#EF4444', stroke: '#DC2626' }; // Red
+      case 'critical':
+        return { fill: '#EF4444', stroke: '#DC2626' };
+      case 'warning':
+        return { fill: '#EF4455', stroke: '#DC2626' };
+         // Red
       case 'overflowing':
         return { fill: '#8B5CF6', stroke: '#7C3AED' }; // Purple
       case 'under_maintenance':
@@ -240,7 +244,7 @@ const SewageSystemMap = () => {
     setPipes(generatedPipes);
     setAlerts(mockAlerts);
     setWorkers(mockWorkers);
-  }, []);
+  }, [manholesData]);
 
   // Initialize map
   useEffect(() => {
@@ -339,7 +343,7 @@ const SewageSystemMap = () => {
     connectingManhole,
     flowDirectionMode,
     editingPipe,
-    manholes,
+
   ]);
 
   // Find manhole at map point
@@ -463,23 +467,21 @@ const SewageSystemMap = () => {
       id: 'manholes-circle',
       type: 'circle',
       source: 'manholes',
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
-        'circle-color': [
-          'case',
-          ['==', ['get', 'status'], 'functional'],
-          '#10B981',
-          ['==', ['get', 'status'], 'damaged'],
-          '#EF4444',
-          ['==', ['get', 'status'], 'overflowing'],
-          '#8B5CF6',
-          ['==', ['get', 'status'], 'under_maintenance'],
-          '#F59E0B',
-          '#6B7280',
-        ],
-        'circle-stroke-color': '#fff',
-        'circle-stroke-width': 2,
-      },
+paint: {
+  'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
+  'circle-color': [
+    'case',
+    ['==', ['get', 'status'], 'functional'], ' #22c55e',      // Green
+    ['==', ['get', 'status'], 'warning'], '#F59E0B',         // Amber
+    ['==', ['get', 'status'], 'critical'], '#ef4444 ',        // Red
+    ['==', ['get', 'status'], 'overflowing'], '#a855f7 ',     // Purple
+    ['==', ['get', 'status'], 'under_maintenance'], '#eab308 ', // Light Amber
+    '#6B7280' // Default Gray
+  ],
+  'circle-stroke-color': '#FFFFFF',
+  'circle-stroke-width': 2,
+}
+
     });
 
     // Manhole code label (larger font)
@@ -529,9 +531,9 @@ const SewageSystemMap = () => {
         'line-color': [
           'case',
           ['==', ['get', 'blockage'], true],
-          '#EF4444',
+          ' #ef4444',
           ['==', ['get', 'flowDirection'], 'bidirectional'],
-          '#10B981',
+          ' #22c55e ',
           '#3B82F6',
         ],
         'line-width': [
@@ -637,71 +639,71 @@ const SewageSystemMap = () => {
       filter: ['==', ['get', 'flowDirection'], 'bidirectional'],
     });
 
-    // Highlight blocked pipes (more visible)
-    map.addLayer({
-      id: 'pipes-blocked-highlight',
-      type: 'line',
-      source: 'pipes',
-      filter: ['==', ['get', 'blockage'], true],
-      paint: {
-        'line-color': '#EF4444',
-        'line-width': [
-          'interpolate',
-          ['linear'],
-          ['get', 'diameter'],
-          100,
-          4,
-          200,
-          5,
-          300,
-          6,
-          400,
-          7,
-        ],
-        'line-dasharray': [2, 2],
-        'line-opacity': 0.8,
-      },
-    });
+    // // Highlight blocked pipes (more visible)
+    // map.addLayer({
+    //   id: 'pipes-blocked-highlight',
+    //   type: 'line',
+    //   source: 'pipes',
+    //   filter: ['==', ['get', 'blockage'], true],
+    //   paint: {
+    //     'line-color': '#EF4444',
+    //     'line-width': [
+    //       'interpolate',
+    //       ['linear'],
+    //       ['get', 'diameter'],
+    //       100,
+    //       4,
+    //       200,
+    //       5,
+    //       300,
+    //       6,
+    //       400,
+    //       7,
+    //     ],
+    //     'line-dasharray': [2, 2],
+    //     'line-opacity': 0.8,
+    //   },
+    // });
 
-    // Highlight hovered manhole
-    map.addLayer({
-      id: 'manholes-popup-highlight',
-      type: 'circle',
-      source: 'manholes',
-      paint: {
-        'circle-radius': 20,
-        'circle-color': '#FACC15',
-        'circle-opacity': 0.3,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#FACC15',
-      },
-      filter: ['==', 'id', ''],
-    });
+    // // Highlight hovered manhole
+    // map.addLayer({
+    //   id: 'manholes-popup-highlight',
+    //   type: 'circle',
+    //   source: 'manholes',
+    //   paint: {
+    //     'circle-radius': 20,
+    //     'circle-color': '#FACC15',
+    //     'circle-opacity': 0.3,
+    //     'circle-stroke-width': 2,
+    //     'circle-stroke-color': '#FACC15',
+    //   },
+    //   filter: ['==', 'id', ''],
+    // });
 
-    // Highlight hovered pipe
-    map.addLayer({
-      id: 'pipes-popup-highlight',
-      type: 'line',
-      source: 'pipes',
-      paint: {
-        'line-color': '#FACC15',
-        'line-width': [
-          'interpolate',
-          ['linear'],
-          ['get', 'diameter'],
-          100,
-          6,
-          200,
-          7,
-          300,
-          8,
-          400,
-          9,
-        ],
-        'line-opacity': 0.6,
-      },
-      filter: ['==', 'id', ''],
-    });
+    // // Highlight hovered pipe
+    // map.addLayer({
+    //   id: 'pipes-popup-highlight',
+    //   type: 'line',
+    //   source: 'pipes',
+    //   paint: {
+    //     'line-color': '#FACC15',
+    //     'line-width': [
+    //       'interpolate',
+    //       ['linear'],
+    //       ['get', 'diameter'],
+    //       100,
+    //       6,
+    //       200,
+    //       7,
+    //       300,
+    //       8,
+    //       400,
+    //       9,
+    //     ],
+    //     'line-opacity': 0.6,
+    //   },
+    //   filter: ['==', 'id', ''],
+    // });
 
     // === Events ===
     map.on('click', 'manholes-circle', (e) => {
@@ -769,7 +771,7 @@ const SewageSystemMap = () => {
     } else {
       updateLayers(map);
     }
-  }, [manholes, pipes]);
+  }, [manholes,manholesData, pipes]);
 
   // Handle manhole click
   const handleManholeClick = (manhole) => {
@@ -1453,7 +1455,7 @@ const SewageSystemMap = () => {
           </div>
           <div className="flex items-center my-2">
             <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
-            <span>Damaged</span>
+            <span>Critical</span>
           </div>
           <div className="flex items-center my-2">
             <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>

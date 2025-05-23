@@ -1,10 +1,13 @@
+import { useManholeStore } from "@/store/useManholeStore";
 import useSensorsStore from "@/store/useSensorsStore";
 import { useEffect, useRef } from "react";
 import io from "socket.io-client";
 
 const Socket = () => {
   const socketRef = useRef(null);
-  const {updateManholes} = useSensorsStore();
+  const {updateManhole} = useManholeStore();
+
+  const {updateSensor}=useSensorsStore()
 
   useEffect(() => {
     // Connect to socket
@@ -22,8 +25,16 @@ const Socket = () => {
 
     socket.on('sensorData', (results) => {
       try {
-        console.log('Received sensor data from ESP32:', results.data);
-        updateManholes(results.data); // Push to Zustand store
+        
+        updateSensor(results.data); // Push to Zustand store
+      } catch (err) {
+        console.error('Error updating dashboard data:', err);
+      }
+    });
+        socket.on('manholeData', (results) => {
+      try {
+        console.log('Received Manholes data from wokwi:', results.data);
+        updateManhole(results.data); // Push to Zustand store
       } catch (err) {
         console.error('Error updating dashboard data:', err);
       }

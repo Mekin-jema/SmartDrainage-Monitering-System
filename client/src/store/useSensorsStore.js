@@ -29,7 +29,7 @@ const useSensorsStore = create(
           });
         }
       },
-updateManholes: (newData) => {
+updateSensor: (newData) => {
   set((state) => ({
     manholes: newData, // Or do deduplication/merge here
   }));

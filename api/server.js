@@ -11,6 +11,8 @@ import { createReading } from "./src/controllers/sensor.controller.js";
 import getLatestReading from "./src/helpers/getLatestReading.js";
 import maintenanceModel from "./src/models/maintenance.model.js";
 import taskModel from "./src/models/task.model.js";
+import manholeModel from "./src/models/manhole.model.js";
+import getAllManholes from "./src/helpers/getManholesData.js";
 // import manholeModel from "./src/models/manhole.model.js";
 dotenv.config();
 
@@ -74,7 +76,6 @@ mqttClient.on("message", async(topic, message) => {
       ...JSON.parse(message.toString()),
    
     };
-    console.log("Received message:", data);
 
     // Update cache
     sensorDataCache.push(data);
@@ -86,8 +87,13 @@ mqttClient.on("message", async(topic, message) => {
     await createReading(data); // Save to DB
       // const result = await getAllSensorReadings();
       const result = await getLatestReading();
-      console.log("Latest sensor data:", result);
       io.emit("sensorData", (result));
+
+      // 
+      const latestManholeData = await  getAllManholes()
+      if (latestManholeData.success){
+        io.emit("manholeData", latestManholeData);
+      }
   
   } catch (error) {
     console.error("Message processing error:", error);
@@ -115,15 +121,16 @@ httpServer.listen(port, () => {
   console.log(`WebSocket available on ws://localhost:${port}`);
 });
 
+const data=
+[
 
-const  data = [
   {
     "id": "1",
     "code": "MH-001",
     "elevation": 2400,
     "location": {
       "type": "Point",
-      "coordinates": [38.761430, 9.043133],
+      "coordinates": [38.76143, 9.043133],
       "zone": "A"
     },
     "status": "functional",
@@ -138,14 +145,14 @@ const  data = [
     "elevation": 2395,
     "location": {
       "type": "Point",
-      "coordinates": [38.761770, 9.041530],
+      "coordinates": [38.76177, 9.04153],
       "zone": "A"
     },
-    "status": "damaged",
+    "status": "critical",
     "lastInspection": "2023-04-20",
     "cover_status": "open",
     "overflow_level": "risk",
-    "connections": [ "3"]
+    "connections": ["3"]
   },
   {
     "id": "3",
@@ -160,7 +167,7 @@ const  data = [
     "lastInspection": "2023-06-01",
     "cover_status": "closed",
     "overflow_level": "overflow",
-    "connections": [ "4"]
+    "connections": ["4"]
   },
   {
     "id": "4",
@@ -186,11 +193,11 @@ const  data = [
       "coordinates": [38.761106, 9.037434],
       "zone": "B"
     },
-    "status": "under_maintenance",
+    "status": "warning",
     "lastInspection": "2023-06-05",
     "cover_status": "open",
     "overflow_level": "moderate",
-    "connections": [  "7"]
+    "connections": ["7"]
   },
   {
     "id": "9",
@@ -205,7 +212,7 @@ const  data = [
     "lastInspection": "2023-06-07",
     "cover_status": "closed",
     "overflow_level": "good",
-    "connections": ["11"]
+    "connections": ["10"]
   },
   {
     "id": "7",
@@ -216,11 +223,11 @@ const  data = [
       "coordinates": [38.759375, 9.036599],
       "zone": "B"
     },
-    "status": "damaged",
+    "status": "critical",
     "lastInspection": "2023-05-10",
     "cover_status": "open",
     "overflow_level": "risk",
-    "connections": [ ""]
+    "connections": [""]
   },
   {
     "id": "8",
@@ -228,7 +235,7 @@ const  data = [
     "elevation": 2365,
     "location": {
       "type": "Point",
-      "coordinates": [38.764006, 9.037890],
+      "coordinates": [38.764006, 9.03789],
       "zone": "C"
     },
     "status": "functional",
@@ -250,9 +257,8 @@ const  data = [
     "lastInspection": "2023-06-01",
     "cover_status": "open",
     "overflow_level": "overflow",
-    "connections": [ "10","9"]
+    "connections": [ "9"]
   },
-
   {
     "id": "11",
     "code": "MH-011",
@@ -277,11 +283,11 @@ const  data = [
       "coordinates": [38.763153, 9.034616],
       "zone": "B"
     },
-    "status": "damaged",
+    "status": "critical",
     "lastInspection": "2023-05-15",
     "cover_status": "open",
     "overflow_level": "risk",
-    "connections": [ "13"]
+    "connections": ["13"]
   },
   {
     "id": "13",
@@ -292,11 +298,11 @@ const  data = [
       "coordinates": [38.762563, 9.033234],
       "zone": "C"
     },
-    "status": "under_maintenance",
+    "status": "warning",
     "lastInspection": "2023-06-02",
     "cover_status": "open",
     "overflow_level": "moderate",
-    "connections": ["14","15"]
+    "connections": ["14"]
   },
   {
     "id": "14",
@@ -304,32 +310,40 @@ const  data = [
     "elevation": 2375,
     "location": {
       "type": "Point",
-      "coordinates": [38.764492, 9.032370],
+      "coordinates": [38.764492, 9.03237],
       "zone": "C"
     },
     "status": "functional",
     "lastInspection": "2023-06-03",
     "cover_status": "closed",
     "overflow_level": "good",
-    "connections": [ "15"]
+    "connections": [""]
   },
   {
-    "id": "15",
-    "code": "MH-015",
+    "id": "10",
+    "code": "MH-010",
     "elevation": 2370,
     "location": {
       "type": "Point",
-      "coordinates": [38.763387, 9.032050],
+      "coordinates": [38.762994,  9.036011 ],
+    
+
+
+
+       
+
+
       "zone": "D"
     },
-    "status": "damaged",
+    "status": "critical",
     "lastInspection": "2023-05-10",
     "cover_status": "open",
     "overflow_level": "risk",
-    "connections": [""]
-  },
+    "connections": ["11"]
+  }
+]
 
-];
+
 const mockMaintenanceLogs = [
   {
     manholeId: "6829b797fd147734102d3c18", // MH-001

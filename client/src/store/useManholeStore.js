@@ -22,6 +22,12 @@ export const useManholeStore = create(
       error: null, // Error state
 
       // Action to fetch all manholesData
+
+      updateManhole: (newData) => {
+  set((state) => ({
+     manholesData: newData, // Or do deduplication/merge here
+  }));
+},
       fetchManholes: async () => {
         try {
           set({ loading: true });
@@ -69,29 +75,29 @@ export const useManholeStore = create(
         }
       },
 
-      // Action to update a specific manhole by id
-      updateManhole: async (id, updates) => {
-        try {
-          set({ loading: true });
-          const response = await axios.put(`${API_END_POINT}/update/${id}`, updates, {
-            headers: { 'Content-Type': 'application/json' },
-          });
-          if (response.data.success) {
-            toast.success(response.data.message);
-            set((state) => ({
-              manholesData: state.manholesData.map((manhole) =>
-                manhole.id === id ? { ...manhole, ...updates } : manhole
-              ),
-            }));
-          } else {
-            toast.error(response.data.message || 'Failed to update manhole');
-          }
-        } catch (error) {
-          toast.error(error?.response?.data?.message || 'Something went wrong');
-        } finally {
-          set({ loading: false });
-        }
-      },
+      // // Action to update a specific manhole by id
+      // updateManhole: async (id, updates) => {
+      //   try {
+      //     set({ loading: true });
+      //     const response = await axios.put(`${API_END_POINT}/update/${id}`, updates, {
+      //       headers: { 'Content-Type': 'application/json' },
+      //     });
+      //     if (response.data.success) {
+      //       toast.success(response.data.message);
+      //       set((state) => ({
+      //         manholesData: state.manholesData.map((manhole) =>
+      //           manhole.id === id ? { ...manhole, ...updates } : manhole
+      //         ),
+      //       }));
+      //     } else {
+      //       toast.error(response.data.message || 'Failed to update manhole');
+      //     }
+      //   } catch (error) {
+      //     toast.error(error?.response?.data?.message || 'Something went wrong');
+      //   } finally {
+      //     set({ loading: false });
+      //   }
+      // },
 
       // Action to delete a manhole by id
       deleteManhole: async (id) => {
