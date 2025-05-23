@@ -59,6 +59,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import useTaskStore from "@/store/useTaskStore";
+import { CreateTaskForm } from "./createTask";
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 
 // Status and role definitions with fallbacks
 const statuses = {
@@ -124,17 +133,17 @@ const AdminDashboard = () => {
 
 
     useEffect(() => {
-    
-            try {
-                setLoading(true);
-                 getAllUsers();
-                 fetchUserOverview();
-                 fetchTasksOverviewWithList();
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred");
-            } finally {
-                setLoading(false);
-            
+
+        try {
+            setLoading(true);
+            getAllUsers();
+            fetchUserOverview();
+            fetchTasksOverviewWithList();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "An unknown error occurred");
+        } finally {
+            setLoading(false);
+
         }
 
 
@@ -276,32 +285,32 @@ const AdminDashboard = () => {
                 );
             },
         },
-{
-  accessorKey: "assignments",
-  header: "Tasks Assigned",
-  cell: ({ row }) => {
-    const assignments = row.getValue("assignments") || [];
+        {
+            accessorKey: "assignments",
+            header: "Tasks Assigned",
+            cell: ({ row }) => {
+                const assignments = row.getValue("assignments") || [];
 
-    if (!Array.isArray(assignments) || assignments.length === 0) {
-      return <span>No tasks</span>;
-    }
+                if (!Array.isArray(assignments) || assignments.length === 0) {
+                    return <span>No tasks</span>;
+                }
 
-    return (
-      <div className="flex flex-col gap-1">
-        {assignments.map((task) => (
-          <Badge key={task._id} className="w-fit bg-gray-400">
-            <div className="text-left">
-              <div>{task.manholeId}</div>
-              <div className="text-xs opacity-70">
-                {format(new Date(task.date), "PPP")}
-              </div>
-            </div>
-          </Badge>
-        ))}
-      </div>
-    );
-  },
-}
+                return (
+                    <div className="flex flex-col gap-1">
+                        {assignments.map((task) => (
+                            <Badge key={task._id} className="w-fit bg-gray-400">
+                                <div className="text-left">
+                                    <div>{task.manholeId}</div>
+                                    <div className="text-xs opacity-70">
+                                        {format(new Date(task.date), "PPP")}
+                                    </div>
+                                </div>
+                            </Badge>
+                        ))}
+                    </div>
+                );
+            },
+        }
     ], []);
 
     const filteredTasks = selectedUser === "all"
@@ -449,7 +458,6 @@ const AdminDashboard = () => {
                     User Management
                 </Button>
             </div>
-
             {activeTab === "task" ? (
                 <Card>
                     <CardHeader>
@@ -474,10 +482,26 @@ const AdminDashboard = () => {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button>
-                                    <FilePlus className="mr-2 h-4 w-4" />
-                                    New Task
-                                </Button>
+
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button>
+                                            <FilePlus className="mr-2 h-4 w-4" />
+                                            New Task
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[625px]">
+                                        <DialogHeader>
+                                            <DialogTitle>Create New Task</DialogTitle>
+                                            <DialogDescription>
+                                                Fill out the form to create a new task assignment.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="py-4">
+                                            <CreateTaskForm users={users} />
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         </div>
                     </CardHeader>
