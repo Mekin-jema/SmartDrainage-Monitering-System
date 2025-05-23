@@ -8,21 +8,21 @@ const useTaskStore = create(
   persist(
     (set) => ({
 
-      tasks: [],
+      task: [],
       loading: false,
       error: null,
+
 
       // Fetch task overview and list
       fetchTasksOverviewWithList: async () => {
         set({ loading: true, error: null });
         try {
           const response = await axios.get(API_TASK_ENDPOINT);
+          console.log('Task overview response:', response);
           if (response.data.success) {
-            const { tasks } = response.data.data;
+      
             set({
-              overview,
-              tasks,
-              loading: false,
+              task:response.data.data.tasks, loading: false,
             });
           } else {
             set({ error: 'Failed to load task data', loading: false });
@@ -40,8 +40,7 @@ const useTaskStore = create(
     {
       name: 'task-storage',
       partialize: (state) => ({
-        overview: state.overview,
-        tasks: state.tasks,
+        task: state.task,
       }),
     }
   )

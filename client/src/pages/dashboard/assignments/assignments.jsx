@@ -30,8 +30,6 @@ import {
     AlertCircle,
     CheckCircle,
     Clock,
-    Sun,
-    Moon,
     Users,
     UserPlus,
     FilePlus,
@@ -62,162 +60,54 @@ import {
 } from "@/components/ui/select";
 import useTaskStore from "@/store/useTaskStore";
 
-// Mock data for users and tasks
-
-
-
+// Status and role definitions with fallbacks
 const statuses = {
     pending: { label: "Pending", icon: Clock, color: "bg-yellow-500" },
     "in-progress": { label: "In Progress", icon: Loader2, color: "bg-blue-500" },
     completed: { label: "Completed", icon: CheckCircle, color: "bg-green-500" },
+    default: { label: "Unknown", icon: AlertCircle, color: "bg-gray-500" },
 };
 
 const priorities = {
     high: { label: "High", color: "bg-red-500" },
     medium: { label: "Medium", color: "bg-orange-500" },
     low: { label: "Low", color: "bg-green-500" },
+    default: { label: "Unknown", color: "bg-gray-500" },
 };
 
 const userStatuses = {
     active: { label: "Active", color: "bg-green-500" },
     inactive: { label: "Inactive", color: "bg-gray-500" },
+    default: { label: "Unknown", color: "bg-gray-500" },
 };
 
 const roles = {
     admin: { label: "Admin", color: "bg-purple-500" },
     supervisor: { label: "Supervisor", color: "bg-blue-500" },
     worker: { label: "Worker", color: "bg-orange-500" },
+    default: { label: "Unknown", color: "bg-gray-500" },
 };
 
-const taskColumns = [
-    {
-        accessorKey: "code",
-        header: "Manhole Code",
-        cell: ({ row }) => (
-            <div className="font-medium">🧱 {row.getValue("code")}</div>
-        ),
-    },
-    {
-        accessorKey: "description",
-        header: "Description",
-        cell: ({ row }) => (
-            <div className="max-w-[300px] truncate">{row.getValue("description")}</div>
-        ),
-    },
-    {
-        accessorKey: "assignedTo",
-        header: "Assigned To",
-        cell: ({ row }) => {
-            const user = mockUsers.find(u => u.id === row.getValue("assignedTo"));
-            return user ? user.name : "Unassigned";
-        },
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            const status = statuses[row.getValue("status")];
-            const Icon = status.icon;
+// Safe accessor functions
+const getStatusInfo = (status) => {
+    return statuses[status] || statuses.default;
+};
 
-            return (
-                <Badge variant="outline" className="flex items-center gap-2">
-                    <Icon className="h-4 w-4" />
-                    {status.label}
-                </Badge>
-            );
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id));
-        },
-    },
-    {
-        accessorKey: "priority",
-        header: "Priority",
-        cell: ({ row }) => {
-            const priority = priorities[row.getValue("priority")];
+const getPriorityInfo = (priority) => {
+    return priorities[priority] || priorities.default;
+};
 
-            return (
-                <Badge className={priority.color}>
-                    {priority.label}
-                </Badge>
-            );
-        },
-    },
-    {
-        accessorKey: "progress",
-        header: "Progress",
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <Progress value={row.getValue("progress")} className="h-2 w-[100px]" />
-                <span className="text-sm text-muted-foreground">
-                    {row.getValue("progress")}%
-                </span>
-            </div>
-        ),
-    },
-    {
-        accessorKey: "location",
-        header: "Location",
-    },
-    {
-        accessorKey: "dueDate",
-        header: "Due Date",
-        cell: ({ row }) => format(new Date(row.getValue("dueDate")), "MMM dd, yyyy"),
-    },
-];
+const getUserStatusInfo = (status) => {
+    return userStatuses[status] || userStatuses.default;
+};
 
-const userColumns = [
-    {
-        accessorKey: "name",
-        header: "Name",
-    },
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
-        accessorKey: "role",
-        header: "Role",
-        cell: ({ row }) => {
-            const role = roles[row.getValue("role")];
-            return (
-                <Badge className={role.color}>
-                    {role.label}
-                </Badge>
-            );
-        },
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-            const status = userStatuses[row.getValue("status")];
-            return (
-                <Badge className={status.color}>
-                    {status.label}
-                </Badge>
-            );
-        },
-    },
-    {
-        accessorKey: "assignments",
-        header: "Tasks Assigned",
-    },
-];
+const getRoleInfo = (role) => {
+    return roles[role] || roles.default;
+};
 
 const AdminDashboard = () => {
     const { theme, setTheme } = useTheme();
-    const [task, setTasks] = useState([]);
+    const [tasks, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -226,26 +116,174 @@ const AdminDashboard = () => {
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
-    
-    const { user,getAllUsers } = useUserStore();
-    console.log("user",user);
-       const {userOverview, fetchUserOverview}=useUserStore();
-      const  {fetchTasksOverviewWithList, tasks }=useTaskStore();
+
+    const { user, getAllUsers } = useUserStore();
+    const { userOverview, fetchUserOverview } = useUserStore();
+    const { fetchTasksOverviewWithList, task } = useTaskStore();
+    console.log("tasks", tasks);
+    console.log("task", task);
 
     useEffect(() => {
-         getAllUsers()
+    
+            try {
+                setLoading(true);
+                 getAllUsers();
+                 fetchUserOverview();
+                 fetchTasksOverviewWithList();
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "An unknown error occurred");
+            } finally {
+                setLoading(false);
+            
+        }
 
-        fetchUserOverview()
-        fetchTasksOverviewWithList()
-            setTasks(tasks);
-                setUsers(user);
 
-   
-    },[]);
+    }, []);
 
-    const filteredTasks = selectedUser === "all" 
-        ? task
-        : task.filter(task => task.assignedTo === selectedUser);
+    useEffect(() => {
+        if (task) {
+            setTasks(task);
+        }
+    }, [task]);
+
+    useEffect(() => {
+        if (user) {
+            setUsers(user);
+        }
+    }, [user]);
+
+    const taskColumns = React.useMemo(() => [
+        {
+            accessorKey: "code",
+            header: "Manhole Code",
+            cell: ({ row }) => (
+                <div className="font-medium">🧱 {row.getValue("code")}</div>
+            ),
+        },
+        {
+            accessorKey: "description",
+            header: "Description",
+            cell: ({ row }) => (
+                <div className="max-w-[300px] truncate">{row.getValue("description")}</div>
+            ),
+        },
+        {
+            accessorKey: "assignedTo",
+            header: "Assigned To",
+            cell: ({ row }) => {
+                const user = users.find((u) => u.id === row.getValue("assignedTo"));
+                return user ? user.name : "Unassigned";
+            },
+        },
+        {
+            accessorKey: "status",
+            header: ({ column }) => (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Status <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            ),
+            cell: ({ row }) => {
+                const statusValue = row.getValue("status") || "default";
+                const status = getStatusInfo(statusValue);
+                const Icon = status.icon;
+
+                return (
+                    <Badge variant="outline" className="flex items-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        {status.label}
+                    </Badge>
+                );
+            },
+            filterFn: (row, id, value) => {
+                return value.includes(row.getValue(id));
+            },
+        },
+        {
+            accessorKey: "priority",
+            header: "Priority",
+            cell: ({ row }) => {
+                const priorityValue = row.getValue("priority") || "default";
+                const priority = getPriorityInfo(priorityValue);
+                return (
+                    <Badge className={priority.color}>
+                        {priority.label}
+                    </Badge>
+                );
+            },
+        },
+        {
+            accessorKey: "progress",
+            header: "Progress",
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <Progress value={row.getValue("progress") || 0} className="h-2 w-[100px]" />
+                    <span className="text-sm text-muted-foreground">
+                        {row.getValue("progress") || 0}%
+                    </span>
+                </div>
+            ),
+        },
+        {
+            accessorKey: "location",
+            header: "Location",
+        },
+        {
+            accessorKey: "dueDate",
+            header: "Due Date",
+            cell: ({ row }) =>
+                row.getValue("dueDate")
+                    ? format(new Date(row.getValue("dueDate")), "MMM dd, yyyy")
+                    : "No date",
+        },
+    ], [users]);
+
+    const userColumns = React.useMemo(() => [
+        {
+            accessorKey: "name",
+            header: "Name",
+        },
+        {
+            accessorKey: "email",
+            header: "Email",
+        },
+        {
+            accessorKey: "role",
+            header: "Role",
+            cell: ({ row }) => {
+                const roleValue = row.getValue("role") || "default";
+                const role = getRoleInfo(roleValue);
+                return (
+                    <Badge className={role.color}>
+                        {role.label}
+                    </Badge>
+                );
+            },
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+                const statusValue = row.getValue("status") || "default";
+                const status = getUserStatusInfo(statusValue);
+                return (
+                    <Badge className={status.color}>
+                        {status.label}
+                    </Badge>
+                );
+            },
+        },
+        {
+            accessorKey: "assignments",
+            header: "Tasks Assigned",
+        },
+    ], []);
+
+    const filteredTasks = selectedUser === "all"
+        ? tasks
+        : tasks.filter((task) => task.assignedTo === selectedUser);
 
     const taskTable = useReactTable({
         data: filteredTasks,
@@ -281,17 +319,13 @@ const AdminDashboard = () => {
         getFilteredRowModel: getFilteredRowModel(),
     });
 
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    };
-
-    // if (loading) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen">
-    //             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-    //         </div>
-    //     );
-    // }
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     if (error) {
         return (
@@ -304,7 +338,6 @@ const AdminDashboard = () => {
             </div>
         );
     }
-
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
@@ -323,7 +356,7 @@ const AdminDashboard = () => {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{userOverview. totalUsers}</div>
+                        <div className="text-2xl font-bold">{userOverview.totalUsers}</div>
                         <p className="text-xs text-muted-foreground">
                             All system users
                         </p>
@@ -335,12 +368,12 @@ const AdminDashboard = () => {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Workers</CardTitle>
                         <Badge variant="outline" className="text-sm">
-                            {userOverview. activeWorkers}
+                            {userOverview.activeWorkers}
                         </Badge>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                                {userOverview. activeWorkers}
+                            {userOverview.activeWorkers}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Available for tasks
@@ -352,11 +385,11 @@ const AdminDashboard = () => {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
                         <Badge variant="outline" className="text-sm">
-                            {task.length}
+                            {tasks.length}
                         </Badge>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{task.length}</div>
+                        <div className="text-2xl font-bold">{tasks.length}</div>
                         <p className="text-xs text-muted-foreground">
                             All assigned tasks
                         </p>
@@ -370,7 +403,7 @@ const AdminDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {task.filter(t => t.status === "completed").length}
+                            {tasks.filter(t => t.status === "completed").length}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Finished tasks
