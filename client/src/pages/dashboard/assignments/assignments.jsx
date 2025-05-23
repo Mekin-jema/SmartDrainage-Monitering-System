@@ -291,7 +291,7 @@ const AdminDashboard = () => {
         {assignments.map((task) => (
           <Badge key={task._id} className="w-fit bg-gray-400">
             <div className="text-left">
-              <div>{task.task}</div>
+              <div>{task.manholeId}</div>
               <div className="text-xs opacity-70">
                 {format(new Date(task.date), "PPP")}
               </div>

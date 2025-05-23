@@ -94,12 +94,12 @@ const MaintenanceLogsTable = () => {
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
-    const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
+  const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
+  console.log(maintenanceLogs);
 
-    useEffect(()=>{
-      fetchMaintenanceLogs();
-    },[])
-
+  useEffect(() => {
+    fetchMaintenanceLogs();
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -121,10 +121,14 @@ const MaintenanceLogsTable = () => {
         accessorKey: "type",
         header: "Type",
         cell: ({ row }) => {
-          const type = row.getValue("type")
+          const type = row.getValue("type");
+          const typeInfo = types[type] || { 
+            label: type || "Unknown", 
+            color: "bg-gray-100 text-gray-800" 
+          };
           return (
-            <Badge className={types[type].color}>
-              {types[type].label}
+            <Badge className={typeInfo.color}>
+              {typeInfo.label}
             </Badge>
           );
         },
@@ -150,10 +154,14 @@ const MaintenanceLogsTable = () => {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-          const status = row.getValue("status")
+          const status = row.getValue("status");
+          const statusInfo = statuses[status] || { 
+            label: status || "Unknown", 
+            color: "bg-gray-100 text-gray-800" 
+          };
           return (
-            <Badge className={statuses[status].color}>
-              {statuses[status].label}
+            <Badge className={statusInfo.color}>
+              {statusInfo.label}
             </Badge>
           );
         },
@@ -164,27 +172,36 @@ const MaintenanceLogsTable = () => {
       {
         accessorKey: "date",
         header: "Scheduled Date",
-        cell: ({ row }) => format(new Date(row.getValue("date")), "MMM dd, yyyy"),
+        cell: ({ row }) => {
+          const dateValue = row.getValue("date");
+          return dateValue ? format(new Date(dateValue), "MMM dd, yyyy") : "N/A";
+        },
       },
       {
         accessorKey: "assignedTo",
         header: "Assigned To",
+        cell: ({ row }) => row.getValue("assignedTo") || "Unassigned",
       },
       {
         accessorKey: "updatedAt",
         header: "Last Updated",
-        cell: ({ row }) => (
-          <Tooltip>
-            <TooltipTrigger>
-              {formatDistanceToNow(new Date(row.getValue("updatedAt")), {
-                addSuffix: true,
-              })}
-            </TooltipTrigger>
-            <TooltipContent>
-              {format(new Date(row.getValue("updatedAt")), "PPpp")}
-            </TooltipContent>
-          </Tooltip>
-        ),
+        cell: ({ row }) => {
+          const dateValue = row.getValue("updatedAt");
+          if (!dateValue) return "N/A";
+          
+          return (
+            <Tooltip>
+              <TooltipTrigger>
+                {formatDistanceToNow(new Date(dateValue), {
+                  addSuffix: true,
+                })}
+              </TooltipTrigger>
+              <TooltipContent>
+                {format(new Date(dateValue), "PPpp")}
+              </TooltipContent>
+            </Tooltip>
+          );
+        },
       },
       {
         id: "actions",
@@ -257,6 +274,8 @@ const MaintenanceLogsTable = () => {
     ],
     [toast]
   );
+
+  // ... rest of the component remains the same ...
 
   const table = useReactTable({
     data: maintenanceLogs,

@@ -40,6 +40,7 @@ import VerifyEmail from "./components/auth/VerifyEmail";
 import ResetPassword from "./components/auth/Reset-password";
 import WorkerDashboard from "./pages/dashboard/worker-task/worker-dashboard";
 import AdminDashboard from "./pages/dashboard/assignments/assignments";
+import { CreateTaskForm } from "./pages/dashboard/assignments/createTask";
 
 
 
@@ -187,7 +188,14 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "docs", element: <Docs /> },
       { path: "map", element: <Map /> },
-      { path: "admin-dashboard", element: <AdminDashboard /> },
+      { path: "admin-dashboard", element: <AdminDashboard  />, children:[{
+        path: "create-task", element: <CreateTaskForm /> },
+      ],
+
+      
+
+
+      },
       
   {
     path: "worker-dashboard",
@@ -200,6 +208,11 @@ const router = createBrowserRouter([
     ],
   },
 
+
+  {
+    path:"/create-task",
+    element: <CreateTaskForm />
+  }
 
   ,
   // Error handling route

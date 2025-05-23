@@ -8,12 +8,9 @@ const MAINTENANCE_TYPES = ['routine', 'repair', 'emergency', 'inspection'];
 
 // Helper: resolve manhole by ID or code
 const resolveManholeId = async (input) => {
-  if (!mongoose.Types.ObjectId.isValid(input)) {
-    const manhole = await Manhole.findOne({ id: input });
-    return manhole ? manhole._id.toString() : null;
-  }
-  const manhole = await Manhole.findById(input);
-  return manhole ? manhole._id.toString() : null;
+
+  const manhole = await Manhole.findOne({id:input});
+  return manhole ? manhole.id: null;
 };
 
 // 1. Create Maintenance Log
