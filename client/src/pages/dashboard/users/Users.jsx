@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import {
   useReactTable,
@@ -56,118 +54,117 @@ const statusColors = {
   default: "bg-gray-500 dark:bg-gray-600 hover:bg-gray-600 dark:hover:bg-gray-700",
 };
 
-const columns = [
-  {
-    header: "User ID",
-    accessorKey: "_id",
-    cell: (info) => (
-      <span className="font-medium text-foreground">
-        {info.getValue().slice(-6).toUpperCase()}
-      </span>
-    ),
-  },
-  {
-    header: "Full Name",
-    accessorKey: "fullname",
-    cell: (info) => (
-      <span className="text-foreground">{info.getValue()}</span>
-    ),
-  },
-  {
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="p-0 hover:bg-transparent text-foreground"
-      >
-        Email <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    accessorKey: "email",
-    cell: (info) => (
-      <span className="text-foreground">{info.getValue()}</span>
-    ),
-  },
-  {
-    header: "Role",
-    accessorKey: "role",
-    cell: (info) => {
-      const value = info.getValue();
-      // Ensure value is a string
-      const roleValue = typeof value === 'string' ? value : 'default';
-      const colorClass = roleColors[roleValue] || roleColors.default;
-      return (
-        <Badge className={`${colorClass} text-white dark:text-gray-100`}>
-          {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
-        </Badge>
-      );
-    },
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
-    cell: (info) => {
-      const value = info.getValue();
-      // Ensure value is a string
-      const statusValue = typeof value === 'string' ? value : 'default';
-      const colorClass = statusColors[statusValue] || statusColors.default;
-      return (
-        <Badge className={`${colorClass} text-white dark:text-gray-100`}>
-          {statusValue.charAt(0).toUpperCase() + statusValue.slice(1)}
-        </Badge>
-      );
-    },
-  },
-  {
-    header: "Last Login",
-    accessorKey: "lastLogin",
-    cell: (info) => (
-      <span className="text-foreground">
-        {format(new Date(info.getValue()), "yyyy-MM-dd HH:mm:ss")}
-      </span>
-    ),
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const user = row.original;
-      const { toast } = useToast();
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => {
-                navigator.clipboard.writeText(user._id);
-                toast({
-                  title: "Copied",
-                  description: "User ID copied to clipboard",
-                });
-              }}
-            >
-              Copy User ID
-            </DropdownMenuItem>
-            <DropdownMenuItem>Edit User</DropdownMenuItem>
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
-export default function UsersTable() {
-  const [users, setUsers] = useState([]);
+const UsersTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
+  const { toast } = useToast();
 
-  const { getAllUsers, users: storeUsers } = useUserStore(); // Changed from 'user' to 'users'
+  const { getAllUsers, user } = useUserStore();
+  // console.log(users);
+
+  const columns = React.useMemo(() => [
+    {
+      header: "User ID",
+      accessorKey: "_id",
+      cell: (info) => (
+        <span className="font-medium text-foreground">
+          {info.getValue().slice(-6).toUpperCase()}
+        </span>
+      ),
+    },
+    {
+      header: "Full Name",
+      accessorKey: "fullname",
+      cell: (info) => (
+        <span className="text-foreground">{info.getValue()}</span>
+      ),
+    },
+    {
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 hover:bg-transparent text-foreground"
+        >
+          Email <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      accessorKey: "email",
+      cell: (info) => (
+        <span className="text-foreground">{info.getValue()}</span>
+      ),
+    },
+    {
+      header: "Role",
+      accessorKey: "role",
+      cell: (info) => {
+        const value = info.getValue();
+        const roleValue = typeof value === "string" ? value : "default";
+        const colorClass = roleColors[roleValue] || roleColors.default;
+        return (
+          <Badge className={`${colorClass} text-white dark:text-gray-100`}>
+            {roleValue.charAt(0).toUpperCase() + roleValue.slice(1)}
+          </Badge>
+        );
+      },
+    },
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (info) => {
+        const value = info.getValue();
+        const statusValue = typeof value === "string" ? value : "default";
+        const colorClass = statusColors[statusValue] || statusColors.default;
+        return (
+          <Badge className={`${colorClass} text-white dark:text-gray-100`}>
+            {statusValue.charAt(0).toUpperCase() + statusValue.slice(1)}
+          </Badge>
+        );
+      },
+    },
+    {
+      header: "Last Login",
+      accessorKey: "lastLogin",
+      cell: (info) => (
+        <span className="text-foreground">
+          {info.getValue()
+            ? format(new Date(info.getValue()), "yyyy-MM-dd HH:mm:ss")
+            : "Never"}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const user = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(user._id);
+                  toast({
+                    title: "Copied",
+                    description: "User ID copied to clipboard",
+                  });
+                }}
+              >
+                Copy User ID
+              </DropdownMenuItem>
+              <DropdownMenuItem>Edit User</DropdownMenuItem>
+              <DropdownMenuItem>View Details</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ], [toast]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -175,27 +172,21 @@ export default function UsersTable() {
         setLoading(true);
         await getAllUsers();
       } catch (err) {
-        setError(err.message);
+        setError(err?.message || "An unknown error occurred");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, [getAllUsers]);
+  },[] );
 
-  useEffect(() => {
-    if (storeUsers) {
-      setUsers(storeUsers);
-    }
-  }, [storeUsers]);
+  console.log(user);
 
   const table = useReactTable({
-    data: users,
+    data: user || [],
     columns,
-    state: {
-      globalFilter,
-    },
+    state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -225,13 +216,11 @@ export default function UsersTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-foreground">
-          System Users
-        </h2>
+        <h2 className="text-xl font-semibold text-foreground">System Users</h2>
         <div className="flex items-center space-x-2">
           <Input
             placeholder="Search all columns..."
-            value={globalFilter ?? ""}
+            value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="max-w-sm"
           />
@@ -264,26 +253,20 @@ export default function UsersTable() {
                     row.original.status === "suspended"
                       ? "bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50"
                       : row.original.status === "inactive"
-                        ? "bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50"
-                        : "hover:bg-accent"
+                      ? "bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50"
+                      : "hover:bg-accent"
                   }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-foreground"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center text-foreground">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -296,60 +279,39 @@ export default function UsersTable() {
         <div className="text-sm text-muted-foreground">
           Showing{" "}
           <strong className="text-foreground">
-            {table.getState().pagination.pageIndex *
-              table.getState().pagination.pageSize +
-              1}
-            -
+            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
             {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-              table.getState().pagination.pageSize,
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
               table.getFilteredRowModel().rows.length
             )}
           </strong>{" "}
-          of <strong className="text-foreground">
+          of{" "}
+          <strong className="text-foreground">
             {table.getFilteredRowModel().rows.length}
           </strong>{" "}
           users
         </div>
         <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to first page</span>
+          <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
             <ChevronsLeft className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to previous page</span>
+          <Button variant="outline" className="h-8 w-8 p-0"
+            onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to next page</span>
+          <Button variant="outline" className="h-8 w-8 p-0"
+            onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to last page</span>
+          <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default UsersTable;

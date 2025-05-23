@@ -336,6 +336,7 @@ const SewageSystemMap = () => {
       }
     });
 
+
     return () => map.remove();
   }, [
     drawingMode,
@@ -343,6 +344,7 @@ const SewageSystemMap = () => {
     connectingManhole,
     flowDirectionMode,
     editingPipe,
+    manholes,
 
   ]);
 
