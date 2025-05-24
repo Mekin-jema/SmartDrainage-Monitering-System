@@ -101,7 +101,7 @@ const router = createBrowserRouter([
         <ServicesSection />
         {/* <PricingSection /> */}
         <TestimonialSection />
-        <TeamSection />
+        {/* <TeamSection /> */}
         <CommunitySection />
         <SponsorsSection />
         <FAQSection />
