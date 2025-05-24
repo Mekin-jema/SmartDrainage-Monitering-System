@@ -72,17 +72,17 @@ export const getSidebarData = (user) => {
             url: "/dashboard/users",
             icon: Users,
           },
-          {
-            title: "Map",
-            url: "/dashboard/map",
-            icon: MapPin,
-          },
+          // {
+          //   title: "Map",
+          //   url: "/dashboard/map",
+          //   icon: MapPin,
+          // },
           {
             title: "Maintenance Logs",
             url: "/dashboard/maintenance",
             icon: ClipboardCheck,
           },
-      
+
           {
             title: "Assignments",
             url: "/dashboard/admin-dashboard",
