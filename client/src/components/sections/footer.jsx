@@ -101,7 +101,7 @@ export const FooterSection = () => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://github.com/leoMirandaa"
+              href="https://github.com/Mekin-jema"
               className="text-primary transition-all border-primary hover:border-b-2 ml-1"
             >
               Mekin & Abdu
