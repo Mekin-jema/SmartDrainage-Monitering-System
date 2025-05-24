@@ -184,7 +184,7 @@ const Navbar = () => {
         <DarkModeToggle />
         <Button asChild size="sm" variant="ghost" aria-label="View on GitHub" className="mx-2">
           <a
-            href="https://github.com/nobruf/shadcn-landing-page.git"
+            href="https://github.com/Mekin-jema/final-project-v1"
             target="_blank"
             rel="noopener noreferrer"
           >
