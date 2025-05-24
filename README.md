@@ -1,8 +1,3 @@
-Here’s a comprehensive `README.md` file for your full-stack IoT-based smart drainage monitoring system project. This includes project overview, setup instructions, tech stack, folder structure, environment variables, and more.
-
----
-
-```markdown
 # 🛠️ Smart Drainage Monitoring System 🌐💧
 
 A full-stack IoT-based Smart Drainage Monitoring System that enables real-time monitoring of drainage manholes using gas, water level, and pH sensors. The system helps city administrators track hazardous areas, receive citizen feedback, and assign maintenance workers efficiently via a web-based dashboard and mobile view.
@@ -55,31 +50,30 @@ A full-stack IoT-based Smart Drainage Monitoring System that enables real-time m
 ---
 
 ## 📁 Folder Structure
-```
 
+```
 smart-drainage/
 ├── api/ # Backend (Node.js + Express)
-│ ├── controllers/
-│ ├── models/
-│ ├── routes/
-│ ├── utils/
-│ ├── index.js
-│ └── .env
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── index.js
+│   └── .env
 ├── client/ # Frontend (React + Tailwind)
-│ ├── public/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── hooks/
-│ │ ├── store/
-│ │ ├── App.jsx
-│ │ └── main.jsx
-│ └── .env.local
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── store/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── .env.local
 ├── package.json
 ├── .gitignore
 └── README.md
-
-````
+```
 
 ---
 
@@ -97,7 +91,7 @@ FRONTEND_URL=http://localhost:5173
 MQTT_TOPIC=drainage-sensors
 MQTT_BROKER_URL=mqtt://broker.hivemq.com
 PORT=8000
-````
+```
 
 ### 💻 Frontend (`client/.env.local`)
 
@@ -186,9 +180,9 @@ Ensure both `.env` and `.env.local` are properly configured.
 
 ## 👨‍💻 Author
 
-**Mekin Jemal**
-📧 [mekinjemal999@gmail.com](mailto:mekinjemal999@gmail.com)
-📞 +251920064543
+**Mekin Jemal**  
+📧 [mekinjemal999@gmail.com](mailto:mekinjemal999@gmail.com)  
+📞 +251920064543  
 🌐 [LinkedIn](https://linkedin.com/in/mekinjemal) | [GitHub](https://github.com/mekinjemal)
 
 ---
@@ -206,10 +200,3 @@ This project is licensed under the MIT License.
 - [Cloudinary](https://cloudinary.com/)
 - [Mailtrap](https://mailtrap.io/)
 - [HiveMQ MQTT Broker](https://www.hivemq.com/public-mqtt-broker/)
-
-```
-
----
-
-Let me know if you'd like a version with badge icons (npm, license, etc.), or if you'd like to generate a markdown file directly from this.
-```
