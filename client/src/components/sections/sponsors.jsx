@@ -40,7 +40,7 @@ export const SponsorsSection = () => {
   return (
     <section id="sponsors" className="max-w-[75%] mx-auto pb-24 sm:pb-32">
       <h2 className="text-lg md:text-xl text-center mb-6">
-        የአምባላይ ማፕ አገልግሎት ዋና መስራች እና አጋሮች (Ambalay Map Service Partners)
+        SmartDrainX Partners
       </h2>
 
       <div className="mx-auto">
@@ -56,7 +56,7 @@ export const SponsorsSection = () => {
               className="flex items-center text-xl md:text-2xl font-medium"
             >
               <Icon
-                name={icon} // Type casting to match the Lucide icon names
+                name={icon}
                 size={32}
                 className="mr-2"
                 color={`${theme === "light" ? "#4A90E2" : "#fff"}`}
