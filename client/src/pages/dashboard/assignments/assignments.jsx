@@ -181,7 +181,7 @@ const AdminDashboard = () => {
             header: "Assigned To",
             cell: ({ row }) => {
                 const user = users.find((u) => u.id === row.getValue("assignedTo"));
-                return user ? user.name : "Unassigned";
+                return user ? user.fullname : "Unassigned";
             },
         },
         {
@@ -376,7 +376,7 @@ const AdminDashboard = () => {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
                     <p className="text-muted-foreground">
-                        Welcome back, {user?.name || "Admin"}
+                        Welcome back, {user?.fullname || "Admin"}
                     </p>
                 </div>
             </div>

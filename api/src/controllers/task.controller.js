@@ -29,7 +29,7 @@ export const getTaskOverviewWithList = async (req, res) => {
 // Helper function to generate unique task code
 const generateTaskCode = async () => {
   const prefix = "TASK-";
-  const count = await Task.countDocuments();
+  const count = await taskModel.countDocuments();
   return `${prefix}${(count + 1).toString().padStart(4, "0")}`;
 };
 

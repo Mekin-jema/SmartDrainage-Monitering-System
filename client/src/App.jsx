@@ -35,7 +35,7 @@ import ForgotPassword from "./components/auth/Forgot-password";
 import { useUserStore } from "./store/useUserStore";
 import Loading from "./components/sections/Loader";
 import { useEffect } from "react";
-import EmailVerified from "./components/auth/Email-verified";
+// import EmailVerified from "./components/auth/Email-verified";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import ResetPassword from "./components/auth/Reset-password";
 import WorkerDashboard from "./pages/dashboard/worker-task/worker-dashboard";
@@ -162,10 +162,10 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoutes>
 
-        <AdminRoute>
+        {/* <AdminRoute> */}
 
-          <DashboardMainPage />
-        </AdminRoute>
+        <DashboardMainPage />
+        {/* </AdminRoute> */}
       </ProtectedRoutes>
 
 

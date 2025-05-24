@@ -285,7 +285,7 @@ export function CreateTaskForm({ users = [] }) {
                   <SelectContent>
                     {users.length > 0 ? (
                       users.map((user) => (
-                        <SelectItem key={user.fullname} value={user.fullname}>
+                        <SelectItem key={user.fullname} value={user._id}>
                           {user.fullname}
                         </SelectItem>
                       ))

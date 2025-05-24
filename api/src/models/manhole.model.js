@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const manholeSchema = new mongoose.Schema({
   id: {
@@ -15,8 +15,8 @@ const manholeSchema = new mongoose.Schema({
   location: {
     type: {
       type: String, // NOT Number
-      default: 'Point',
-      enum: ['Point'],
+      default: "Point",
+      enum: ["Point"],
       required: true,
     },
     coordinates: {
@@ -41,4 +41,4 @@ const manholeSchema = new mongoose.Schema({
 //   },
 // });
 
-export default mongoose.model('Manhole', manholeSchema);
+export default mongoose.model("Manhole", manholeSchema);

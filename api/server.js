@@ -22,17 +22,19 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 // Enhanced CORS
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Socket.IO Setup
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // MQTT Client Setup
@@ -40,7 +42,7 @@ const mqttClient = mqtt.connect(
   process.env.MQTT_BROKER_URL || "mqtt://broker.hivemq.com",
   {
     clientId: `server_${Math.random().toString(16).substr(2, 8)}`,
-    clean: true
+    clean: true,
   }
 );
 
@@ -51,10 +53,10 @@ const MAX_CACHE_SIZE = 1000;
 // Socket.IO Events
 io.on("connection", (socket) => {
   console.log("New client connected");
-  
+
   // Send latest data on connect
   socket.emit("initialData", sensorDataCache.slice(-100)); // Last 100 readings
-  
+
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
@@ -64,17 +66,16 @@ io.on("connection", (socket) => {
 mqttClient.on("connect", () => {
   console.log("Connected to MQTT broker");
   mqttClient.subscribe(
-    process.env.MQTT_TOPIC || "drainage/sensor-data", 
+    process.env.MQTT_TOPIC || "drainage/sensor-data",
     { qos: 1 },
     (err) => err && console.error("Subscribe error:", err)
   );
 });
 
-mqttClient.on("message", async(topic, message) => {
+mqttClient.on("message", async (topic, message) => {
   try {
     const data = {
       ...JSON.parse(message.toString()),
-   
     };
 
     // Update cache
@@ -85,16 +86,15 @@ mqttClient.on("message", async(topic, message) => {
 
     // Broadcast to all clients
     await createReading(data); // Save to DB
-      // const result = await getAllSensorReadings();
-      const result = await getLatestReading();
-      io.emit("sensorData", (result));
+    // const result = await getAllSensorReadings();
+    const result = await getLatestReading();
+    io.emit("sensorData", result);
 
-      // 
-      const latestManholeData = await  getAllManholes()
-      if (latestManholeData.success){
-        io.emit("manholeData", latestManholeData);
-      }
-  
+    //
+    const latestManholeData = await getAllManholes();
+    if (latestManholeData.success) {
+      io.emit("manholeData", latestManholeData);
+    }
   } catch (error) {
     console.error("Message processing error:", error);
   }
@@ -104,245 +104,234 @@ mqttClient.on("message", async(topic, message) => {
 
 app.use("/api/v1", router);
 
-
 // Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
     mqtt: mqttClient.connected ? "connected" : "disconnected",
-    clients: io.engine.clientsCount
+    clients: io.engine.clientsCount,
   });
 });
 
 // Start Server
 httpServer.listen(port, () => {
-  db()
+  db();
   console.log(`Server running on port ${port}`);
   console.log(`WebSocket available on ws://localhost:${port}`);
 });
 
-const data=
-[
-
+const data = [
   {
-    "id": "1",
-    "code": "MH-001",
-    "elevation": 2400,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.76143, 9.043133],
-      "zone": "A"
+    id: "1",
+    code: "MH-001",
+    elevation: 2400,
+    location: {
+      type: "Point",
+      coordinates: [38.76143, 9.043133],
     },
-    "status": "functional",
-    "lastInspection": "2023-05-15",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": ["2"]
+    zone: "A",
+    status: "functional",
+    lastInspection: "2023-05-15",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: ["2"],
   },
   {
-    "id": "2",
-    "code": "MH-002",
-    "elevation": 2395,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.76177, 9.04153],
-      "zone": "A"
+    id: "2",
+    code: "MH-002",
+    elevation: 2395,
+    location: {
+      type: "Point",
+      coordinates: [38.76177, 9.04153],
     },
-    "status": "critical",
-    "lastInspection": "2023-04-20",
-    "cover_status": "open",
-    "overflow_level": "risk",
-    "connections": ["3"]
+    zone: "A",
+    status: "critical",
+    lastInspection: "2023-04-20",
+    cover_status: "open",
+    overflow_level: "risk",
+    connections: ["3"],
   },
   {
-    "id": "3",
-    "code": "MH-003",
-    "elevation": 2390,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762154, 9.040072],
-      "zone": "A"
+    id: "3",
+    code: "MH-003",
+    elevation: 2390,
+    location: {
+      type: "Point",
+      coordinates: [38.762154, 9.040072],
     },
-    "status": "overflowing",
-    "lastInspection": "2023-06-01",
-    "cover_status": "closed",
-    "overflow_level": "overflow",
-    "connections": ["4"]
+    zone: "A",
+    status: "overflowing",
+    lastInspection: "2023-06-01",
+    cover_status: "closed",
+    overflow_level: "overflow",
+    connections: ["4"],
   },
   {
-    "id": "4",
-    "code": "MH-004",
-    "elevation": 2385,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762508, 9.038484],
-      "zone": "A"
+    id: "4",
+    code: "MH-004",
+    elevation: 2385,
+    location: {
+      type: "Point",
+      coordinates: [38.762508, 9.038484],
     },
-    "status": "functional",
-    "lastInspection": "2023-05-25",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": ["5", "6", "8"]
+    zone: "A",
+    status: "functional",
+    lastInspection: "2023-05-25",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: ["5", "6", "8"],
   },
   {
-    "id": "5",
-    "code": "MH-005",
-    "elevation": 2380,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.761106, 9.037434],
-      "zone": "B"
+    id: "5",
+    code: "MH-005",
+    elevation: 2380,
+    location: {
+      type: "Point",
+      coordinates: [38.761106, 9.037434],
     },
-    "status": "warning",
-    "lastInspection": "2023-06-05",
-    "cover_status": "open",
-    "overflow_level": "moderate",
-    "connections": ["7"]
+    zone: "B",
+    status: "warning",
+    lastInspection: "2023-06-05",
+    cover_status: "open",
+    overflow_level: "moderate",
+    connections: ["7"],
   },
   {
-    "id": "9",
-    "code": "MH-009",
-    "elevation": 2375,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762951, 9.036137],
-      "zone": "A"
+    id: "9",
+    code: "MH-009",
+    elevation: 2375,
+    location: {
+      type: "Point",
+      coordinates: [38.762951, 9.036137],
     },
-    "status": "functional",
-    "lastInspection": "2023-06-07",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": ["10"]
+    zone: "A",
+    status: "functional",
+    lastInspection: "2023-06-07",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: ["10"],
   },
   {
-    "id": "7",
-    "code": "MH-007",
-    "elevation": 2370,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.759375, 9.036599],
-      "zone": "B"
+    id: "7",
+    code: "MH-007",
+    elevation: 2370,
+    location: {
+      type: "Point",
+      coordinates: [38.759375, 9.036599],
     },
-    "status": "critical",
-    "lastInspection": "2023-05-10",
-    "cover_status": "open",
-    "overflow_level": "risk",
-    "connections": [""]
+    zone: "B",
+    status: "critical",
+    lastInspection: "2023-05-10",
+    cover_status: "open",
+    overflow_level: "risk",
+    connections: [""],
   },
   {
-    "id": "8",
-    "code": "MH-008",
-    "elevation": 2365,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.764006, 9.03789],
-      "zone": "C"
+    id: "8",
+    code: "MH-008",
+    elevation: 2365,
+    location: {
+      type: "Point",
+      coordinates: [38.764006, 9.03789],
     },
-    "status": "functional",
-    "lastInspection": "2023-06-03",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": [""]
+    zone: "C",
+    status: "functional",
+    lastInspection: "2023-06-03",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: [""],
   },
   {
-    "id": "6",
-    "code": "MH-006",
-    "elevation": 2360,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762809, 9.037224],
-      "zone": "D"
+    id: "6",
+    code: "MH-006",
+    elevation: 2360,
+    location: {
+      type: "Point",
+      coordinates: [38.762809, 9.037224],
     },
-    "status": "overflowing",
-    "lastInspection": "2023-06-01",
-    "cover_status": "open",
-    "overflow_level": "overflow",
-    "connections": [ "9"]
+    zone: "D",
+    status: "overflowing",
+    lastInspection: "2023-06-01",
+    cover_status: "open",
+    overflow_level: "overflow",
+    connections: ["9"],
   },
   {
-    "id": "11",
-    "code": "MH-011",
-    "elevation": 2395,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.763048, 9.035362],
-      "zone": "A"
+    id: "11",
+    code: "MH-011",
+    elevation: 2395,
+    location: {
+      type: "Point",
+      coordinates: [38.763048, 9.035362],
     },
-    "status": "functional",
-    "lastInspection": "2023-06-10",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": ["12"]
+    zone: "A",
+    status: "functional",
+    lastInspection: "2023-06-10",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: ["12"],
   },
   {
-    "id": "12",
-    "code": "MH-012",
-    "elevation": 2390,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.763153, 9.034616],
-      "zone": "B"
+    id: "12",
+    code: "MH-012",
+    elevation: 2390,
+    location: {
+      type: "Point",
+      coordinates: [38.763153, 9.034616],
     },
-    "status": "critical",
-    "lastInspection": "2023-05-15",
-    "cover_status": "open",
-    "overflow_level": "risk",
-    "connections": ["13"]
+    zone: "B",
+    status: "critical",
+    lastInspection: "2023-05-15",
+    cover_status: "open",
+    overflow_level: "risk",
+    connections: ["13"],
   },
   {
-    "id": "13",
-    "code": "MH-013",
-    "elevation": 2380,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762563, 9.033234],
-      "zone": "C"
+    id: "13",
+    code: "MH-013",
+    elevation: 2380,
+    location: {
+      type: "Point",
+      coordinates: [38.762563, 9.033234],
     },
-    "status": "warning",
-    "lastInspection": "2023-06-02",
-    "cover_status": "open",
-    "overflow_level": "moderate",
-    "connections": ["14"]
+    zone: "C",
+    status: "warning",
+    lastInspection: "2023-06-02",
+    cover_status: "open",
+    overflow_level: "moderate",
+    connections: ["14"],
   },
   {
-    "id": "14",
-    "code": "MH-014",
-    "elevation": 2375,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.764492, 9.03237],
-      "zone": "C"
+    id: "14",
+    code: "MH-014",
+    elevation: 2375,
+    location: {
+      type: "Point",
+      coordinates: [38.764492, 9.03237],
     },
-    "status": "functional",
-    "lastInspection": "2023-06-03",
-    "cover_status": "closed",
-    "overflow_level": "good",
-    "connections": [""]
+    zone: "C",
+    status: "functional",
+    lastInspection: "2023-06-03",
+    cover_status: "closed",
+    overflow_level: "good",
+    connections: [""],
   },
   {
-    "id": "10",
-    "code": "MH-010",
-    "elevation": 2370,
-    "location": {
-      "type": "Point",
-      "coordinates": [38.762994,  9.036011 ],
-    
-
-
-
-       
-
-
-      "zone": "D"
+    id: "10",
+    code: "MH-010",
+    elevation: 2370,
+    location: {
+      type: "Point",
+      coordinates: [38.762987, 9.035571],
     },
-    "status": "critical",
-    "lastInspection": "2023-05-10",
-    "cover_status": "open",
-    "overflow_level": "risk",
-    "connections": ["11"]
-  }
-]
-
+    zone: "D",
+    status: "critical",
+    lastInspection: "2023-05-10",
+    cover_status: "open",
+    overflow_level: "risk",
+    connections: ["11"],
+  },
+];
 
 const mockMaintenanceLogs = [
   {
@@ -357,9 +346,10 @@ const mockMaintenanceLogs = [
     actualEnd: new Date("2025-05-01T10:45:00"),
     partsReplaced: [
       { name: "Concrete Seal", quantity: 2 },
-      { name: "Reinforcement Bars", quantity: 4 }
+      { name: "Reinforcement Bars", quantity: 4 },
     ],
-    notes: "Found significant cracks in the chamber walls. Required immediate repair."
+    notes:
+      "Found significant cracks in the chamber walls. Required immediate repair.",
   },
   {
     manholeId: "6829b798fd147734102d3c1e", // MH-007
@@ -371,7 +361,7 @@ const mockMaintenanceLogs = [
     scheduledDate: new Date("2025-05-02"),
     actualStart: new Date("2025-05-02T09:00:00"),
     partsReplaced: [],
-    notes: "Standard cleaning in progress. Found minor debris buildup."
+    notes: "Standard cleaning in progress. Found minor debris buildup.",
   },
   {
     manholeId: "6829b798fd147734102d3c22", // MH-012
@@ -385,9 +375,9 @@ const mockMaintenanceLogs = [
     actualEnd: new Date("2025-04-25T09:30:00"),
     partsReplaced: [
       { name: "Methane Sensor", quantity: 1 },
-      { name: "Battery Pack", quantity: 2 }
+      { name: "Battery Pack", quantity: 2 },
     ],
-    notes: "Calibrated all sensors and replaced aging components."
+    notes: "Calibrated all sensors and replaced aging components.",
   },
   {
     manholeId: "6829b798fd147734102d3c1d", // MH-009
@@ -398,7 +388,7 @@ const mockMaintenanceLogs = [
     status: "scheduled",
     scheduledDate: new Date("2025-05-05"),
     partsReplaced: [],
-    notes: "Reported by neighborhood residents. Requires pump truck."
+    notes: "Reported by neighborhood residents. Requires pump truck.",
   },
   {
     manholeId: "6829b797fd147734102d3c1a", // MH-003
@@ -409,7 +399,7 @@ const mockMaintenanceLogs = [
     status: "pending",
     scheduledDate: new Date("2025-05-10"),
     partsReplaced: [],
-    notes: "Part of quarterly inspection cycle"
+    notes: "Part of quarterly inspection cycle",
   },
   {
     manholeId: "6829b798fd147734102d3c25", // MH-015
@@ -422,9 +412,9 @@ const mockMaintenanceLogs = [
     actualStart: new Date("2025-05-03T08:15:00"),
     partsReplaced: [
       { name: "Control Valve", quantity: 1 },
-      { name: "Pressure Gauge", quantity: 1 }
+      { name: "Pressure Gauge", quantity: 1 },
     ],
-    notes: "Upgrading to new valve model for better flow control"
+    notes: "Upgrading to new valve model for better flow control",
   },
   {
     manholeId: "6829b797fd147734102d3c18", // MH-001
@@ -438,9 +428,9 @@ const mockMaintenanceLogs = [
     actualEnd: new Date("2025-04-28T08:30:00"),
     partsReplaced: [
       { name: "Manhole Cover", quantity: 1 },
-      { name: "Sealing Compound", quantity: 1 }
+      { name: "Sealing Compound", quantity: 1 },
     ],
-    notes: "Replaced damaged 24-inch cover with new composite model"
+    notes: "Replaced damaged 24-inch cover with new composite model",
   },
   {
     manholeId: "6829b798fd147734102d3c1c", // MH-005
@@ -453,7 +443,7 @@ const mockMaintenanceLogs = [
     actualStart: new Date("2025-04-30T10:00:00"),
     actualEnd: new Date("2025-04-30T12:30:00"),
     partsReplaced: [],
-    notes: "Removed 15kg of sediment. Pipes in good condition."
+    notes: "Removed 15kg of sediment. Pipes in good condition.",
   },
   {
     manholeId: "6829b798fd147734102d3c24", // MH-014 (Note: Original was MH-018 which doesn't exist, using closest available)
@@ -464,7 +454,7 @@ const mockMaintenanceLogs = [
     status: "scheduled",
     scheduledDate: new Date("2025-05-15"),
     partsReplaced: [],
-    notes: "Annual pump service scheduled"
+    notes: "Annual pump service scheduled",
   },
   {
     manholeId: "6829b798fd147734102d3c21", // MH-011 (Note: Original was MH-022 which doesn't exist, using closest available)
@@ -476,14 +466,10 @@ const mockMaintenanceLogs = [
     scheduledDate: new Date("2025-04-27"),
     actualStart: new Date("2025-04-27T14:00:00"),
     actualEnd: new Date("2025-04-27T17:45:00"),
-    partsReplaced: [
-      { name: "Pipe Seal", quantity: 3 }
-    ],
-    notes: "Major blockage cleared. Found roots infiltrating pipe."
-  }
+    partsReplaced: [{ name: "Pipe Seal", quantity: 3 }],
+    notes: "Major blockage cleared. Found roots infiltrating pipe.",
+  },
 ];
-
-
 
 // maintenanceModel.insertMany(mockMaintenanceLogs)
 //   .then(() => {
@@ -493,14 +479,14 @@ const mockMaintenanceLogs = [
 //     console.error("Error inserting mock data:", error);
 //   });
 
-// manholeModel.insertMany(data)
+// manholeModel
+//   .insertMany(data)
 //   .then(() => {
 //     console.log("Data inserted successfully");
 //   })
 //   .catch((error) => {
 //     console.error("Error inserting data:", error);
 //   });
-
 
 const mockTasks = [
   {
@@ -559,8 +545,6 @@ const mockTasks = [
     assignedTo: "68230e5633d1f39f8414aba5", // user-1 again
   },
 ];
-
-
 
 // taskModel.insertMany(mockTasks)
 //   .then(() => {
