@@ -9,7 +9,6 @@ export const FooterSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
           <div className="col-span-full xl:col-span-2">
             <Link to="/" className="flex font-bold items-center">
-              <ChevronsDownIcon className="w-9 h-9 mr-2 bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg border border-secondary" />
               <h3 className="text-2xl text-transparent px-2 bg-gradient-to-r from-[#4A90E2] to-primary bg-clip-text">SmartDrainageX</h3>
             </Link>
             <p className="mt-2 text-sm text-muted-foreground">

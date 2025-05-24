@@ -28,9 +28,6 @@ const formSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
 });
 
-// Infer the form type from the schema
-// type ContactFormValues = z.infer<typeof formSchema>;
-
 export const ContactSection = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -42,12 +39,9 @@ export const ContactSection = () => {
     },
   });
 
-  const onSubmit = (values
-    
-  ) => {
-    // Optional: use mailto to send message
-    // const mailToLink = `mailto:leomirandadev@gmail.com?subject=Contact Message&body=Hello, I'm ${values.firstName} ${values.lastName}. My email is ${values.email}. %0D%0A${values.message}`;
-    // window.location.href = mailToLink;
+  const onSubmit = (values) => {
+    // Optional: implement API call or mailto
+    console.log("Submitted:", values);
   };
 
   return (
@@ -60,8 +54,7 @@ export const ContactSection = () => {
             <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum
-            ipsam sint enim exercitationem ex autem corrupti quas tenetur.
+            We are here to help. Whether you're in Bole, Kazanchis, or any part of Addis, feel free to reach out with your questions, ideas, or suggestions.
           </p>
 
           <div className="flex flex-col gap-4">
@@ -70,7 +63,7 @@ export const ContactSection = () => {
                 <Building2 />
                 <div className="font-bold">Find us</div>
               </div>
-              <div>742 Evergreen Terrace, Springfield, IL 62704</div>
+              <div>Bole Road, Morning Star Mall, 5th Floor, Addis Ababa, Ethiopia</div>
             </div>
 
             <div>
@@ -78,7 +71,7 @@ export const ContactSection = () => {
                 <Phone />
                 <div className="font-bold">Call us</div>
               </div>
-              <div>+1 (619) 123-4567</div>
+              <div>+251 92 006 4543</div>
             </div>
 
             <div>
@@ -86,7 +79,7 @@ export const ContactSection = () => {
                 <Mail />
                 <div className="font-bold">Mail Us</div>
               </div>
-              <div>leomirandadev@gmail.com</div>
+              <div>info@smartdrainx.et</div>
             </div>
 
             <div>
@@ -96,7 +89,7 @@ export const ContactSection = () => {
               </div>
               <div>
                 <div>Monday - Friday</div>
-                <div>8AM - 4PM</div>
+                <div>9:00 AM - 5:00 PM EAT</div>
               </div>
             </div>
           </div>
@@ -116,7 +109,7 @@ export const ContactSection = () => {
                       <FormItem className="w-full">
                         <FormLabel>First Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Leopoldo" {...field} />
+                          <Input placeholder="Abebe" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -129,7 +122,7 @@ export const ContactSection = () => {
                       <FormItem className="w-full">
                         <FormLabel>Last Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Miranda" {...field} />
+                          <Input placeholder="Bekele" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -144,7 +137,7 @@ export const ContactSection = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="leomirandadev@gmail.com" {...field} />
+                        <Input type="email" placeholder="you@example.et" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -160,7 +153,7 @@ export const ContactSection = () => {
                       <FormControl>
                         <Textarea
                           rows={5}
-                          placeholder="Your message..."
+                          placeholder="Your message or inquiry..."
                           className="resize-none"
                           {...field}
                         />

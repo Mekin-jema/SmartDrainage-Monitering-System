@@ -99,7 +99,7 @@ const router = createBrowserRouter([
         <FeaturesSection />
         <BenefitsSection />
         <ServicesSection />
-        <PricingSection />
+        {/* <PricingSection /> */}
         <TestimonialSection />
         <TeamSection />
         <CommunitySection />
