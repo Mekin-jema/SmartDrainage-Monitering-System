@@ -44,49 +44,6 @@ import { CreateTaskForm } from "./pages/dashboard/assignments/createTask";
 
 
 
-const ProtectedRoutes = ({ children }) => {
-  const { isAuthenticated, user, isCheckingAuth } = useUserStore();
-  if (isCheckingAuth) {
-    return <Loading />;
-  }
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // if (!user?.isVerified) {
-  //   return <Navigate to="/verify-email" replace />;
-  // }
-  return children;
-};
-const AuthenticatedUser = ({ children }) => {
-  const { isAuthenticated, user } = useUserStore();
-  if (isAuthenticated && user?.isVerified) {
-    return <Navigate to="/" replace />
-  }
-  return children;
-};
-// const WorkerRoute = ({ children }) => {
-//   const { user, isAuthenticated } = useUserStore();
-//   if (!isAuthenticated) return <Navigate to="/login" replace />;
-//   if (user?.role !== "worker") return <Navigate to="/" replace />;
-//   return children;
-// };
-
-const AdminRoute = ({ children }) => {
-  const { user, isAuthenticated, isCheckingAuth } = useUserStore();
-  if (isCheckingAuth) {
-    return <Loading />; // or null/spinner
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-  if (user?.role !== "admin") {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-}
 // Router configuration
 const router = createBrowserRouter([
   // Home route
@@ -99,9 +56,9 @@ const router = createBrowserRouter([
         <FeaturesSection />
         <BenefitsSection />
         <ServicesSection />
-        {/* <PricingSection /> */}
+        <PricingSection />
         <TestimonialSection />
-        {/* <TeamSection /> */}
+        <TeamSection />
         <CommunitySection />
         <SponsorsSection />
         <FAQSection />
@@ -111,123 +68,161 @@ const router = createBrowserRouter([
     ),
   },
 
-  // Dashboard routes
+  // Authentication routes
   { path: "/reset-password", element: <ResetPassword /> },
-
   {
-    path: "/login", element:
+    path: "/login",
+    element: (
       <AuthenticatedUser>
         <Login />
       </AuthenticatedUser>
+    )
   },
   {
-    path: "/signup", element:
+    path: "/signup",
+    element: (
       <AuthenticatedUser>
         <Signup />
-    // </AuthenticatedUser>
+      </AuthenticatedUser>
+    )
   },
   {
-    path: "/sensor", element:
-      <Table />
+    path: "/sensor",
+    element: <Table />
   },
   {
-    path: "/veri>fy-email", element:
+    path: "/verify-email",
+    element: (
       <AuthenticatedUser>
         <VerifyEmail />
       </AuthenticatedUser>
+    )
   },
-  // Authentication routes
-  // {
-  //   path: "/signin",
-  //   element: <SignIn />,
-  // },
-  // {
-  //   path: "/otp",
-  //   element: <Otp />,
-  // },
-  // {
-  //   path: "/signup",
-  //   element: <SignUp />, // Add component for SignUp if needed
-  // },
   {
     path: "/forgot-password",
-    element: <AuthenticatedUser>
-
-      <ForgotPassword />,
-    </AuthenticatedUser>
+    element: (
+      <AuthenticatedUser>
+        <ForgotPassword />
+      </AuthenticatedUser>
+    )
   },
 
+  // Admin Dashboard routes
   {
     path: "/dashboard",
     element: (
       <ProtectedRoutes>
-
-        {/* <AdminRoute> */}
-
         <DashboardMainPage />
-        {/* </AdminRoute> */}
       </ProtectedRoutes>
-
-
     ),
-
-
     children: [
       {
-        index: true, element:
-
-          <Dashboard />
-
+        index: true,
+        element: <RoleBasedRedirect />
       },
       {
         path: "sensor-readings",
-        element:
-          //  <AdminRoute>
-          <SensorsData />
-        // </AdminRoute>
+        element: (
+          <AdminRoute>
+            <SensorsData />
+          </AdminRoute>
+        )
       },
-      { path: "manholes", element: <Manholes /> },
-      { path: "alerts", element: <Alerts /> },
-      { path: "users", element: <Users /> },
-      { path: "maintenance", element: <MaintenanceLogs /> },
-      { path: "settings", element: <SettingsPage /> },
-      { path: "docs", element: <Docs /> },
-      { path: "map", element: <Map /> },
       {
-        path: "admin-dashboard", element: <AdminDashboard />, children: [{
-          path: "create-task", element: <CreateTaskForm />
-        },
-        ],
-
-
-
-
+        path: "manholes",
+        element: (
+          <AdminRoute>
+            <Manholes />
+          </AdminRoute>
+        )
       },
-
+      {
+        path: "alerts",
+        element: (
+          <AdminRoute>
+            <Alerts />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "users",
+        element: (
+          <AdminRoute>
+            <Users />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "maintenance",
+        element: (
+          <AdminRoute>
+            <MaintenanceLogs />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "settings",
+        element: (
+          <AdminRoute>
+            <SettingsPage />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "docs",
+        element: (
+          <AdminRoute>
+            <Docs />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "map",
+        element: (
+          <AdminRoute>
+            <Map />
+          </AdminRoute>
+        )
+      },
+      {
+        path: "admin-dashboard",
+        element: (
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        ),
+        children: [{
+          path: "create-task",
+          element: (
+            <AdminRoute>
+              <CreateTaskForm />
+            </AdminRoute>
+          )
+        }]
+      },
       {
         path: "worker-dashboard",
         element: (
-          // <WorkerRoute>
-          <WorkerDashboard />
-          // </WorkerRoute>
+          <WorkerRoute>
+            <WorkerDashboard />
+          </WorkerRoute>
         )
       }
     ],
   },
-
-
   {
     path: "/create-task",
-    element: <CreateTaskForm />
-  }
-
-  ,
+    element: (
+      <AdminRoute>
+        <CreateTaskForm />
+      </AdminRoute>
+    )
+  },
   // Error handling route
   {
     path: "/404",
     element: <NotFoundError />,
   },
-
   // Fallback route
   {
     path: "*",
@@ -235,21 +230,106 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Role-based redirect component
+const RoleBasedRedirect = () => {
+  const { user } = useUserStore();
 
+  if (user?.role === "admin") {
+    return <Navigate to="/dashboard/admin-dashboard" replace />;
+  } else if (user?.role === "worker") {
+    return <Navigate to="/dashboard/worker-dashboard" replace />;
+  }
+  return <Navigate to="/" replace />;
+};
 
-// App Component
+// Worker Route protection
+const WorkerRoute = ({ children }) => {
+  const { user, isAuthenticated, isCheckingAuth } = useUserStore();
+
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "worker") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+// Protected Routes component (updated)
+const ProtectedRoutes = ({ children }) => {
+  const { isAuthenticated, user, isCheckingAuth } = useUserStore();
+
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If you want to enforce email verification
+  // if (!user?.isVerified) {
+  //   return <Navigate to="/verify-email" replace />;
+  // }
+
+  return children;
+};
+
+// Authenticated User component (updated)
+const AuthenticatedUser = ({ children }) => {
+  const { isAuthenticated, isCheckingAuth } = useUserStore();
+
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// Admin Route protection (updated)
+const AdminRoute = ({ children }) => {
+  const { user, isAuthenticated, isCheckingAuth } = useUserStore();
+
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+// App Component (updated)
 function App() {
   const { checkAuthentication, isCheckingAuth } = useUserStore();
-  // checking auth every time when page is loaded
+
   useEffect(() => {
     checkAuthentication();
-  }, [checkAuthentication])
-  if (isCheckingAuth) return <Loading />
-  return (
-    <RouterProvider router={router}>
-      {/* The content is routed and displayed by the Router */}
-    </RouterProvider>
-  );
+  }, [checkAuthentication]);
+
+  if (isCheckingAuth) {
+    return <Loading />;
+  }
+
+  return <RouterProvider router={router} />;
 }
+
+
 
 export default App;
