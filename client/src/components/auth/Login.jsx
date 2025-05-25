@@ -42,24 +42,24 @@ const Login = () => {
         rememberMe: false,
       },
     });
+  // In your Login component
   const onSubmit = async (data) => {
     try {
       form.reset();
-       await login(data);
-       navigate("/dashboard");
-  //       if (user?.role === "admin") {
-  //   navigate("/dashboard");
-  // } else if (user?.role === "worker") {
-  //   navigate("/worker-dashboard");
-  // } else if (user) {
-  //   navigate("/");
-  // }
-    
+      const user = await login(data); // Get the returned user data
+
+      // Redirect based on role
+      if (user?.role === "admin") {
+        navigate("/dashboard/admin-dashboard");
+      } else if (user?.role === "worker") {
+        navigate("/dashboard/worker-dashboard");
+      } else {
+        navigate("/dashboard"); // Fallback to general dashboard
+      }
     } catch (error) {
       console.error("Login error:", error);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
       <div className="w-full max-w-md">

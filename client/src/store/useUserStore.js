@@ -14,7 +14,7 @@ export const useUserStore = create()(
       isAuthenticated: false,
       isCheckingAuth: true,
       loading: false,
-         userOverview: {
+      userOverview: {
         totalUsers: 0,
         totalUsersLabel: 'All system users',
         activeWorkers: 0,
@@ -40,6 +40,7 @@ export const useUserStore = create()(
         }
       },
 
+      // In your Zustand store (useUserStore)
       login: async (input) => {
         try {
           set({ loading: true });
@@ -49,11 +50,14 @@ export const useUserStore = create()(
           if (response.data.success) {
             toast.success(response.data.message);
             set({ user: response.data.user, isAuthenticated: true });
+            return response.data.user; // Return the user data
           } else {
             toast.error(response.data.message || 'Login failed');
+            throw new Error(response.data.message);
           }
         } catch (error) {
           toast.error(error?.response?.data?.message || 'Something went wrong');
+          throw error;
         } finally {
           set({ loading: false });
         }
@@ -225,11 +229,8 @@ export const useUserStore = create()(
           set({ loading: false });
         }
       },
-
     }),
 
-
-   
     {
       name: 'user-storage',
       storage: createJSONStorage(() => localStorage),
