@@ -47,7 +47,7 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="container py-24 sm:py-32 md:max-w-[80%] mx-auto p-3">
+    <section id="contact" className="container py-24 sm:py-32 md:max-w-[80%] mx-auto p-3 text-lg">
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Contact Info */}
         <div>

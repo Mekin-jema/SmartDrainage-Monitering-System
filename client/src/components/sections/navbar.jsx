@@ -1,5 +1,5 @@
 import React from "react";
-import { Github, Menu } from "lucide-react";
+import { Github, LogIn, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import {
@@ -121,6 +121,11 @@ const Navbar = () => {
 
             <SheetFooter className="flex-col sm:flex-col justify-start items-start">
               <Separator className="mb-2" />
+
+              <Button variant="none" className=" lg:hidden bg-transparent">
+                <Link to="/login">
+                  <LogIn className="w-5 h-5 inline-block " />Login</Link>
+              </Button>
               <DarkModeToggle />
             </SheetFooter>
           </SheetContent>
@@ -197,6 +202,7 @@ const Navbar = () => {
               </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
+
 
 
 

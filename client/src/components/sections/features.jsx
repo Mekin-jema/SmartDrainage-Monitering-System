@@ -1,51 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
-// import { icons } from "lucide-react";
 
-// interface FeaturesProps {
-//   icon: string;
-//   title: string;
-//   description: string;
-// }
-
-const featureList
-// : FeaturesProps[] 
-=  [
+const featureList = [
   {
     icon: "SatelliteDish",
     title: "Real-Time Monitoring",
     description:
-      "Continuously tracks sewage levels and gas concentrations in manholes using IoT sensors to prevent overflows and health hazards.",
+      "Continuously observes sewage levels and toxic gas concentrations through IoT sensors embedded in manholes, reducing overflow risks and promoting public health.",
   },
   {
     icon: "MapPin",
     title: "Location-Based Alerts",
     description:
-      "Automatically assigns tasks to nearby sewage workers based on GPS data and the severity of the detected issue.",
+      "Dynamically dispatches the nearest available sewage personnel by analyzing GPS coordinates and prioritizing alerts based on severity and proximity.",
   },
-  {
-    icon: "QrCode",
-    title: "QR-Based Feedback System",
-    description:
-      "Each manhole includes a QR code enabling citizens to easily report issues, helping authorities prioritize maintenance.",
-  },
+
   {
     icon: "BellRing",
-    title: "Automated Alerts",
+    title: "Automated Notifications",
     description:
-      "Instant notifications are sent to responsible personnel when dangerous gas levels or overflows are detected.",
+      "Sends real-time alerts to responsible workers when critical conditions, such as gas leaks or overflow risks, are detected.",
   },
-  {
-    icon: "BrainCircuit",
-    title: "AI-Powered Insights",
-    description:
-      "Machine learning algorithms predict overflow risks and filter out irrelevant or spam feedback automatically.",
-  },
+
   {
     icon: "LayoutDashboard",
-    title: "Central Dashboard",
+    title: "Centralized Admin Dashboard",
     description:
-      "A responsive admin dashboard provides live sensor data, feedback management, worker coordination, and performance reports.",
+      "Provides a unified interface for administrators to monitor sensor data, manage field workers, review reports, and oversee the entire sewage infrastructure.",
   },
 ];
 
@@ -53,29 +34,25 @@ export const FeaturesSection = () => {
   return (
     <section id="features" className="container py-24 sm:py-32 md:max-w-[90%] mx-auto">
       <h2 className="text-lg text-primary text-center mb-2 tracking-wider">
-        Features
+        Key Features
       </h2>
 
       <h2 className="text-3xl md:text-4xl text-center font-bold mb-4">
-        What Makes Us Different
+        Smart Sewage Monitoring System
       </h2>
 
       <h3 className="md:w-1/2 mx-auto text-xl text-center text-muted-foreground mb-8">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatem
-        fugiat, odit similique quasi sint reiciendis quidem iure veritatis optio
-        facere tenetur.
+        Our final-year project integrates IoT, machine learning, and cloud-based dashboards to modernize urban drainage systems and improve environmental safety through intelligent monitoring and proactive response.
       </h3>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 md:max-w-[1000px] mx-auto">
         {featureList.map(({ icon, title, description }) => (
           <div key={title}>
             <Card className="h-full bg-background border-0 shadow-none">
               <CardHeader className="flex justify-center items-center">
                 <div className="bg-primary/20 p-2 rounded-full ring-8 ring-primary/10 mb-4">
                   <Icon
-                    name={icon 
-                      // as keyof typeof icons
-                    }
+                    name={icon}
                     size={24}
                     color="hsl(var(--primary))"
                     className="text-primary"
@@ -85,7 +62,7 @@ export const FeaturesSection = () => {
                 <CardTitle>{title}</CardTitle>
               </CardHeader>
 
-              <CardContent className="text-muted-foreground text-center">
+              <CardContent className="text-muted-foreground text-left text-wrap " >
                 {description}
               </CardContent>
             </Card>
