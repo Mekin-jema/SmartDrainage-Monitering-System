@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import GithubIcon from "../icons/github-icon";
+import LinkedInIcon from "../icons/linkedin-icon";
 
 // Define schema
 const formSchema = z.object({
@@ -45,31 +47,23 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="container py-24 sm:py-32 md:max-w-[90%] mx-auto p-3">
+    <section id="contact" className="container py-24 sm:py-32 md:max-w-[80%] mx-auto p-3">
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Contact Info */}
         <div>
           <div className="mb-4">
             <h2 className="text-lg text-primary mb-2 tracking-wider text-center">Contact</h2>
-            <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Get in Touch</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
-            We are here to help. Whether you're in Bole, Kazanchis, or any part of Addis, feel free to reach out with your questions, ideas, or suggestions.
+            If you have questions, feedback, or would like to learn more about this project, feel free to reach out. We're happy to share insights and collaborate.
           </p>
 
           <div className="flex flex-col gap-4">
             <div>
               <div className="flex gap-2 mb-1">
-                <Building2 />
-                <div className="font-bold">Find us</div>
-              </div>
-              <div>Bole Road, Morning Star Mall, 5th Floor, Addis Ababa, Ethiopia</div>
-            </div>
-
-            <div>
-              <div className="flex gap-2 mb-1">
                 <Phone />
-                <div className="font-bold">Call us</div>
+                <div className="font-bold">Phone</div>
               </div>
               <div>+251 92 006 4543</div>
             </div>
@@ -77,27 +71,36 @@ export const ContactSection = () => {
             <div>
               <div className="flex gap-2 mb-1">
                 <Mail />
-                <div className="font-bold">Mail Us</div>
+                <div className="font-bold">Email</div>
               </div>
-              <div>info@smartdrainx.et</div>
+              <div>mekinjemal999@gmail.com</div>
             </div>
 
             <div>
-              <div className="flex gap-2">
-                <Clock />
-                <div className="font-bold">Visit us</div>
+              <div className="flex gap-2 mb-1">
+                <GithubIcon />
+                <div className="font-bold">GitHub</div>
               </div>
-              <div>
-                <div>Monday - Friday</div>
-                <div>9:00 AM - 5:00 PM EAT</div>
+              <a href="https://github.com/mekinjemal" className="text-primary hover:underline" target="_blank">
+                github.com/mekinjemal
+              </a>
+            </div>
+
+            <div>
+              <div className="flex gap-2 mb-1">
+                <LinkedInIcon />
+                <div className="font-bold">LinkedIn</div>
               </div>
+              <a href="https://linkedin.com/in/mekinjemal" className="text-primary hover:underline" target="_blank">
+                linkedin.com/in/mekinjemal
+              </a>
             </div>
           </div>
         </div>
 
         {/* Contact Form */}
         <Card className="bg-muted/60 dark:bg-card">
-          <CardHeader className="text-primary text-2xl">Send Us a Message</CardHeader>
+          <CardHeader className="text-primary text-2xl">Send a Message</CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid w-full gap-4">
@@ -137,7 +140,7 @@ export const ContactSection = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.et" {...field} />
+                        <Input type="email" placeholder="you@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -163,7 +166,7 @@ export const ContactSection = () => {
                   )}
                 />
 
-                <Button type="submit" className="mt-4">Send message</Button>
+                <Button type="submit" className="mt-4">Send Message</Button>
               </form>
             </Form>
           </CardContent>
@@ -171,5 +174,6 @@ export const ContactSection = () => {
         </Card>
       </section>
     </section>
+
   );
 };
