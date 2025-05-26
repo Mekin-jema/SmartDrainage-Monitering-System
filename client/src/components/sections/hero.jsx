@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { useTheme } from "@/pages/dashboard/theme-provider";
 
 export const HeroSection = () => {
-   const {theme}=useTheme()
+  const { theme } = useTheme()
 
   // useEffect(() => {
   //   const storedTheme = localStorage.getItem("theme") || "light";
@@ -13,7 +13,7 @@ export const HeroSection = () => {
   // }, []);
 
   return (
-    <section className="container w-full">
+    <section className="container w-full " id="home">
       <div className="grid place-items-center lg:max-w-screen-xl gap-8 mx-auto py-20 md:py-32">
         <div className="text-center space-y-8">
           <Badge variant="outline" className="text-sm py-2">

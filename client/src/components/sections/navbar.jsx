@@ -22,8 +22,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { DarkModeToggle } from "@/pages/dashboard/navbar/toggle-theme";
 
+
 const routeList = [
+  { href: "#home", label: "Home" },
   { href: "#features", label: "Features" },
+
   // { href: "#pricing", label: "Pricing" },
   // { href: "#testimonials", label: "Testimonials" },
   { href: "#team", label: "About" },
@@ -46,6 +49,7 @@ const components = [
   { title: "Tooltip", href: "/docs/primitives/tooltip", description: "Popup displays info on hover or focus." },
 ];
 
+
 // ListItem Component (already defined)
 const ListItem = ({ title, href, children }) => {
   return (
@@ -63,6 +67,11 @@ const ListItem = ({ title, href, children }) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+
+
+  const [activeTab, setActiveTab] = React.useState("#features");
+  const [hoveredTab, setHoveredTab] = React.useState(null);
+
 
   return (
     <header className="shadow-inner pl-8 bg-opacity-15 w-[90%] md:w-[70%] lg:w-[90%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-md hover:rounded-none hover:border-none flex justify-between items-center p-2 bg-card">
@@ -166,19 +175,36 @@ const Navbar = () => {
               </motion.ul>
             </NavigationMenuContent>
           </NavigationMenuItem> */}
-
           {routeList.map(({ href, label }) => (
             <NavigationMenuItem key={href}>
               <NavigationMenuLink asChild>
-                <a href={href} className="text-base px-2">
+                <a
+                  href={href}
+                  onMouseEnter={() => setHoveredTab(href)}
+                  onMouseLeave={() => setHoveredTab(null)}
+                  onClick={() => setActiveTab(href)}
+                  className="relative px-3 py-2 text-base text-foreground transition-all"
+                >
                   {label}
+                  {(hoveredTab === href || activeTab === href) && (
+                    <motion.span
+                      layoutId="underline"
+                      className="absolute left-0 bottom-0 h-[2px] w-full bg-primary"
+                      transition={{ type: "spring", stiffness: 50, damping: 30 }}
+                    />
+                  )}
                 </a>
               </NavigationMenuLink>
             </NavigationMenuItem>
           ))}
+
+
+
         </NavigationMenuList>
       </NavigationMenu>
-
+      <Button className="hidden md:block mx-10">
+        <Link to="/login">Login</Link>
+      </Button>
       {/* Right Actions */}
       <div className="hidden lg:flex">
         <DarkModeToggle />
@@ -192,9 +218,7 @@ const Navbar = () => {
           </a>
         </Button>
       </div>
-      <Button className="hidden md:block mx-10">
-        <Link to="/login">Login</Link>
-      </Button>
+
     </header>
   );
 };
