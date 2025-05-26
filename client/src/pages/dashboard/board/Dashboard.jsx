@@ -569,7 +569,7 @@ const Dashboard = () => {
         </CardContent>
       </Card>
       {/* Critical Manholes */}
-      <div>
+      {/* <div>
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Critical Manholes
         </h2>
@@ -592,15 +592,12 @@ const Dashboard = () => {
           ))}
 
         </div>
-      </div>
-
-
-      {/* Custom label renderer for pie charts */}
+      </div> */}
 
 
 
       {/* Sensor Trends */}
-      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit mt-[300px]">
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">
             Sensor Trends (Last 24h)
