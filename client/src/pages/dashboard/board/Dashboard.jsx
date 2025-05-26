@@ -527,6 +527,8 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
+
+
         <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
           <CardContent className="flex justify-between items-center p-6">
             <div>
@@ -582,263 +584,43 @@ const Dashboard = () => {
         </Card>
       </div>
 
+      {/* Map Visualization */}
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">
+            Manhole Locations
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SewageSystemMap manholes={dashboardData.manholes} />
+        </CardContent>
+      </Card>
       {/* Critical Manholes */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Critical Manholes
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-{Object.values(
-  dashboardData.manholes.reduce((acc, curr) => {
-    const id = curr.manholeId;
+          {Object.values(
+            dashboardData.manholes.reduce((acc, curr) => {
+              const id = curr.manholeId;
 
-    // Only consider critical status
-    if (curr.status === "critical") {
-      if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
-        acc[id] = curr; // keep the most recent critical
-      }
-    }
+              // Only consider critical status
+              if (curr.status === "critical") {
+                if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
+                  acc[id] = curr; // keep the most recent critical
+                }
+              }
 
-    return acc;
-  }, {})
-).map(manhole => (
-  <ManholeStatusCard key={manhole._id} manhole={manhole} />
-))}
+              return acc;
+            }, {})
+          ).map(manhole => (
+            <ManholeStatusCard key={manhole._id} manhole={manhole} />
+          ))}
 
         </div>
       </div>
-      {/* Enhanced Charts Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Water Level Status Card with Advanced Features */}
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                Water Level Status
-              </CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Shows distribution of water levels across all monitored manholes</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {dashboardData.systemStatus.monitoredManholes} monitored manholes
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px] relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={waterLevelData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={100}
-                    innerRadius={60}
-                    paddingAngle={2}
-                    dataKey="value"
-                    animationBegin={100}
-                    animationDuration={1000}
-                    label={renderCustomizedLabel}
-                  >
-                    {waterLevelData.map((entry, index) => (
-                      <Cell
-                        key={`water-cell-${index}`}
-                        fill={entry.color}
-                        stroke="#fff"
-                        strokeWidth={1}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={<CustomTooltip
-                      valueSuffix=" manholes"
-                      formatter={(value) => [`${value}`, 'Count']}
-                    />}
-                  />
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ paddingTop: '20px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">
-                    {waterLevelData.reduce((acc, curr) => acc + curr.value, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Total</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Gas Level Status Card with Interactive Features */}
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                Gas Level Status
-              </CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Methane concentration levels across the system</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Threshold: {dashboardData.manholes[0]?.thresholds.maxGas || 1000} ppm
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={gasLevelData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 35 }}
-                  barCategoryGap={15}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e5e7eb"
-                    strokeOpacity={0.3}
-                    horizontal={false}
-                  />
-                  <XAxis
-                    type="number"
-                    stroke="#6b7280"
-                    tickFormatter={(value) => `${value} manholes`}
-                  />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    stroke="#6b7280"
-                    width={80}
-                  />
-                  <Tooltip
-                    content={<CustomTooltip
-                      valueSuffix=" manholes"
-                      formatter={(value) => [`${value}`, 'Count']}
-                    />}
-                  />
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ paddingTop: '10px' }}
-                  />
-                  <Bar
-                    dataKey="value"
-                    name="Manholes"
-                    radius={[0, 4, 4, 0]}
-                    animationBegin={200}
-                    animationDuration={1000}
-                  >
-                    {gasLevelData.map((entry, index) => (
-                      <Cell
-                        key={`gas-cell-${index}`}
-                        fill={entry.color}
-                        stroke="#fff"
-                        strokeWidth={1}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Temperature Status Card with Enhanced Visualization */}
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit group">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                Temperature Status
-              </CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Temperature distribution across monitoring points</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Current range: 0°C to 50°C
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px] relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={temperatureData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={100}
-                    innerRadius={60}
-                    paddingAngle={2}
-                    dataKey="value"
-                    animationBegin={300}
-                    animationDuration={1000}
-                    label={renderCustomizedLabel}
-                  >
-                    {temperatureData.map((entry, index) => (
-                      <Cell
-                        key={`temp-cell-${index}`}
-                        fill={entry.color}
-                        stroke="#fff"
-                        strokeWidth={1}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={<CustomTooltip
-                      valueSuffix=" manholes"
-                      formatter={(value) => [`${value}`, 'Count']}
-                    />}
-                  />
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ paddingTop: '20px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">
-                    {temperatureData.reduce((acc, curr) => acc + curr.value, 0)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Total</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Custom label renderer for pie charts */}
 
@@ -865,7 +647,7 @@ const Dashboard = () => {
                 />
                 <XAxis dataKey="hour" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
-             f
+                f
                 <Legend />
                 <Line
                   type="monotone"
@@ -976,78 +758,65 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-       <div className="space-y-4">
-  {dashboardData.maintenanceLogs.slice(0, 4).map((log) => (
-    <div
-      key={log.id}
-      className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-    >
-      <div
-        className={`p-2 rounded-full ${
-          log.status === "completed"
-            ? "bg-green-100 dark:bg-green-900/30"
-            : log.status === "in-progress"
-            ? "bg-blue-100 dark:bg-blue-900/30"
-            : "bg-gray-100 dark:bg-gray-800"
-        }`}
-      >
-        {log.status === "completed" ? (
-          <CheckCircle className="text-green-600 dark:text-green-400" />
-        ) : log.status === "in-progress" ? (
-          <Activity className="text-blue-600 dark:text-blue-400" />
-        ) : (
-          <HardHat className="text-gray-600 dark:text-gray-400" />
-        )}
-      </div>
-      <div className="flex-1">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium text-gray-900 dark:text-white">
-            {log.type}
-          </h3>
-          <span
-            className={`text-xs px-2 py-1 rounded-full ${
-              log.status === "completed"
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                : log.status === "in-progress"
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-            }`}
-          >
-            {log.status}
-          </span>
-        </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Manhole {log.manhole} • {log.technician}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-500">
-          Scheduled: {log.date}
-        </p>
-      </div>
-    </div>
-  ))}
-  <Button
-    variant="outline"
-    className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-  >
-    View Maintenance Schedule
-  </Button>
-</div>
+            <div className="space-y-4">
+              {dashboardData.maintenanceLogs.slice(0, 4).map((log) => (
+                <div
+                  key={log.id}
+                  className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div
+                    className={`p-2 rounded-full ${log.status === "completed"
+                      ? "bg-green-100 dark:bg-green-900/30"
+                      : log.status === "in-progress"
+                        ? "bg-blue-100 dark:bg-blue-900/30"
+                        : "bg-gray-100 dark:bg-gray-800"
+                      }`}
+                  >
+                    {log.status === "completed" ? (
+                      <CheckCircle className="text-green-600 dark:text-green-400" />
+                    ) : log.status === "in-progress" ? (
+                      <Activity className="text-blue-600 dark:text-blue-400" />
+                    ) : (
+                      <HardHat className="text-gray-600 dark:text-gray-400" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium text-gray-900 dark:text-white">
+                        {log.type}
+                      </h3>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${log.status === "completed"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                          : log.status === "in-progress"
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                          }`}
+                      >
+                        {log.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Manhole {log.manhole} • {log.technician}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                      Scheduled: {log.date}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              <Button
+                variant="outline"
+                className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
+              >
+                View Maintenance Schedule
+              </Button>
+            </div>
 
           </CardContent>
         </Card>
       </div>
 
-      {/* Map Visualization */}
-      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
-        <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">
-            Manhole Locations
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SewageSystemMap manholes={dashboardData.manholes} />
-        </CardContent>
-      </Card>
     </div>
   );
 };
