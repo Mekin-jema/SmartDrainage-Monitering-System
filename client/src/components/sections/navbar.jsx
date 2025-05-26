@@ -189,8 +189,8 @@ const Navbar = () => {
                   {(hoveredTab === href || activeTab === href) && (
                     <motion.span
                       layoutId="underline"
-                      className="absolute left-0 bottom-0 h-[2px] w-full bg-primary"
-                      transition={{ type: "spring", stiffness: 50, damping: 30 }}
+                      className="absolute left-3 bottom-0 h-[3px] w-[70%] bg-primary"
+                      transition={{ type: "spring", stiffness: 100, damping: 30 }}
                     />
                   )}
                 </a>
