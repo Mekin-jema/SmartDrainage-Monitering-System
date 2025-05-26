@@ -24,8 +24,8 @@ import { DarkModeToggle } from "@/pages/dashboard/navbar/toggle-theme";
 
 const routeList = [
   { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#testimonials", label: "Testimonials" },
+  // { href: "#pricing", label: "Pricing" },
+  // { href: "#testimonials", label: "Testimonials" },
   { href: "#team", label: "About" },
   { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
@@ -119,9 +119,9 @@ const Navbar = () => {
       </div>
 
       {/* Desktop Navigation */}
-      <NavigationMenu className="relative hidden lg:block mx-auto ">
+      <NavigationMenu className="relative hidden lg:block mx-auto justify-center ">
         <NavigationMenuList>
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuTrigger className="bg-card hover:bg-card text-base">
               Features
             </NavigationMenuTrigger>
@@ -146,9 +146,9 @@ const Navbar = () => {
                 ))}
               </motion.ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
 
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuTrigger className="bg-card text-base">Components</NavigationMenuTrigger>
             <NavigationMenuContent>
               <motion.ul
@@ -165,7 +165,7 @@ const Navbar = () => {
                 ))}
               </motion.ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
 
           {routeList.map(({ href, label }) => (
             <NavigationMenuItem key={href}>
