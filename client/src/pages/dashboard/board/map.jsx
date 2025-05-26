@@ -58,7 +58,7 @@ const ManholeIcon = ({ status }) => {
         return { fill: '#EF4444', stroke: '#DC2626' };
       case 'warning':
         return { fill: '#EF4455', stroke: '#DC2626' };
-         // Red
+      // Red
       case 'overflowing':
         return { fill: '#8B5CF6', stroke: '#7C3AED' }; // Purple
       case 'under_maintenance':
@@ -261,10 +261,11 @@ const SewageSystemMap = () => {
       center: [38.764006, 9.037890],
       zoom: 15,
       speed: 7,
-      curve: 1,'animate': true,
+      curve: 1, 'animate': true,
       easing(t) {
-        return t; 
-      }  })
+        return t;
+      }
+    })
 
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
     map.addControl(new maplibregl.FullscreenControl(), 'top-left');
@@ -469,20 +470,20 @@ const SewageSystemMap = () => {
       id: 'manholes-circle',
       type: 'circle',
       source: 'manholes',
-paint: {
-  'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
-  'circle-color': [
-    'case',
-    ['==', ['get', 'status'], 'functional'], ' #22c55e',      // Green
-    ['==', ['get', 'status'], 'warning'], '#F59E0B',         // Amber
-    ['==', ['get', 'status'], 'critical'], '#ef4444 ',        // Red
-    ['==', ['get', 'status'], 'overflowing'], '#a855f7 ',     // Purple
-    ['==', ['get', 'status'], 'under_maintenance'], '#eab308 ', // Light Amber
-    '#6B7280' // Default Gray
-  ],
-  'circle-stroke-color': '#FFFFFF',
-  'circle-stroke-width': 2,
-}
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
+        'circle-color': [
+          'case',
+          ['==', ['get', 'status'], 'functional'], ' #22c55e',      // Green
+          ['==', ['get', 'status'], 'warning'], '#F59E0B',         // Amber
+          ['==', ['get', 'status'], 'critical'], '#ef4444 ',        // Red
+          ['==', ['get', 'status'], 'overflowing'], '#a855f7 ',     // Purple
+          ['==', ['get', 'status'], 'under_maintenance'], '#eab308 ', // Light Amber
+          '#6B7280' // Default Gray
+        ],
+        'circle-stroke-color': '#FFFFFF',
+        'circle-stroke-width': 2,
+      }
 
     });
 
@@ -773,7 +774,7 @@ paint: {
     } else {
       updateLayers(map);
     }
-  }, [manholes,manholesData, pipes]);
+  }, [manholes, manholesData, pipes]);
 
   // Handle manhole click
   const handleManholeClick = (manhole) => {
@@ -1004,7 +1005,7 @@ paint: {
       </div>
 
       {/* Side panel */}
-      <div className="w-96 bg-background border-l overflow-y-auto">
+      {/* <div className="w-96 bg-background border-l overflow-y-auto">
         <Tabs defaultValue="manholes">
           <TabsList className="grid grid-cols-3">
             <TabsTrigger value="manholes">
@@ -1019,7 +1020,7 @@ paint: {
           </TabsList>
 
           {/* Manholes tab */}
-          <TabsContent value="manholes" className="p-4">
+      {/* <TabsContent value="manholes" className="p-4">
             <div className="flex items-center mb-4">
               <Input placeholder="Search manholes..." className="flex-1" />
               <Button variant="outline" className="ml-2">
@@ -1127,95 +1128,96 @@ paint: {
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </TabsContent> */}
 
-          {/* Alerts tab */}
-          <TabsContent value="alerts" className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Switch
-                  id="critical-only"
-                  checked={showCriticalOnly}
-                  onCheckedChange={setShowCriticalOnly}
-                />
-                <Label htmlFor="critical-only" className="ml-2">
-                  Critical Only
-                </Label>
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" /> Filter
-              </Button>
-            </div>
+      {/* Alerts tab */}
+      {/* <TabsContent value="alerts" className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Switch
+              id="critical-only"
+              checked={showCriticalOnly}
+              onCheckedChange={setShowCriticalOnly}
+            />
+            <Label htmlFor="critical-only" className="ml-2">
+              Critical Only
+            </Label>
+          </div>
+          <Button variant="outline" size="sm">
+            <Filter className="w-4 h-4 mr-2" /> Filter
+          </Button>
+        </div>
 
-            <div className="space-y-2">
-              {filteredAlerts.map((alert) => {
-                const manhole = manholes.find((m) => m.id === alert.manholeId);
-                return (
-                  <Card
-                    key={alert.id}
-                    className="cursor-pointer hover:bg-accent"
-                    onClick={() => handleAlertClick(alert)}
-                  >
-                    <CardHeader className="p-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium">
-                          {manhole?.code || 'Unknown'} - {alert.alertType}
-                        </CardTitle>
-                        <Badge
-                          variant={alert.alertLevel === 'critical' ? 'destructive' : 'warning'}
-                        >
-                          {alert.alertLevel}
-                        </Badge>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {new Date(alert.timestamp).toLocaleString()}
-                      </div>
-                      {alert.assignedWorker && (
-                        <div className="text-xs mt-1 flex items-center">
-                          <User className="w-3 h-3 mr-1" /> Assigned
-                        </div>
-                      )}
-                    </CardHeader>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          {/* Workers tab */}
-          <TabsContent value="workers" className="p-4">
-            <div className="space-y-2">
-              {workers.map((worker) => (
-                <Card key={worker.id} className="hover:bg-accent">
-                  <CardHeader className="p-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">{worker.name}</CardTitle>
-                      <Badge
-                        variant={
-                          worker.status === 'available'
-                            ? 'success'
-                            : worker.status === 'assigned'
-                              ? 'warning'
-                              : 'destructive'
-                        }
-                      >
-                        {worker.status}
-                      </Badge>
+        <div className="space-y-2">
+          {filteredAlerts.map((alert) => {
+            const manhole = manholes.find((m) => m.id === alert.manholeId);
+            return (
+              <Card
+                key={alert.id}
+                className="cursor-pointer hover:bg-accent"
+                onClick={() => handleAlertClick(alert)}
+              >
+                <CardHeader className="p-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium">
+                      {manhole?.code || 'Unknown'} - {alert.alertType}
+                    </CardTitle>
+                    <Badge
+                      variant={alert.alertLevel === 'critical' ? 'destructive' : 'warning'}
+                    >
+                      {alert.alertLevel}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {new Date(alert.timestamp).toLocaleString()}
+                  </div>
+                  {alert.assignedWorker && (
+                    <div className="text-xs mt-1 flex items-center">
+                      <User className="w-3 h-3 mr-1" /> Assigned
                     </div>
-                    {worker.currentAssignment && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        Assigned to: {worker.currentAssignment}
-                      </div>
-                    )}
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                  )}
+                </CardHeader>
+              </Card>
+            );
+          })}
+        </div>
+      </TabsContent> */}
 
-        {/* Selected manhole details */}
-        {selectedManhole && (
+      {/* Workers tab */}
+      {/* <TabsContent value="workers" className="p-4">
+        <div className="space-y-2">
+          {workers.map((worker) => (
+            <Card key={worker.id} className="hover:bg-accent">
+              <CardHeader className="p-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-medium">{worker.name}</CardTitle>
+                  <Badge
+                    variant={
+                      worker.status === 'available'
+                        ? 'success'
+                        : worker.status === 'assigned'
+                          ? 'warning'
+                          : 'destructive'
+                    }
+                  >
+                    {worker.status}
+                  </Badge>
+                </div>
+                {worker.currentAssignment && (
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Assigned to: {worker.currentAssignment}
+                  </div>
+                )}
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </TabsContent> */}
+      {/* </Tabs> */}
+
+      {/* Selected manhole details */}
+      {
+        selectedManhole && (
           <div className="border-t p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold">{selectedManhole.code}</h3>
@@ -1343,10 +1345,12 @@ paint: {
               </Button>
             </div>
           </div>
-        )}
+        )
+      }
 
-        {/* Selected pipe details */}
-        {selectedPipe && (
+      {/* Selected pipe details */}
+      {
+        selectedPipe && (
           <div className="border-t p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-bold">Pipe Details</h3>
@@ -1415,10 +1419,12 @@ paint: {
               </div>
             </div>
           </div>
-        )}
+        )
+      }
 
-        {/* Route details */}
-        {route && (
+      {/* Route details */}
+      {
+        route && (
           <div className="border-t p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-bold">Optimal Route</h3>
@@ -1445,55 +1451,56 @@ paint: {
               </div>
             </div>
           </div>
-        )}
+        )
+      }
 
-        {/* Legend */}
-        <div className="w-[220px] border border-white p-4 absolute left-0 bottom-10 shadow-lg z-50 rounded-md bg-background">
-          <h3 className="text-lg font-bold mb-2">Legend</h3>
+      {/* Legend */}
+      <div className="w-[220px] border border-white p-4 absolute left-0 bottom-10 shadow-lg z-50 rounded-md bg-background">
+        <h3 className="text-lg font-bold mb-2">Legend</h3>
 
-          <div className="flex items-center my-2">
-            <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
-            <span>Functional</span>
-          </div>
-          <div className="flex items-center my-2">
-            <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
-            <span>Critical</span>
-          </div>
-          <div className="flex items-center my-2">
-            <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
-            <span>Overflowing</span>
-          </div>
-          <div className="flex items-center my-2">
-            <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
-            <span>Under Maintenance</span>
-          </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+          <span>Functional</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+          <span>Critical</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+          <span>Overflowing</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+          <span>Under Maintenance</span>
+        </div>
 
-          <div className="border-t my-2 pt-2">
-            <div className="flex items-center my-1">
-              <div className="w-4 h-1 bg-blue-500 mr-2"></div>
-              <span>Clear Pipe</span>
-            </div>
-            <div className="flex items-center my-1">
-              <div className="w-4 h-1 bg-red-500 mr-2"></div>
-              <span>Blocked Pipe</span>
-            </div>
-            <div className="flex items-center my-1">
-              <div className="w-4 h-1 bg-green-500 mr-2"></div>
-              <span>Bidirectional Pipe</span>
-            </div>
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-blue-500 mr-2"></div>
+            <span>Clear Pipe</span>
           </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-red-500 mr-2"></div>
+            <span>Blocked Pipe</span>
+          </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-green-500 mr-2"></div>
+            <span>Bidirectional Pipe</span>
+          </div>
+        </div>
 
-          <div className="border-t my-2 pt-2">
-            <div className="flex items-center my-1">
-              <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
-                <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
-              </svg>
-              <span>Flow Direction</span>
-            </div>
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
+              <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
+            </svg>
+            <span>Flow Direction</span>
           </div>
         </div>
       </div>
-    </div>
+    </div >
+    // </div >
   );
 };
 
