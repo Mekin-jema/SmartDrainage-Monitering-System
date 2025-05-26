@@ -1249,7 +1249,7 @@ const SewageSystemMap = () => {
       }
 
       {/* Legend */}
-      <div className="w-[220px] border border-white p-4 absolute left-0 bottom-10 shadow-lg z-50 rounded-md bg-background">
+      <div className="w-[220px] border border-white p-4 absolute left-0 top-[700px] shadow-lg z-50 rounded-md bg-background">
         <h3 className="text-lg font-bold mb-2">Legend</h3>
 
         <div className="flex items-center my-2">

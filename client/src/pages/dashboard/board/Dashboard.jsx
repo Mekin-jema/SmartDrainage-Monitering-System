@@ -3,10 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, AlertCircle, CheckCircle, Activity, Gauge, Droplets, Thermometer, Waves, HardHat, Battery, Fuel, WavesIcon, Info } from "lucide-react"; import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import SewageSystemMap from "./map";
-import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useManholeStore } from "@/store/useManholeStore";
 import useSensorsStore from "@/store/useSensorsStore";
-import io from 'socket.io-client';
 import useAlertStore from "@/store/useAlertStore";
 import useMaintenanceStore from "@/store/usemantenanceStore";
 
@@ -186,31 +184,6 @@ const Dashboard = () => {
     { name: "Critical", value: sensorStatistics.temperature.critical, color: COLORS.critical },
   ];
 
-
-
-
-
-
-  // Custom tooltip for charts
-  // const CustomTooltip = ({ active, payload, label }) => {
-  //   if (active && payload && payload.length) {
-  //     return (
-  //       <div className="bg-white p-3 shadow-lg rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-  //         <p className="font-medium text-gray-900 dark:text-white">{label}</p>
-  //         {payload.map((entry, index) => (
-  //           <p
-  //             key={`tooltip-${index}`}
-  //             style={{ color: entry.color }}
-  //             className="text-sm"
-  //           >
-  //             {entry.name}: {entry.value}
-  //           </p>
-  //         ))}
-  //       </div>
-  //     );
-  //   }
-  //   return null;
-  // };
 
   // Manhole status card component
   const ManholeStatusCard = ({ manhole }) => {
