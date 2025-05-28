@@ -13,7 +13,8 @@ import { Link } from "react-router-dom";
 export const TeamSection = () => {
   const teamList = [
     {
-      imageUrl: "https://i.pravatar.cc/250?img=58", // Mekin Jemal
+      imageUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+      , // Mekin Jemal
       firstName: "Mekin",
       lastName: "Jemal",
       positions: ["Frontend Developer", "Project Manager"],
@@ -23,7 +24,9 @@ export const TeamSection = () => {
       ],
     },
     {
-      imageUrl: "https://i.pravatar.cc/250?img=12", // Abdu Seid
+      imageUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
+
+
       firstName: "Abdu",
       lastName: "Seid",
       positions: ["Backend Developer", "Hardware Specialist"],
