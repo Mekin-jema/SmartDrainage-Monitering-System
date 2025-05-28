@@ -36,7 +36,7 @@ export const TeamSection = () => {
       ],
     },
     {
-      imageUrl: "https://i.pravatar.cc/250?img=25", // Getachew Tesheome
+      imageUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
       firstName: "Getachew",
       lastName: "Tesheome",
       positions: ["Our Advisor"],
