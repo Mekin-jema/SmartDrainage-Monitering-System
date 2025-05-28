@@ -39,7 +39,7 @@ export const TeamSection = () => {
       imageUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
       firstName: "Getachew",
       lastName: "Tesheome",
-      positions: ["Our Advisor"],
+      positions: ["Our Advisor", " Senior Embedded System Engineer"],
       socialNetworks: [
         { name: "LinkedIn", url: "https://www.linkedin.com/in/getachew-tesheome/" },
       ],
