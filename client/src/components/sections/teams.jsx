@@ -66,7 +66,7 @@ export const TeamSection = () => {
         <h2 className="text-3xl md:text-4xl font-bold">Members of the Project</h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 h-96">
         {teamList.map(({ imageUrl, firstName, lastName, positions, socialNetworks }, index) => (
           <Card
             key={index}
@@ -78,7 +78,7 @@ export const TeamSection = () => {
                   src={imageUrl}
                   alt={`${firstName} ${lastName}`}
                   loading="lazy"
-                  className="w-full aspect-square object-cover saturate-0 transition-all duration-200 ease-in-out group-hover:saturate-100 group-hover:scale-[1.02]"
+                  className="w-full aspect-square object-cover saturate-0 transition-all duration-200 ease-in-out group-hover:saturate-100 h-[200px] group-hover:scale-[1.02]"
                 />
               </div>
               <CardTitle className="px-6 pt-6 text-lg font-semibold">
