@@ -5,13 +5,13 @@ import io from "socket.io-client";
 
 const Socket = () => {
   const socketRef = useRef(null);
-  const {updateManhole} = useManholeStore();
+  const { updateManhole } = useManholeStore();
 
-  const {updateSensor}=useSensorsStore()
+  const { updateSensor } = useSensorsStore()
 
   useEffect(() => {
     // Connect to socket
-    socketRef.current = io('http://localhost:3000', {
+    socketRef.current = io('/api', {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -25,13 +25,13 @@ const Socket = () => {
 
     socket.on('sensorData', (results) => {
       try {
-        
+
         updateSensor(results.data); // Push to Zustand store
       } catch (err) {
         console.error('Error updating dashboard data:', err);
       }
     });
-        socket.on('manholeData', (results) => {
+    socket.on('manholeData', (results) => {
       try {
         console.log('Received Manholes data from wokwi:', results.data);
         updateManhole(results.data); // Push to Zustand store
