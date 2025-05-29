@@ -74,26 +74,28 @@ mqttClient.on("connect", () => {
 
 mqttClient.on("message", async (topic, message) => {
   try {
-    const data = {
-      ...JSON.parse(message.toString()),
-    };
+    if (topic !== (process.env.MQTT_TOPIC || "drainage/sensor-data")) {
+      const data = {
+        ...JSON.parse(message.toString()),
+      };
 
-    // Update cache
-    sensorDataCache.push(data);
-    if (sensorDataCache.length > MAX_CACHE_SIZE) {
-      sensorDataCache.shift();
-    }
+      // Update cache
+      sensorDataCache.push(data);
+      if (sensorDataCache.length > MAX_CACHE_SIZE) {
+        sensorDataCache.shift();
+      }
 
-    // Broadcast to all clients
-    await createReading(data); // Save to DB
-    // const result = await getAllSensorReadings();
-    const result = await getLatestReading();
-    io.emit("sensorData", result);
+      // Broadcast to all clients
+      await createReading(data); // Save to DB
+      // const result = await getAllSensorReadings();
+      const result = await getLatestReading();
+      io.emit("sensorData", result);
 
-    //
-    const latestManholeData = await getAllManholes();
-    if (latestManholeData.success) {
-      io.emit("manholeData", latestManholeData);
+      //
+      const latestManholeData = await getAllManholes();
+      if (latestManholeData.success) {
+        io.emit("manholeData", latestManholeData);
+      }
     }
   } catch (error) {
     console.error("Message processing error:", error);
