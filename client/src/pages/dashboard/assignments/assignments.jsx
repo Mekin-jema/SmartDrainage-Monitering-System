@@ -33,7 +33,6 @@ import {
     Users,
     UserPlus,
     FilePlus,
-    Bell,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -49,9 +48,7 @@ import {
     CardTitle,
     CardDescription,
     CardContent,
-    CardFooter,
 } from "@/components/ui/card";
-import { useTheme } from "../theme-provider";
 import {
     Select,
     SelectContent,
@@ -69,9 +66,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { useNavigate } from "react-router-dom";
 import useAlertStore from "@/store/useAlertStore";
-import NotificationBell from "./notification-bell";
 
 // Status and role definitions with fallbacks
 const statuses = {
@@ -119,7 +114,6 @@ const getRoleInfo = (role) => {
 };
 
 const AdminDashboard = () => {
-    const { theme, setTheme } = useTheme();
     const [tasks, setTasks] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -129,34 +123,29 @@ const AdminDashboard = () => {
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
-    const navigate = useNavigate();
 
-    const { allUsers, getAllUsers } = useUserStore();
-    const { userOverview, fetchUserOverview } = useUserStore();
+    const { allUsers, getAllUsers, userOverview, fetchUserOverview, user } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
-    const [notificationCount, setNotificationCount] = useState(0); // Initialize with your actual count
-    const { fetchAlerts, alerts } = useAlertStore()
-    console.log("alerts", alerts);
-    console.log("task", task);
-
+    const { fetchAlerts, alerts } = useAlertStore();
+    const [notificationCount, setNotificationCount] = useState(0);
 
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                await getAllUsers();
+                await fetchUserOverview();
+                await fetchTasksOverviewWithList();
+                await fetchAlerts();
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "An unknown error occurred");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        try {
-            setLoading(true);
-            getAllUsers();
-            fetchUserOverview();
-            fetchTasksOverviewWithList();
-            fetchAlerts()
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "An unknown error occurred");
-        } finally {
-            setLoading(false);
-
-        }
-
-
-    }, []);
+        fetchData();
+    }, [getAllUsers, fetchUserOverview, fetchTasksOverviewWithList, fetchAlerts]);
 
     useEffect(() => {
         if (task) {
@@ -169,12 +158,12 @@ const AdminDashboard = () => {
             setUsers(allUsers);
         }
     }, [allUsers]);
+
     useEffect(() => {
         if (alerts) {
             setNotificationCount(alerts.length);
         }
     }, [alerts]);
-
 
     const taskColumns = React.useMemo(() => [
         {
@@ -190,14 +179,6 @@ const AdminDashboard = () => {
             cell: ({ row }) => (
                 <div className="max-w-[300px] truncate">{row.getValue("description")}</div>
             ),
-        },
-        {
-            accessorKey: "assignedTo",
-            header: "Assigned To",
-            cell: ({ row }) => {
-                const user = users.find((u) => u._id === row.getValue("assignedTo"));
-                return user ? user.fullname : "Unassigned";
-            },
         },
         {
             accessorKey: "status",
@@ -262,7 +243,7 @@ const AdminDashboard = () => {
                     ? format(new Date(row.getValue("dueDate")), "MMM dd, yyyy")
                     : "No date",
         },
-    ], [users]);
+    ], []);
 
     const userColumns = React.useMemo(() => [
         {
@@ -294,8 +275,7 @@ const AdminDashboard = () => {
                 const status = getUserStatusInfo(statusValue);
                 return (
                     <Badge className={status.color}>
-                        {statusValue.availability}
-
+                        {status.label}
                     </Badge>
                 );
             },
@@ -385,8 +365,9 @@ const AdminDashboard = () => {
             </div>
         );
     }
+
     return (
-        <div className=" relative p-6 max-w-7xl mx-auto space-y-6">
+        <div className="relative p-6 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
@@ -395,8 +376,6 @@ const AdminDashboard = () => {
                     </p>
                 </div>
             </div>
-
-
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
@@ -411,7 +390,6 @@ const AdminDashboard = () => {
                         </p>
                     </CardContent>
                 </Card>
-
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -463,8 +441,8 @@ const AdminDashboard = () => {
 
             <div className="flex space-x-4">
                 <Button
-                    variant={activeTab === "task" ? "default" : "outline"}
-                    onClick={() => setActiveTab("task")}
+                    variant={activeTab === "tasks" ? "default" : "outline"}
+                    onClick={() => setActiveTab("tasks")}
                 >
                     Task Management
                 </Button>
@@ -475,7 +453,8 @@ const AdminDashboard = () => {
                     User Management
                 </Button>
             </div>
-            {activeTab === "task" ? (
+
+            {activeTab === "tasks" ? (
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">
@@ -493,8 +472,8 @@ const AdminDashboard = () => {
                                     <SelectContent>
                                         <SelectItem value="all">All Users</SelectItem>
                                         {users.map(user => (
-                                            <SelectItem key={user.id} value={user.id}>
-                                                {user.name}
+                                            <SelectItem key={user._id} value={user._id}>
+                                                {user.fullname}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -802,7 +781,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
-
-

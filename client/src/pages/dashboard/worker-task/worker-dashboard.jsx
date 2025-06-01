@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
-
 import {
     useReactTable,
     getCoreRowModel,
@@ -31,8 +30,6 @@ import {
     AlertCircle,
     CheckCircle,
     Clock,
-    Sun,
-    Moon,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -51,78 +48,36 @@ import {
     CardFooter,
 } from "@/components/ui/card";
 import { useTheme } from "../theme-provider";
-
-const mockTasks = [
-    {
-        id: "MH-101",
-        description: "Inspect and clean the drainage system",
-        status: "pending",
-        priority: "high",
-        location: "Addis Ketema, Sector 3",
-        assignedDate: "2025-05-10",
-        dueDate: "2025-05-15",
-        progress: 0,
-    },
-    {
-        id: "MH-202",
-        description: "Report overflow and check gas levels",
-        status: "in-progress",
-        priority: "medium",
-        location: "Kirkos Sub-city, Zone B",
-        assignedDate: "2025-05-11",
-        dueDate: "2025-05-16",
-        progress: 45,
-    },
-    {
-        id: "MH-303",
-        description: "Routine maintenance check and seal cracks",
-        status: "completed",
-        priority: "low",
-        location: "Bole Michael, Block D",
-        assignedDate: "2025-05-12",
-        dueDate: "2025-05-14",
-        progress: 100,
-    },
-    {
-        id: "MH-404",
-        description: "Install new sensors and test functionality",
-        status: "in-progress",
-        priority: "high",
-        location: "Yeka Sub-city, Zone 4",
-        assignedDate: "2025-05-13",
-        dueDate: "2025-05-18",
-        progress: 30,
-    },
-    {
-        id: "MH-505",
-        description: "Clear debris from main drainage line",
-        status: "pending",
-        priority: "medium",
-        location: "Lideta Sub-city, Block A",
-        assignedDate: "2025-05-14",
-        dueDate: "2025-05-20",
-        progress: 0,
-    },
-];
+import useTaskStore from "@/store/useTaskStore";
 
 const statuses = {
     pending: { label: "Pending", icon: Clock, color: "bg-yellow-500" },
     "in-progress": { label: "In Progress", icon: Loader2, color: "bg-blue-500" },
     completed: { label: "Completed", icon: CheckCircle, color: "bg-green-500" },
+    default: { label: "Unknown", icon: AlertCircle, color: "bg-gray-500" },
 };
 
 const priorities = {
     high: { label: "High", color: "bg-red-500" },
     medium: { label: "Medium", color: "bg-orange-500" },
     low: { label: "Low", color: "bg-green-500" },
+    default: { label: "Unknown", color: "bg-gray-500" },
+};
+
+const getStatusInfo = (status) => {
+    return statuses[status] || statuses.default;
+};
+
+const getPriorityInfo = (priority) => {
+    return priorities[priority] || priorities.default;
 };
 
 const columns = [
     {
-        accessorKey: "id",
+        accessorKey: "code",
         header: "Manhole ID",
         cell: ({ row }) => (
-            <div className="font-medium">🧱 {row.getValue("id")}</div>
+            <div className="font-medium">🧱 {row.getValue("code")}</div>
         ),
     },
     {
@@ -146,7 +101,8 @@ const columns = [
             );
         },
         cell: ({ row }) => {
-            const status = statuses[row.getValue("status")];
+            const statusValue = row.getValue("status") || "default";
+            const status = getStatusInfo(statusValue);
             const Icon = status.icon;
 
             return (
@@ -164,7 +120,8 @@ const columns = [
         accessorKey: "priority",
         header: "Priority",
         cell: ({ row }) => {
-            const priority = priorities[row.getValue("priority")];
+            const priorityValue = row.getValue("priority") || "default";
+            const priority = getPriorityInfo(priorityValue);
 
             return (
                 <Badge className={priority.color}>
@@ -178,9 +135,9 @@ const columns = [
         header: "Progress",
         cell: ({ row }) => (
             <div className="flex items-center gap-2">
-                <Progress value={row.getValue("progress")} className="h-2 w-[100px]" />
+                <Progress value={row.getValue("progress") || 0} className="h-2 w-[100px]" />
                 <span className="text-sm text-muted-foreground">
-                    {row.getValue("progress")}%
+                    {row.getValue("progress") || 0}%
                 </span>
             </div>
         ),
@@ -192,40 +149,44 @@ const columns = [
     {
         accessorKey: "dueDate",
         header: "Due Date",
-        cell: ({ row }) => format(new Date(row.getValue("dueDate")), "MMM dd, yyyy"),
+        cell: ({ row }) =>
+            row.getValue("dueDate")
+                ? format(new Date(row.getValue("dueDate")), "MMM dd, yyyy")
+                : "No date",
     },
 ];
 
+
 const WorkerDashboard = () => {
     const { user } = useUserStore();
-    const { theme, setTheme } = useTheme();
-    const [tasks, setTasks] = useState([]);
+    const { fetchTasksOverviewWithList, task } = useTaskStore();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
-
     useEffect(() => {
-        const fetchMockTasks = () => {
-            setTimeout(() => {
-                setTasks(mockTasks);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                await fetchTasksOverviewWithList();
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "An unknown error occurred");
+            } finally {
                 setLoading(false);
-            }, 1000);
+            }
         };
 
         if (user?._id) {
-            try {
-                fetchMockTasks();
-            } catch (err) {
-                setError("Failed to load tasks. Please try again later.");
-                setLoading(false);
-            }
+            fetchData();
         }
-    }, [user]);
+    }, [user, fetchTasksOverviewWithList]);
+
+    const workerTasks = task?.filter(t => t.assignedTo === user?._id) || [];
+
 
     const table = useReactTable({
-        data: tasks,
+        data: workerTasks || [],
         columns,
         state: {
             sorting,
@@ -240,10 +201,6 @@ const WorkerDashboard = () => {
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
     });
-
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    };
 
     if (loading) {
         return (
@@ -265,13 +222,15 @@ const WorkerDashboard = () => {
         );
     }
 
+
+
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Worker Dashboard</h1>
                     <p className="text-muted-foreground">
-                        Welcome back, {user?.name || "Worker"}
+                        Welcome back, {user?.fullname || "Worker"}
                     </p>
                 </div>
             </div>
@@ -281,11 +240,11 @@ const WorkerDashboard = () => {
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
                         <Badge variant="outline" className="text-sm">
-                            {tasks.length}
+                            {workerTasks.length}
                         </Badge>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{tasks.length}</div>
+                        <div className="text-2xl font-bold">{workerTasks.length}</div>
                         <p className="text-xs text-muted-foreground">
                             All assigned tasks
                         </p>
@@ -299,7 +258,7 @@ const WorkerDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {tasks.filter(t => t.status === "pending").length}
+                            {workerTasks.filter(t => t.status === "pending").length}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Tasks not yet started
@@ -314,7 +273,7 @@ const WorkerDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {tasks.filter(t => t.status === "in-progress").length}
+                            {workerTasks.filter(t => t.status === "in-progress").length}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Active tasks
@@ -329,7 +288,7 @@ const WorkerDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {tasks.filter(t => t.status === "completed").length}
+                            {workerTasks.filter(t => t.status === "completed").length}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Finished tasks
@@ -425,7 +384,7 @@ const WorkerDashboard = () => {
                                             colSpan={columns.length}
                                             className="h-24 text-center"
                                         >
-                                            No results.
+                                            No tasks assigned yet.
                                         </TableCell>
                                     </TableRow>
                                 )}

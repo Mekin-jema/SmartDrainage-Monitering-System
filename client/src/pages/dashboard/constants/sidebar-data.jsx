@@ -30,6 +30,11 @@ export const getSidebarData = (user) => {
           title: "Smart Sewage System",
           items: [
             {
+              title: "Analytics Dashboard",
+              url: "/dashboard",
+              icon: LayoutGrid,
+            },
+            {
               title: "Assignments",
               url: "/dashboard/worker-dashboard",
               icon: Users,
