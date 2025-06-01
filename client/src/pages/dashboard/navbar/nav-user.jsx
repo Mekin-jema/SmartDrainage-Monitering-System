@@ -59,7 +59,7 @@ export function NavUser() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56  bg-[#555562] text-white rounded-lg shadow-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 "
             side={isMobile ? "bottom" : "bottom"}
             align="end"
             sideOffset={4}
@@ -77,12 +77,7 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+
 
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -90,10 +85,7 @@ export function NavUser() {
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <Bell />
                 Notifications

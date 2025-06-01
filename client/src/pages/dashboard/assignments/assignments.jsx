@@ -130,6 +130,7 @@ const AdminDashboard = () => {
     console.log("user", user);
     const { userOverview, fetchUserOverview } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
+    console.log("task", task);
 
 
     useEffect(() => {
@@ -180,7 +181,7 @@ const AdminDashboard = () => {
             accessorKey: "assignedTo",
             header: "Assigned To",
             cell: ({ row }) => {
-                const user = users.find((u) => u.id === row.getValue("assignedTo"));
+                const user = users.find((u) => u._id === row.getValue("assignedTo"));
                 return user ? user.fullname : "Unassigned";
             },
         },

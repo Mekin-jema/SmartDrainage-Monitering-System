@@ -142,11 +142,11 @@ const Login = () => {
             </div>
 
             <div className="flex gap-4 ">
-              <GoogleAuthButton
+              {/* <GoogleAuthButton
                 action="login"
                 buttonText="Sign up with Google"
                 redirectTo="/dashboard"
-              />
+              /> */}
             </div>
             <div className="text-center text-sm">
               Don't have an account?{" "}

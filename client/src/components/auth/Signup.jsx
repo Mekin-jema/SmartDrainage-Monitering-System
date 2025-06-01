@@ -116,11 +116,11 @@ const Signup = () => {
                 <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
               </div>
             </div>
-            <GoogleAuthButton
+            {/* <GoogleAuthButton
               action="signup"
               buttonText="Sign up with Google"
               redirectTo="/dashboard"
-            />
+            /> */}
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link to="/login" className="font-medium text-primary underline-offset-4 hover:underline">

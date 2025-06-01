@@ -16,7 +16,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import useSensorsStore from "@/store/useSensorsStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ const columns = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    accessorKey: "createdAt",
+    accessorKey: "lastCalibration",
     cell: (info) => {
       const rawValue = info.getValue();
       const date = new Date(rawValue);
@@ -66,7 +66,8 @@ const columns = [
         <span className="text-foreground">
           {isNaN(date.getTime())
             ? "Invalid date"
-            : format(date, "yyyy-MM-dd HH:mm:ss")}
+            : formatDistanceToNow(date, { addSuffix: true })}
+
         </span>
       );
     }
@@ -153,38 +154,9 @@ export default function SensorTable() {
 
 
 
-    //  try {
-    //     setLoading(true);
-    //      fetchManholes();
-    //     setSensorReadings(manholes);
-    //   } catch (err) {
-    //     setError(err.message || "Failed to fetch sensor data");
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    //  
 
+  }, [manholes]);
 
-
-  }, [manholes, fetchManholes]);
-
-  // useEffect(() => {
-  //   const loadData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       await fetchManholes();
-  //       setSensorReadings(manholes);
-  //     } catch (err) {
-  //       setError(err.message || "Failed to fetch sensor data");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   loadData();
-  // }, [fetchManholes, manholes,]);
-
-  console.log("Manholes Readings:", manholes);
 
   const table = useReactTable({
     data: sensorReadings,
