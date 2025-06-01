@@ -8,10 +8,20 @@ const Socket = () => {
   const { updateManhole } = useManholeStore();
 
   const { updateSensor } = useSensorsStore()
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000'; // Default to localhost if not set
 
   useEffect(() => {
     // Connect to socket
     socketRef.current = io('/api', {
+      path: '/socket.io',
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+
+    socketRef.current = io(SOCKET_URL, {
+
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

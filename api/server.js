@@ -74,7 +74,7 @@ mqttClient.on("connect", () => {
 
 mqttClient.on("message", async (topic, message) => {
   try {
-    if (topic !== (process.env.MQTT_TOPIC || "drainage/sensor-data")) {
+    if (topic === (process.env.MQTT_TOPIC || "drainage/sensor-data")) {
       const data = {
         ...JSON.parse(message.toString()),
       };
