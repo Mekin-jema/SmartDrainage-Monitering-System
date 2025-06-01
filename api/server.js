@@ -24,7 +24,11 @@ app.use(express.json());
 // Enhanced CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://final-project-wz7h.onrender.com",
+    ],
+
     credentials: true,
   })
 );
@@ -32,7 +36,10 @@ app.use(
 // Socket.IO Setup
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://final-project-wz7h.onrender.com",
+    ],
     methods: ["GET", "POST"],
   },
 });
