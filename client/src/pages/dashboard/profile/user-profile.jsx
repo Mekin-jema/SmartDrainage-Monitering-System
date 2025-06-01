@@ -83,7 +83,7 @@ const UserProfile = () => {
     };
 
     return (
-        <Card className="p-6 max-w-2xl mx-auto">
+        <div className="p-6 max-w-2xl mx-auto bg-inherit/20">
             <h2 className="text-xl font-bold mb-2">Worker Profile</h2>
             <p className="text-sm mb-4">
                 {isEditing ? "Update your profile details" : "View your profile information"}
@@ -242,7 +242,7 @@ const UserProfile = () => {
                     </Button>
                 )}
             </div>
-        </Card>
+        </div>
     );
 };
 
