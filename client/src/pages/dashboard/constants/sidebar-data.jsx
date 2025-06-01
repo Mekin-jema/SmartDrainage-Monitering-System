@@ -48,7 +48,7 @@ export const getSidebarData = (user) => {
         title: "Smart Sewage System",
         items: [
           {
-            title: "Dashboard",
+            title: "Analytics Dashboard",
             url: "/dashboard",
             icon: LayoutGrid,
           },
@@ -84,7 +84,7 @@ export const getSidebarData = (user) => {
           },
 
           {
-            title: "Assignments",
+            title: "Admin Controls",
             url: "/dashboard/admin-dashboard",
             icon: Users,
           },

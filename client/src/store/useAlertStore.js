@@ -17,10 +17,10 @@ const useAlertStore = create(
       fetchAlerts: async (filters = {}) => {
         set({ loading: true, error: null });
         try {
-          const queryParams = new URLSearchParams(filters).toString();
           const response = await axios.get(`${API_ALERT_ENDPOINT}/recent`);
-          if (response.data.success) {
-            set({ alerts: response.data.data, loading: false });
+          console.log('Response from fetchAlerts:', response);
+          if (response) {
+            set({ alerts: response.data.recentAlerts, loading: false });
           } else {
             set({ error: 'Failed to load alerts', loading: false });
           }

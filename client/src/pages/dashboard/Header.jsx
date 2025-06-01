@@ -12,6 +12,7 @@ import {
 } from "../../components/ui/breadcrumb";
 import { Link } from "react-router-dom";
 import SearchInput from "./navbar/search-input";
+import NotificationBell from "./assignments/notification-bell";
 
 export default function Header() {
   return (
@@ -43,6 +44,12 @@ export default function Header() {
           <DarkModeToggle />
         </div>
         {/* <NavUser /> */}
+
+        {/* // Usage in your header: */}
+        <div className=" flex items-center space-x-4 top-0 right-0 p-4">
+          <NotificationBell />
+          {/* User Avatar or other header elements can go here */}
+        </div>
       </div>
     </header>
   );

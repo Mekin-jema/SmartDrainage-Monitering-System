@@ -33,6 +33,7 @@ import {
     Users,
     UserPlus,
     FilePlus,
+    Bell,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -68,6 +69,9 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
+import useAlertStore from "@/store/useAlertStore";
+import NotificationBell from "./notification-bell";
 
 // Status and role definitions with fallbacks
 const statuses = {
@@ -125,11 +129,15 @@ const AdminDashboard = () => {
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
+    const navigate = useNavigate();
 
     const { user, getAllUsers } = useUserStore();
     console.log("user", user);
     const { userOverview, fetchUserOverview } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
+    const [notificationCount, setNotificationCount] = useState(0); // Initialize with your actual count
+    const { fetchAlerts, alerts } = useAlertStore()
+    console.log("alerts", alerts);
     console.log("task", task);
 
 
@@ -140,6 +148,7 @@ const AdminDashboard = () => {
             getAllUsers();
             fetchUserOverview();
             fetchTasksOverviewWithList();
+            fetchAlerts()
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unknown error occurred");
         } finally {
@@ -161,6 +170,12 @@ const AdminDashboard = () => {
             setUsers(user);
         }
     }, [user]);
+    useEffect(() => {
+        if (alerts) {
+            setNotificationCount(alerts.length);
+        }
+    }, [alerts]);
+
 
     const taskColumns = React.useMemo(() => [
         {
@@ -372,7 +387,7 @@ const AdminDashboard = () => {
         );
     }
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className=" relative p-6 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
@@ -381,6 +396,8 @@ const AdminDashboard = () => {
                     </p>
                 </div>
             </div>
+
+
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
@@ -786,3 +803,7 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+
+
+

@@ -1,7 +1,5 @@
-
 import React, { useEffect, useState } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
-// import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,56 +13,65 @@ import {
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-// import { useRouter } from "react-router-dom";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { InputField, CheckboxField } from "@/components/auth/FormFields";
 import { loginSchema } from "@/lib/schema/loginSchema";
 import { useUserStore } from "@/store/useUserStore";
-// import { authClient } from "@/lib/auth-client";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Login = () => {
   const [pending, setPending] = useState(false);
-  const navigate = useNavigate()
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const { login, loading, user } = useUserStore();
 
+  // Form setup
+  const form = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
 
+  // Notification with sound on mount
+  useEffect(() => {
+    const message = "You have a new notification!";
+    const notificationSound = new Audio("/warning.mp3");
 
-
-  // const router = useRouter();
-  const form = useForm
-    // <LoginFormValues>
-    ({
-      resolver: zodResolver(loginSchema),
-      defaultValues: {
-        email: "",
-        password: "",
-        rememberMe: false,
-      },
+    notificationSound.play().catch((err) => {
+      console.warn("Auto-play was blocked:", err);
     });
-  // In your Login component
+
+    toast(message, {
+      position: "top-right",
+      autoClose: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       form.reset();
-      const user = await login(data); // Get the returned user data
-
-      // Redirect based on role
+      const user = await login(data);
       if (user?.role === "admin") {
         navigate("/dashboard");
       } else if (user?.role === "worker") {
         navigate("/dashboard/worker-dashboard");
       } else {
-        navigate("/dashboard"); // Fallback to general dashboard
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-background/80 p-4">
       <div className="w-full max-w-md">
-
-
         <Card className="border-none shadow-lg">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
@@ -76,10 +83,7 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <InputField
                   control={form.control}
                   name="email"
@@ -88,7 +92,6 @@ const Login = () => {
                   type="email"
                   icon={<Mail className="h-5 w-5 text-muted-foreground" />}
                 />
-
                 <InputField
                   control={form.control}
                   name="password"
@@ -96,16 +99,14 @@ const Login = () => {
                   placeholder="••••••••"
                   type="password"
                   icon={<Lock className="h-5 w-5 text-muted-foreground" />}
-                  showPasswordToggle={true}
+                  showPasswordToggle
                 />
-
                 <div className="flex items-center justify-between">
                   <CheckboxField
                     control={form.control}
                     name="rememberMe"
                     label="Remember me"
                   />
-
                   <Link
                     to="/forgot-password"
                     className="text-sm font-medium text-primary hover:underline"
@@ -113,7 +114,6 @@ const Login = () => {
                     Forgot password?
                   </Link>
                 </div>
-
                 <Button type="submit" className="w-full" disabled={pending}>
                   {loading ? (
                     <>
@@ -140,14 +140,7 @@ const Login = () => {
                 </span>
               </div>
             </div>
-
-            <div className="flex gap-4 ">
-              {/* <GoogleAuthButton
-                action="login"
-                buttonText="Sign up with Google"
-                redirectTo="/dashboard"
-              /> */}
-            </div>
+            <div className="flex gap-4"></div>
             <div className="text-center text-sm">
               Don't have an account?{" "}
               <Link

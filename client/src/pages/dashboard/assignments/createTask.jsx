@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
 import useTaskStore from "@/store/useTaskStore";
+import { toast } from "sonner";
 
 // Zod validation schema
 const taskSchema = z.object({
@@ -73,9 +74,9 @@ export function CreateTaskForm({ users = [] }) {
       .then((res) => {
         if (res.success) {
           form.reset();
-          alert("Task created successfully");
+          toast.success("Task created successfully");
         } else {
-          alert(res.message);
+          toast.error("Failed to create task: " + res.message);
         }
       })
       .catch((error) => {
