@@ -24,19 +24,17 @@ export function AppSidebar({ ...props }) {
     <Sidebar
       collapsible="icon"
       {...props}
-      className={`mx-3 mt-3 ${
-        isMobile 
-          ? "bg-[hsl(var(--background))] dark:bg-[hsl(var(--card))]" 
+      className={`mx-3 mt-3 ${isMobile
+          ? "bg-[hsl(var(--background))] dark:bg-[hsl(var(--card))]"
           : "bg-[hsl(var(--card))] dark:bg-[hsl(var(--popover))]"
-      } text-foreground rounded-xl border-border border ${
-        state.collapsed ? "w-20" : "w-64"
-      } transition-all duration-300 shadow-light dark:shadow-dark bg-foreground/90  `}
+        } text-foreground rounded-xl border-border border ${state.collapsed ? "w-20" : "w-64"
+        } transition-all duration-300 shadow-light dark:shadow-dark bg-foreground/90  `}
     >
       <SidebarHeader className="flex items-center justify-between px-4 py-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton 
-              size="lg" 
+            <SidebarMenuButton
+              size="lg"
               asChild
               className={`flex ${state.collapsed ? "justify-center" : "justify-start"}`}
             >
@@ -57,15 +55,15 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain 
-          items={sidebarData.navMain[0].items} 
+        <NavMain
+          items={sidebarData.navMain[0].items}
           className={state.collapsed ? "items-center" : ""}
         />
       </SidebarContent>
 
       <SidebarFooter className="mb-3 px-2">
-        <NavUser 
-          user={sidebarData.user} 
+        <NavUser
+          user={sidebarData.user}
           collapsed={state.collapsed}
         />
       </SidebarFooter>

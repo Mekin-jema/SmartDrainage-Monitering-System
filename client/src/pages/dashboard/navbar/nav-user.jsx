@@ -25,9 +25,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useUserStore } from "@/store/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 export function NavUser() {
+
+  const { logout, user } = useUserStore();
   const { isMobile } = useSidebar();
+
+  const navigate = useNavigate()
+  console.log("User in NavUser:", user);
 
   return (
     <SidebarMenu>
@@ -45,8 +52,8 @@ export function NavUser() {
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-white text-sm leading-tight">
-                <span className="truncate font-semibold">Mekin</span>
-                <span className="truncate text-xs">mekinjemalflkdajfl</span>
+                <span className="truncate font-semibold">{user.fullname}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -64,8 +71,8 @@ export function NavUser() {
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Mekin Jemal</span>
-                  <span className="truncate text-xs">mekinjemal</span>
+                  <span className="truncate font-semibold">{user.fullname}</span>
+                  <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -93,13 +100,17 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => {
+              logout();
+              navigate("/login");
+            }}>
               <LogOut />
               Log out
             </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu>
+    </SidebarMenu >
   );
 }
