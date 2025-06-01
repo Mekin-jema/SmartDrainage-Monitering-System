@@ -34,24 +34,7 @@ const Login = () => {
     },
   });
 
-  // Notification with sound on mount
-  useEffect(() => {
-    const message = "You have a new notification!";
-    const notificationSound = new Audio("/warning.mp3");
 
-    notificationSound.play().catch((err) => {
-      console.warn("Auto-play was blocked:", err);
-    });
-
-    toast(message, {
-      position: "top-right",
-      autoClose: 5000,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-    });
-  }, []);
 
   const onSubmit = async (data) => {
     try {

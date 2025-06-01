@@ -131,8 +131,7 @@ const AdminDashboard = () => {
     const [selectedUser, setSelectedUser] = useState("all");
     const navigate = useNavigate();
 
-    const { user, getAllUsers } = useUserStore();
-    console.log("user", user);
+    const { allUsers, getAllUsers } = useUserStore();
     const { userOverview, fetchUserOverview } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
     const [notificationCount, setNotificationCount] = useState(0); // Initialize with your actual count
@@ -166,10 +165,10 @@ const AdminDashboard = () => {
     }, [task]);
 
     useEffect(() => {
-        if (user) {
-            setUsers(user);
+        if (allUsers) {
+            setUsers(allUsers);
         }
-    }, [user]);
+    }, [allUsers]);
     useEffect(() => {
         if (alerts) {
             setNotificationCount(alerts.length);

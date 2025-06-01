@@ -34,6 +34,11 @@ export const getSidebarData = (user) => {
               url: "/dashboard/worker-dashboard",
               icon: Users,
             },
+            {
+              title: "Profile",
+              url: "/dashboard/profile",
+              icon: Users,
+            },
           ],
         },
       ],
@@ -97,6 +102,11 @@ export const getSidebarData = (user) => {
             title: "Support & Docs",
             url: "/dashboard/docs",
             icon: BookOpen,
+          },
+          {
+            title: "Profile",
+            url: "/dashboard/profile",
+            icon: Users,
           },
         ],
       },

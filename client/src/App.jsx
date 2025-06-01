@@ -40,6 +40,7 @@ import ResetPassword from "./components/auth/Reset-password";
 import WorkerDashboard from "./pages/dashboard/worker-task/worker-dashboard";
 import AdminDashboard from "./pages/dashboard/assignments/assignments";
 import { CreateTaskForm } from "./pages/dashboard/assignments/createTask";
+import UserProfile from "./pages/dashboard/profile/user-profile";
 
 
 
@@ -210,6 +211,10 @@ const router = createBrowserRouter([
           <WorkerDashboard />
           // </WorkerRoute>
         )
+      }
+      , {
+        path: "profile",
+        element: <UserProfile />
       }
     ],
   },

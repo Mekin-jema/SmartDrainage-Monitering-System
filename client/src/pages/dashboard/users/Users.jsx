@@ -60,7 +60,7 @@ const UsersTable = () => {
   const [globalFilter, setGlobalFilter] = useState("");
   const { toast } = useToast();
 
-  const { getAllUsers, user } = useUserStore();
+  const { getAllUsers, allUsers } = useUserStore();
   // console.log(users);
 
   const columns = React.useMemo(() => [
@@ -137,7 +137,7 @@ const UsersTable = () => {
     {
       id: "actions",
       cell: ({ row }) => {
-        const user = row.original;
+        const allUsers = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -148,7 +148,7 @@ const UsersTable = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  navigator.clipboard.writeText(user._id);
+                  navigator.clipboard.writeText(allUsers._id);
                   toast({
                     title: "Copied",
                     description: "User ID copied to clipboard",
@@ -179,12 +179,12 @@ const UsersTable = () => {
     };
 
     fetchUsers();
-  },[] );
+  }, []);
 
-  console.log(user);
+  console.log(allUsers);
 
   const table = useReactTable({
-    data: user || [],
+    data: allUsers || [],
     columns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
@@ -208,7 +208,7 @@ const UsersTable = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">Loading user data...</span>
+        <span className="ml-2 text-foreground">Loading allUsers data...</span>
       </div>
     );
   }
@@ -253,8 +253,8 @@ const UsersTable = () => {
                     row.original.status === "suspended"
                       ? "bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50"
                       : row.original.status === "inactive"
-                      ? "bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50"
-                      : "hover:bg-accent"
+                        ? "bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50"
+                        : "hover:bg-accent"
                   }
                 >
                   {row.getVisibleCells().map((cell) => (

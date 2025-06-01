@@ -10,6 +10,7 @@ const API_END_POINT = `/api/v1/auth`;
 export const useUserStore = create()(
   persist(
     (set) => ({
+      allUsers: [],
       user: null,
       isAuthenticated: false,
       isCheckingAuth: true,
@@ -179,7 +180,7 @@ export const useUserStore = create()(
           const response = await axios.get(`${API_END_POINT}/get-all-users`);
           if (response.data.success) {
             // Optionally, you can store it in the state (e.g., users list)
-            set({ user: response.data.users });
+            set({ allUsers: response.data.users });
           } else {
             toast.error(response.data.message || 'Failed to fetch users');
           }
