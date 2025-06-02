@@ -35,7 +35,7 @@ export const getSidebarData = (user) => {
               icon: LayoutGrid,
             },
             {
-              title: "Assignments",
+              title: "My Assignments",
               url: "/dashboard/worker-dashboard",
               icon: Users,
             },

@@ -33,6 +33,9 @@ import {
     Users,
     UserPlus,
     FilePlus,
+    Pencil,
+    Trash2,
+    User,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -65,8 +68,11 @@ import {
     DialogHeader,
     DialogTitle,
     DialogDescription,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import useAlertStore from "@/store/useAlertStore";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
 
 // Status and role definitions with fallbacks
 const statuses = {
@@ -123,11 +129,18 @@ const AdminDashboard = () => {
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [selectedUser, setSelectedUser] = useState("all");
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
+    const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
 
     const { allUsers, getAllUsers, userOverview, fetchUserOverview, user } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
     const { fetchAlerts, alerts } = useAlertStore();
     const [notificationCount, setNotificationCount] = useState(0);
+
+    const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -285,19 +298,22 @@ const AdminDashboard = () => {
             header: "Tasks Assigned",
             cell: ({ row }) => {
                 const assignments = row.getValue("assignments") || [];
+                const userTasks = tasks.filter(task =>
+                    assignments.some(assignment => assignment._id === task._id)
+                );
 
-                if (!Array.isArray(assignments) || assignments.length === 0) {
+                if (!userTasks.length) {
                     return <span>No tasks</span>;
                 }
 
                 return (
                     <div className="flex flex-col gap-1">
-                        {assignments.map((task) => (
+                        {userTasks.map((task) => (
                             <Badge key={task._id} className="w-fit bg-gray-400">
                                 <div className="text-left">
-                                    <div>{task.manholeId}</div>
+                                    <div>{task.code || "Unnamed Task"}</div>
                                     <div className="text-xs opacity-70">
-                                        {format(new Date(task.date), "PPP")}
+                                        {task.status ? getStatusInfo(task.status).label : "No status"}
                                     </div>
                                 </div>
                             </Badge>
@@ -305,8 +321,46 @@ const AdminDashboard = () => {
                     </div>
                 );
             },
+        },
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const user = row.original;
+
+                return (
+                    <div className="flex space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                setCurrentUser(user);
+                                reset({
+                                    fullname: user.fullname,
+                                    email: user.email,
+                                    role: user.role,
+                                    status: user.status
+                                });
+                                setIsEditDialogOpen(true);
+                            }}
+                        >
+                            <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                setUserToDelete(user);
+                                setIsDeleteDialogOpen(true);
+                            }}
+                        >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                    </div>
+                );
+            },
         }
-    ], []);
+    ], [tasks]);
 
     const filteredTasks = selectedUser === "all"
         ? tasks
@@ -345,6 +399,43 @@ const AdminDashboard = () => {
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
     });
+
+    const handleEditUser = async (data) => {
+        try {
+            const updatedUsers = users.map(user =>
+                user._id === currentUser._id ? { ...user, ...data } : user
+            );
+            setUsers(updatedUsers);
+            setIsEditDialogOpen(false);
+        } catch (error) {
+            console.error("Error updating user:", error);
+        }
+    };
+
+    const handleDeleteUser = async () => {
+        try {
+            const updatedUsers = users.filter(user => user._id !== userToDelete._id);
+            setUsers(updatedUsers);
+            setIsDeleteDialogOpen(false);
+        } catch (error) {
+            console.error("Error deleting user:", error);
+        }
+    };
+
+    const handleCreateUser = async (data) => {
+        try {
+            const newUser = {
+                _id: `user-${Date.now()}`,
+                ...data,
+                assignments: []
+            };
+            setUsers([...users, newUser]);
+            setIsCreateUserDialogOpen(false);
+            reset();
+        } catch (error) {
+            console.error("Error creating user:", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -640,10 +731,116 @@ const AdminDashboard = () => {
                                     View and manage all system users
                                 </CardDescription>
                             </div>
-                            <Button>
-                                <UserPlus className="mr-2 h-4 w-4" />
-                                Add User
-                            </Button>
+                            <Dialog
+                                open={isCreateUserDialogOpen}
+                                onOpenChange={setIsCreateUserDialogOpen}
+                            >
+                                <DialogTrigger asChild>
+                                    <Button>
+                                        <UserPlus className="mr-2 h-4 w-4" />
+                                        Add User
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Create New User</DialogTitle>
+                                        <DialogDescription>
+                                            Fill out the form to add a new user to the system.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={handleSubmit(handleCreateUser)}>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="fullname" className="text-right">
+                                                    Full Name
+                                                </Label>
+                                                <Input
+                                                    id="fullname"
+                                                    {...register("fullname", { required: true })}
+                                                    className="col-span-3"
+                                                />
+                                                {errors.fullname && (
+                                                    <span className="col-span-4 text-right text-sm text-red-500">
+                                                        Full name is required
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="email" className="text-right">
+                                                    Email
+                                                </Label>
+                                                <Input
+                                                    id="email"
+                                                    type="email"
+                                                    {...register("email", {
+                                                        required: true,
+                                                        pattern: /^\S+@\S+$/i
+                                                    })}
+                                                    className="col-span-3"
+                                                />
+                                                {errors.email && (
+                                                    <span className="col-span-4 text-right text-sm text-red-500">
+                                                        Valid email is required
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="role" className="text-right">
+                                                    Role
+                                                </Label>
+                                                <Select
+                                                    onValueChange={(value) => reset({ ...reset(), role: value })}
+                                                    {...register("role", { required: true })}
+                                                >
+                                                    <SelectTrigger className="col-span-3">
+                                                        <SelectValue placeholder="Select role" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {Object.keys(roles).map((role) => (
+                                                            <SelectItem key={role} value={role}>
+                                                                {roles[role].label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.role && (
+                                                    <span className="col-span-4 text-right text-sm text-red-500">
+                                                        Role is required
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="status" className="text-right">
+                                                    Status
+                                                </Label>
+                                                <Select
+                                                    onValueChange={(value) => reset({ ...reset(), status: value })}
+                                                    {...register("status", { required: true })}
+                                                >
+                                                    <SelectTrigger className="col-span-3">
+                                                        <SelectValue placeholder="Select status" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {Object.keys(userStatuses).map((status) => (
+                                                            <SelectItem key={status} value={status}>
+                                                                {userStatuses[status].label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.status && (
+                                                    <span className="col-span-4 text-right text-sm text-red-500">
+                                                        Status is required
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button type="submit">Create User</Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -774,6 +971,141 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     </CardContent>
+
+                    {/* Edit User Dialog */}
+                    <Dialog
+                        open={isEditDialogOpen}
+                        onOpenChange={setIsEditDialogOpen}
+                    >
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Edit User</DialogTitle>
+                                <DialogDescription>
+                                    Make changes to user profile here.
+                                </DialogDescription>
+                            </DialogHeader>
+                            {currentUser && (
+                                <form onSubmit={handleSubmit(handleEditUser)}>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="fullname" className="text-right">
+                                                Full Name
+                                            </Label>
+                                            <Input
+                                                id="fullname"
+                                                defaultValue={currentUser.fullname}
+                                                {...register("fullname", { required: true })}
+                                                className="col-span-3"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="email" className="text-right">
+                                                Email
+                                            </Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                defaultValue={currentUser.email}
+                                                {...register("email", {
+                                                    required: true,
+                                                    pattern: /^\S+@\S+$/i
+                                                })}
+                                                className="col-span-3"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="role" className="text-right">
+                                                Role
+                                            </Label>
+                                            <Select
+                                                defaultValue={currentUser.role}
+                                                onValueChange={(value) => reset({ ...reset(), role: value })}
+                                                {...register("role", { required: true })}
+                                            >
+                                                <SelectTrigger className="col-span-3">
+                                                    <SelectValue placeholder="Select role" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {Object.keys(roles).map((role) => (
+                                                        <SelectItem key={role} value={role}>
+                                                            {roles[role].label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="status" className="text-right">
+                                                Status
+                                            </Label>
+                                            <Select
+                                                defaultValue={currentUser.status}
+                                                onValueChange={(value) => reset({ ...reset(), status: value })}
+                                                {...register("status", { required: true })}
+                                            >
+                                                <SelectTrigger className="col-span-3">
+                                                    <SelectValue placeholder="Select status" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {Object.keys(userStatuses).map((status) => (
+                                                        <SelectItem key={status} value={status}>
+                                                            {userStatuses[status].label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button type="submit">Save Changes</Button>
+                                    </DialogFooter>
+                                </form>
+                            )}
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Delete User Dialog */}
+                    <Dialog
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                    >
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Confirm Deletion</DialogTitle>
+                                <DialogDescription>
+                                    Are you sure you want to delete this user? This action cannot be undone.
+                                </DialogDescription>
+                            </DialogHeader>
+                            {userToDelete && (
+                                <div className="flex items-center space-x-4">
+                                    <div className="flex-shrink-0">
+                                        <User className="h-12 w-12 rounded-full bg-gray-100 p-2" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium">{userToDelete.fullname}</h4>
+                                        <p className="text-sm text-muted-foreground">{userToDelete.email}</p>
+                                        <Badge className="mt-1">
+                                            {getRoleInfo(userToDelete.role).label}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            )}
+                            <DialogFooter>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsDeleteDialogOpen(false)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    onClick={handleDeleteUser}
+                                >
+                                    Delete User
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </Card>
             )}
         </div>
