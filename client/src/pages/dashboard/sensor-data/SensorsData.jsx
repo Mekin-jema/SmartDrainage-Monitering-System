@@ -134,7 +134,6 @@ export default function SensorTable() {
   const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const { manholes, fetchManholes } = useSensorsStore();
-  const socketRef = useRef(null);
 
   console.log("Sensor Readings:", sensorReadings);
 
@@ -143,7 +142,6 @@ export default function SensorTable() {
     try {
       setLoading(true);
       fetchManholes();
-      setSensorReadings(manholes);
     } catch (err) {
       setError(err.message || "Failed to fetch sensor data");
     } finally {
@@ -155,7 +153,13 @@ export default function SensorTable() {
 
 
 
-  }, [manholes]);
+  }, []);
+
+
+  useEffect(() => {
+  setSensorReadings(manholes);
+}, [manholes]);
+
 
 
   const table = useReactTable({
