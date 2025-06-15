@@ -8,6 +8,7 @@ import {
   MANHOLE_STATUS,
   ALERT_STATUS 
 } from '../helpers/checkThreshold.js';
+import { getIO } from '../helpers/socket.service.js';
 
 // Helper function for threshold checking
 const checkThresholds = (value, thresholdConfig) => {
@@ -23,7 +24,15 @@ const createReading = async (data) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
+      const io = getIO();
+    
+
+
   try {
+    // Access io instance from the app
+ 
+    
+    // Emit to all clientssoc
     // Destructure and validate input
     const {
       manholeId,
@@ -110,7 +119,15 @@ const createReading = async (data) => {
     
     if (alerts.length > 0) {
       await Alert.insertMany(alerts, { session });
+      const alertData=await Alert.find({})
+      io.emit('alertData',alertData )
+      // console.log("Alerts created:", alertData);
+
+
     }
+
+
+
 
     // Update manhole status
     await Manhole.updateOne(

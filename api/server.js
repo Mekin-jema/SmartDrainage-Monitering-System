@@ -13,6 +13,7 @@ import maintenanceModel from "./src/models/maintenance.model.js";
 import taskModel from "./src/models/task.model.js";
 import manholeModel from "./src/models/manhole.model.js";
 import getAllManholes from "./src/helpers/getManholesData.js";
+import { initializeSocket } from "./src/helpers/socket.service.js";
 // import manholeModel from "./src/models/manhole.model.js";
 dotenv.config();
 
@@ -34,15 +35,7 @@ app.use(
 );
 
 // Socket.IO Setup
-const io = new Server(httpServer, {
-  cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://final-project-wz7h.onrender.com",
-    ],
-    methods: ["GET", "POST"],
-  },
-});
+const io = initializeSocket(httpServer);
 
 // MQTT Client Setup
 const mqttClient = mqtt.connect(
@@ -85,7 +78,7 @@ mqttClient.on("message", async (topic, message) => {
       let data = {
         ...JSON.parse(message.toString()),
       };
-    console.log(data)
+    // console.log(data)
       // Update cache
       sensorDataCache.push(data);
       if (sensorDataCache.length > MAX_CACHE_SIZE) {
@@ -129,8 +122,8 @@ app.get("/health", (req, res) => {
 });
 
 // Start Server
-httpServer.listen(port, async () => {
-  await db();
+httpServer.listen(port, () => {
+  db();
   console.log(`Server running on port ${port}`);
   console.log(`WebSocket available on ws://localhost:${port}`);
 });

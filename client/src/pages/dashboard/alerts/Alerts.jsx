@@ -276,7 +276,7 @@ const AlertsTable = () => {
     // Set up polling every 30 seconds
     const intervalId = setInterval(loadData, 30000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [recentAlerts]);
 
   const table = useReactTable({
     data: recentAlerts,

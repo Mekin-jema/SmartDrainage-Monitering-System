@@ -31,7 +31,13 @@ const useAlertStore = create(
           });
         }
       },
-
+      
+      
+      updateAlerts: (newData) => {
+  set((state) => ({
+    recentAlerts : newData, // Or do deduplication/merge here
+  }));
+},
       // Fetch 5 recent alerts
       fetchRecentAlerts: async () => {
         set({ loading: true, error: null });

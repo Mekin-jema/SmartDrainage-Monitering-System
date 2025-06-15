@@ -1,3 +1,4 @@
+import useAlertStore from "@/store/useAlertStore";
 import { useManholeStore } from "@/store/useManholeStore";
 import useSensorsStore from "@/store/useSensorsStore";
 import { useEffect, useRef } from "react";
@@ -7,7 +8,9 @@ const Socket = () => {
   const socketRef = useRef(null);
   const { updateManhole } = useManholeStore();
 
+
   const { updateSensor } = useSensorsStore()
+  const { updateAlerts}=useAlertStore()
   const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000'; // Default to localhost if not set
 
   useEffect(() => {
@@ -50,6 +53,15 @@ const Socket = () => {
       }
     });
 
+
+        socket.on('alertData', (results) => {
+      try {
+        console.log('Received Manholes data from wokwi:', results.data);
+        updateManhole(results.data); // Push to Zustand store
+      } catch (err) {
+        console.error('Error updating dashboard data:', err);
+      }
+    });
     socket.on('disconnect', () => {
       console.log('Socket.IO disconnected');
     });
