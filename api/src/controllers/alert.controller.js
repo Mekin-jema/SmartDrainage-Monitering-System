@@ -230,7 +230,6 @@ const getRecentAlerts = async (req, res) => {
   try {
     const alerts = await Alert.find()
       .sort({ createdAt: -1 }) // Most recent based on creation time
-      .limit(5);
 
     const formattedAlerts = alerts.map((alert, index) => ({
       id: index + 1,

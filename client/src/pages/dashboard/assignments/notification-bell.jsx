@@ -8,7 +8,7 @@ const NotificationBell = () => {
     const [prevCount, setPrevCount] = useState(0);
     const navigate = useNavigate();
     const audioRef = useRef(null);
-    const { fetchAlerts, alerts } = useAlertStore();
+    const {  fetchRecentAlerts,  recentAlerts } = useAlertStore();
 
     // Load notification sound
     useEffect(() => {
@@ -19,15 +19,15 @@ const NotificationBell = () => {
 
     useEffect(() => {
 
-        // Fetch alerts when component mounts
+        // Fetch  recentAlerts when component mounts
 
-        fetchAlerts()
-    }, [])
+      fetchRecentAlerts()
+    }, [recentAlerts])
 
-    // Update notification count when alerts change
+    // Update notification count when  recentAlerts change
     useEffect(() => {
-        if (alerts) {
-            const newCount = alerts.length;
+        if ( recentAlerts) {
+            const newCount =  recentAlerts.length;
 
             // Play sound if count increased
             if (newCount > prevCount) {
@@ -37,7 +37,7 @@ const NotificationBell = () => {
             setPrevCount(newCount);
             setNotificationCount(newCount);
         }
-    }, [alerts, prevCount]);
+    }, [ recentAlerts, prevCount]);
 
     const handleNotificationClick = () => {
         // Reset count when notifications are viewed
@@ -50,7 +50,7 @@ const NotificationBell = () => {
             // markNotificationsAsRead();
         }
 
-        navigate('/dashboard/alerts');
+        navigate('/dashboard/ recentAlerts');
     };
 
     return (
