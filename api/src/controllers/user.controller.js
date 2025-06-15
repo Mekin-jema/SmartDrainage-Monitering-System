@@ -310,15 +310,13 @@ export const getAssignedTasksForWorker = async (req, res) => {
   }
 };
 
-
-
 export const getUserOverview = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
 
     const activeWorkers = await User.countDocuments({
-      role: 'worker',
-      'status.availability': 'available',
+      role: "worker",
+      "status.availability": "available",
     });
 
     res.status(200).json({
@@ -327,14 +325,117 @@ export const getUserOverview = async (req, res) => {
         totalUsers,
         totalUsersLabel: "All system users",
         activeWorkers,
-        activeWorkersLabel: "Active Workers"
+        activeWorkersLabel: "Active Workers",
       },
     });
   } catch (error) {
-    console.error('Error fetching user overview:', error);
+    console.error("Error fetching user overview:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve user overview',
+      message: "Failed to retrieve user overview",
     });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.id; // assuming you pass the user id in the route param
+    const { fullname, email, address, city, country, phone, role, status } =
+      req.body;
+
+    const updatedFields = {
+      ...(fullname && { fullname }),
+      ...(email && { email }),
+      ...(address && { address }),
+      ...(city && { city }),
+      ...(country && { country }),
+      ...(phone && { phone }),
+      ...(role && { role }),
+      ...(status && { status }),
+    };
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedFields, {
+      new: true,
+    }).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    const {
+      fullname,
+      email,
+      password,
+      phone,
+      address,
+      salary,
+      role,
+      status,
+      // profilePicture,
+    } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already in use" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = await User.create({
+      fullname,
+      email,
+      // password: hashedPassword,
+      phone,
+      address,
+      salary,
+      role,
+      status,
+      profilePicture,
+      isVerified: true, // Optional: or false if you're doing email verification
+    });
+
+    // Optional: Send verification email if needed
+    // await sendEmailVerification(newUser.email, newUser.verificationToken);
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: {
+        id: newUser._id,
+        fullname: newUser.fullname,
+        email: newUser.email,
+        role: newUser.role,
+        phone: newUser.phone,
+        address: newUser.address,
+        salary: newUser.salary,
+        profilePicture: newUser.profilePicture,
+        status: newUser.status,
+        createdAt: newUser.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Create user error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };

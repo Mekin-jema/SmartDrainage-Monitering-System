@@ -129,8 +129,8 @@ app.get("/health", (req, res) => {
 });
 
 // Start Server
-httpServer.listen(port, () => {
-  db();
+httpServer.listen(port, async () => {
+  await db();
   console.log(`Server running on port ${port}`);
   console.log(`WebSocket available on ws://localhost:${port}`);
 });

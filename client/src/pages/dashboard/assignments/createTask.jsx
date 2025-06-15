@@ -27,9 +27,10 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { Skeleton } from "@/components/ui/skeleton";
 import useTaskStore from "@/store/useTaskStore";
 import { toast } from "sonner";
+import { useManholeStore } from "@/store/useManholeStore";
+import { useEffect } from "react";
 
 // Zod validation schema
 const taskSchema = z.object({
@@ -61,11 +62,19 @@ export function CreateTaskForm({ users = [] }) {
 
 
   const { createTask } = useTaskStore()
+  const { manholesData, fetchManholes } = useManholeStore()
   console.log("Users:", users);
   const form = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues,
   });
+
+
+  // Fetch manholes data on component mount
+  useEffect(() => {
+    fetchManholes();
+
+  }, [manholesData])
 
   function onSubmit(values) {
     console.log("Submitted Task:", values);
@@ -89,7 +98,7 @@ export function CreateTaskForm({ users = [] }) {
     <Form {...form} className="md:max-w-[400px] mx-auto md:h-[300px]">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6  ">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
+          {/* <FormField
             control={form.control}
             name="code"
             render={({ field }) => (
@@ -98,6 +107,37 @@ export function CreateTaskForm({ users = [] }) {
                 <FormControl>
                   <Input placeholder="Enter task code" {...field} />
                 </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          /> */}
+
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-medium">Manholes Code</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Manholes Code" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {manholesData.length > 0 ? (
+                      manholesData.map((manhole) => (
+                        <SelectItem key={manhole._id} value={manhole.code}>
+                          {manhole.code}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-muted-foreground">
+                        No users available
+                      </div>
+                    )}
+                  </SelectContent>
+                </Select>
                 <FormMessage className="text-xs" />
               </FormItem>
             )}

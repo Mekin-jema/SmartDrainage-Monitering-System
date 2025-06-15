@@ -196,12 +196,13 @@ export const useUserStore = create()(
       deleteUser: async (userId) => {
         try {
           set({ loading: true });
-          const response = await axios.delete(`${API_END_POINT}/user/${userId}`);
+          const response = await axios.delete(`${API_END_POINT}/delete-user/${userId}`);
           if (response.data.success) {
             toast.success(response.data.message);
             // Re-fetch users list if needed
-            const updatedUsers = (await axios.get(`${API_END_POINT}/users`)).data.users;
-            set({ users: updatedUsers });
+            const updatedUsers = (await axios.get(`${API_END_POINT}/get-all-users`)).data.users;
+            // Optionally, you can store it in the state (e.g., users list)
+            set({ allUsers: updatedUsers });
           } else {
             toast.error(response.data.message || 'Delete failed');
           }
@@ -226,6 +227,49 @@ export const useUserStore = create()(
           const message = error?.response?.data?.message || 'Something went wrong';
           set({ error: message });
           toast.error(message);
+        } finally {
+          set({ loading: false });
+        }
+      },
+      createUser: async (data) => {
+        try {
+          set({ loading: true });
+          const response = await axios.post(`${API_END_POINT}/create-user`, data, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.data.success) {
+            toast.success(response.data.message);
+            set({ user: response.data.user, isAuthenticated: true });
+          } else {
+            toast.error(response.data.message || 'Update failed');
+          }
+        } catch (error) {
+          toast.error(error?.response?.data?.message || 'Something went wrong');
+        } finally {
+          set({ loading: false });
+        }
+      },
+      updateUser: async (userId, updateData) => {
+        try {
+          set({ loading: true });
+
+          const response = await axios.put(`${API_END_POINT}/update-user/${userId}`, updateData, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          if (response.data.success) {
+            toast.success(response.data.message || 'User updated successfully');
+
+            // Optionally refresh the user list
+            const updatedUsers = (await axios.get(`${API_END_POINT}/get-all-users`)).data.users;
+            set({ allUsers: updatedUsers });
+          } else {
+            toast.error(response.data.message || 'User update failed');
+          }
+        } catch (error) {
+          toast.error(
+            error?.response?.data?.message || 'Something went wrong while updating the user'
+          );
         } finally {
           set({ loading: false });
         }

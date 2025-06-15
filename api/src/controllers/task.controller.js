@@ -26,13 +26,6 @@ export const getTaskOverviewWithList = async (req, res) => {
   }
 };
 
-// Helper function to generate unique task code
-const generateTaskCode = async () => {
-  const prefix = "TASK-";
-  const count = await taskModel.countDocuments();
-  return `${prefix}${(count + 1).toString().padStart(4, "0")}`;
-};
-
 export const createTask = async (req, res) => {
   try {
     // Destructure required fields from request body
@@ -45,6 +38,7 @@ export const createTask = async (req, res) => {
       dueDate,
       progress = 0,
       assignedTo,
+      code,
     } = req.body;
 
     // Validate required fields
@@ -90,7 +84,6 @@ export const createTask = async (req, res) => {
     }
 
     // Generate unique task code
-    const code = await generateTaskCode();
 
     // Create new task
     const newTask = new taskModel({

@@ -87,23 +87,15 @@ const SewageSystemMap = () => {
     'https://maps.geoapify.com/v1/styles/osm-carto/style.json?apiKey=0d3e5c9668f242409228bfa012c04031';
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   // State
   const [manholes, setManholes] = useState([]);
   const [pipes, setPipes] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [workers, setWorkers] = useState([]);
   const [selectedManhole, setSelectedManhole] = useState(null);
   const [selectedPipe, setSelectedPipe] = useState(null);
   const [readings, setReadings] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [filters, setFilters] = useState({
-    status: 'all',
-    alertLevel: 'all',
-    zone: 'all',
-  });
-  const [showCriticalOnly, setShowCriticalOnly] = useState(false);
+
   const [route, setRoute] = useState(null);
   const [drawingMode, setDrawingMode] = useState(false);
   const [newManholeLocation, setNewManholeLocation] = useState(null);
@@ -201,49 +193,11 @@ const SewageSystemMap = () => {
       });
     });
 
-    // Sample alerts
-    const mockAlerts = [
-      {
-        id: 'A1',
-        manholeId: '2',
-        alertType: 'structural_damage',
-        alertLevel: 'critical',
-        timestamp: '2023-06-10T08:30:00',
-      },
-      {
-        id: 'A2',
-        manholeId: '3',
-        alertType: 'overflow',
-        alertLevel: 'warning',
-        timestamp: '2023-06-11T14:15:00',
-      },
-      {
-        id: 'A3',
-        manholeId: '9',
-        alertType: 'overflow',
-        alertLevel: 'critical',
-        timestamp: '2023-06-12T11:00:00',
-      },
-      {
-        id: 'A4',
-        manholeId: '5',
-        alertType: 'cover_open',
-        alertLevel: 'warning',
-        timestamp: '2023-06-09T09:45:00',
-      },
-    ];
-
-    // Sample workers
-    const mockWorkers = [
-      { id: 'W1', name: 'John Doe', status: 'available', location: [38.764, 9.007] },
-      { id: 'W2', name: 'Jane Smith', status: 'available', location: [38.763, 9.003] },
-    ];
 
     // Set states
     setManholes(enrichedManholes);
     setPipes(generatedPipes);
-    setAlerts(mockAlerts);
-    setWorkers(mockWorkers);
+
   }, [manholesData]);
 
   // Initialize map
@@ -806,63 +760,6 @@ const SewageSystemMap = () => {
     setLogs(mockLogs);
   };
 
-  // Handle alert click
-  const handleAlertClick = (alert) => {
-    const manhole = manholes.find((m) => m.id === alert.manholeId);
-    if (manhole) handleManholeClick(manhole);
-  };
-
-  // Handle file upload
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-
-        if (data.type === 'FeatureCollection') {
-          // Process GeoJSON
-          const newManholes = [];
-          const newPipes = [];
-
-          data.features.forEach((feature) => {
-            if (feature.geometry.type === 'Point') {
-              newManholes.push({
-                id: feature.properties.id || `mh-${newManholes.length + 1}`,
-                code: feature.properties.code || `MH-${newManholes.length + 1}`,
-                location: feature.geometry.coordinates,
-                elevation: feature.properties.elevation || 0,
-                status: feature.properties.status || 'functional',
-                zone: feature.properties.zone || 'A',
-                lastInspection:
-                  feature.properties.lastInspection || new Date().toISOString().split('T')[0],
-                cover_status: feature.properties.cover_status || 'closed',
-                overflow_level: feature.properties.overflow_level || 'good',
-                connections: feature.properties.connections || [],
-              });
-            } else if (feature.geometry.type === 'LineString') {
-              newPipes.push({
-                id: feature.properties.id || `p-${newPipes.length + 1}`,
-                start: feature.properties.start,
-                end: feature.properties.end,
-                blockage: feature.properties.blockage || false,
-                flowDirection: feature.properties.flowDirection || 'start_to_end',
-                diameter: feature.properties.diameter || 200,
-              });
-            }
-          });
-
-          setManholes(newManholes);
-          setPipes(newPipes);
-        }
-      } catch (error) {
-        console.error('Error parsing GeoJSON:', error);
-      }
-    };
-    reader.readAsText(file);
-  };
 
   // Generate optimal route
   const generateRoute = () => {
@@ -914,19 +811,7 @@ const SewageSystemMap = () => {
     }
   };
 
-  // Filter manholes
-  const filteredManholes = manholes.filter((manhole) => {
-    if (filters.status !== 'all' && manhole.status !== filters.status) return false;
-    if (filters.zone !== 'all' && manhole.zone !== filters.zone) return false;
-    return true;
-  });
 
-  // Filter alerts
-  const filteredAlerts = alerts.filter((alert) => {
-    if (showCriticalOnly && alert.alertLevel !== 'critical') return false;
-    if (filters.alertLevel !== 'all' && alert.alertLevel !== filters.alertLevel) return false;
-    return !alert.resolved;
-  });
 
   // Add new manhole
   const addNewManhole = () => {
@@ -963,7 +848,52 @@ const SewageSystemMap = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen relative">
+      {/* Legend */}
+      <div className="  w-[220px] border border-white p-4 absolute left-0 top-0  shadow-lg z-50 rounded-md bg-background">
+        <h3 className="text-lg font-bold mb-2">Legend</h3>
+
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+          <span>Functional</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+          <span>Critical</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+          <span>Overflowing</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+          <span>Under Maintenance</span>
+        </div>
+
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-blue-500 mr-2"></div>
+            <span>Clear Pipe</span>
+          </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-red-500 mr-2"></div>
+            <span>Blocked Pipe</span>
+          </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-green-500 mr-2"></div>
+            <span>Bidirectional Pipe</span>
+          </div>
+        </div>
+
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
+              <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
+            </svg>
+            <span>Flow Direction</span>
+          </div>
+        </div>
+      </div>
       {/* Map container */}
       <div ref={mapContainer} className="flex-1 relative">
         {/* Drawing mode controls */}
@@ -1248,51 +1178,7 @@ const SewageSystemMap = () => {
         )
       }
 
-      {/* Legend */}
-      <div className="w-[220px] border border-white p-4 absolute left-0 top-[650px] shadow-lg z-50 rounded-md bg-background">
-        <h3 className="text-lg font-bold mb-2">Legend</h3>
 
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
-          <span>Functional</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
-          <span>Critical</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
-          <span>Overflowing</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
-          <span>Under Maintenance</span>
-        </div>
-
-        <div className="border-t my-2 pt-2">
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-blue-500 mr-2"></div>
-            <span>Clear Pipe</span>
-          </div>
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-red-500 mr-2"></div>
-            <span>Blocked Pipe</span>
-          </div>
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-green-500 mr-2"></div>
-            <span>Bidirectional Pipe</span>
-          </div>
-        </div>
-
-        <div className="border-t my-2 pt-2">
-          <div className="flex items-center my-1">
-            <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
-              <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
-            </svg>
-            <span>Flow Direction</span>
-          </div>
-        </div>
-      </div>
     </div >
     // </div >
   );

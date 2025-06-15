@@ -72,7 +72,7 @@ import {
 } from "@/components/ui/dialog";
 import useAlertStore from "@/store/useAlertStore";
 import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 // Status and role definitions with fallbacks
 const statuses = {
@@ -134,13 +134,12 @@ const AdminDashboard = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
     const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
-
-    const { allUsers, getAllUsers, userOverview, fetchUserOverview, user } = useUserStore();
+    const { allUsers, getAllUsers, userOverview, fetchUserOverview, user, deleteUser, createUser, updateUser } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
     const { fetchAlerts, alerts } = useAlertStore();
     const [notificationCount, setNotificationCount] = useState(0);
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -299,7 +298,7 @@ const AdminDashboard = () => {
             cell: ({ row }) => {
                 const assignments = row.getValue("assignments") || [];
                 const userTasks = tasks.filter(task =>
-                    assignments.some(assignment => assignment._id === task._id)
+                    assignments.some(assignment => assignment.manholeId === task.code)
                 );
 
                 if (!userTasks.length) {
@@ -402,10 +401,8 @@ const AdminDashboard = () => {
 
     const handleEditUser = async (data) => {
         try {
-            const updatedUsers = users.map(user =>
-                user._id === currentUser._id ? { ...user, ...data } : user
-            );
-            setUsers(updatedUsers);
+
+            updateUser(currentUser._id, data)
             setIsEditDialogOpen(false);
         } catch (error) {
             console.error("Error updating user:", error);
@@ -414,8 +411,7 @@ const AdminDashboard = () => {
 
     const handleDeleteUser = async () => {
         try {
-            const updatedUsers = users.filter(user => user._id !== userToDelete._id);
-            setUsers(updatedUsers);
+            deleteUser(userToDelete._id);
             setIsDeleteDialogOpen(false);
         } catch (error) {
             console.error("Error deleting user:", error);
@@ -424,12 +420,9 @@ const AdminDashboard = () => {
 
     const handleCreateUser = async (data) => {
         try {
-            const newUser = {
-                _id: `user-${Date.now()}`,
-                ...data,
-                assignments: []
-            };
-            setUsers([...users, newUser]);
+            console.log("Creating user with data:", data);
+            // await createUser(data);
+
             setIsCreateUserDialogOpen(false);
             reset();
         } catch (error) {
@@ -750,6 +743,7 @@ const AdminDashboard = () => {
                                     </DialogHeader>
                                     <form onSubmit={handleSubmit(handleCreateUser)}>
                                         <div className="grid gap-4 py-4">
+                                            {/* Full Name */}
                                             <div className="grid grid-cols-4 items-center gap-4">
                                                 <Label htmlFor="fullname" className="text-right">
                                                     Full Name
@@ -765,6 +759,8 @@ const AdminDashboard = () => {
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Email */}
                                             <div className="grid grid-cols-4 items-center gap-4">
                                                 <Label htmlFor="email" className="text-right">
                                                     Email
@@ -774,7 +770,7 @@ const AdminDashboard = () => {
                                                     type="email"
                                                     {...register("email", {
                                                         required: true,
-                                                        pattern: /^\S+@\S+$/i
+                                                        pattern: /^\S+@\S+$/i,
                                                     })}
                                                     className="col-span-3"
                                                 />
@@ -784,57 +780,100 @@ const AdminDashboard = () => {
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Role (Select) */}
                                             <div className="grid grid-cols-4 items-center gap-4">
                                                 <Label htmlFor="role" className="text-right">
                                                     Role
                                                 </Label>
-                                                <Select
-                                                    onValueChange={(value) => reset({ ...reset(), role: value })}
-                                                    {...register("role", { required: true })}
-                                                >
-                                                    <SelectTrigger className="col-span-3">
-                                                        <SelectValue placeholder="Select role" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {Object.keys(roles).map((role) => (
-                                                            <SelectItem key={role} value={role}>
-                                                                {roles[role].label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <Controller
+                                                    control={control}
+                                                    name="role"
+                                                    rules={{ required: true }}
+                                                    render={({ field }) => (
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger className="col-span-3">
+                                                                <SelectValue placeholder="Select role" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {Object.keys(roles).map((role) => (
+                                                                    <SelectItem key={role} value={role}>
+                                                                        {roles[role].label}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
+                                                />
                                                 {errors.role && (
                                                     <span className="col-span-4 text-right text-sm text-red-500">
                                                         Role is required
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Status (Select) */}
                                             <div className="grid grid-cols-4 items-center gap-4">
                                                 <Label htmlFor="status" className="text-right">
                                                     Status
                                                 </Label>
-                                                <Select
-                                                    onValueChange={(value) => reset({ ...reset(), status: value })}
-                                                    {...register("status", { required: true })}
-                                                >
-                                                    <SelectTrigger className="col-span-3">
-                                                        <SelectValue placeholder="Select status" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {Object.keys(userStatuses).map((status) => (
-                                                            <SelectItem key={status} value={status}>
-                                                                {userStatuses[status].label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <Controller
+                                                    control={control}
+                                                    name="status"
+                                                    rules={{ required: true }}
+                                                    render={({ field }) => (
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger className="col-span-3">
+                                                                <SelectValue placeholder="Select status" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {Object.keys(userStatuses).map((status) => (
+                                                                    <SelectItem key={status} value={status}>
+                                                                        {userStatuses[status].label}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
+                                                />
                                                 {errors.status && (
                                                     <span className="col-span-4 text-right text-sm text-red-500">
                                                         Status is required
                                                     </span>
                                                 )}
                                             </div>
+                                            {/* Task Assigned */}
+                                            <div className="grid grid-cols-4 items-center gap-4">
+                                                <Label htmlFor="task" className="text-right">
+                                                    Task Assigned
+                                                </Label>
+                                                <Controller
+                                                    name="task"
+                                                    control={control}
+                                                    rules={{ required: true }}
+                                                    render={({ field }) => (
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger className="col-span-3">
+                                                                <SelectValue placeholder="Select task" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {task?.map((t) => (
+                                                                    <SelectItem key={t._id} value={t._id}>
+                                                                        {t.code}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
+                                                />
+                                                {errors.task && (
+                                                    <span className="col-span-4 text-right text-sm text-red-500">
+                                                        Task is required
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
+
                                         <DialogFooter>
                                             <Button type="submit">Create User</Button>
                                         </DialogFooter>
@@ -987,17 +1026,24 @@ const AdminDashboard = () => {
                             {currentUser && (
                                 <form onSubmit={handleSubmit(handleEditUser)}>
                                     <div className="grid gap-4 py-4">
+                                        {/* Full Name */}
                                         <div className="grid grid-cols-4 items-center gap-4">
                                             <Label htmlFor="fullname" className="text-right">
                                                 Full Name
                                             </Label>
                                             <Input
                                                 id="fullname"
-                                                defaultValue={currentUser.fullname}
                                                 {...register("fullname", { required: true })}
                                                 className="col-span-3"
                                             />
+                                            {errors.fullname && (
+                                                <span className="col-span-4 text-right text-sm text-red-500">
+                                                    Full name is required
+                                                </span>
+                                            )}
                                         </div>
+
+                                        {/* Email */}
                                         <div className="grid grid-cols-4 items-center gap-4">
                                             <Label htmlFor="email" className="text-right">
                                                 Email
@@ -1005,57 +1051,114 @@ const AdminDashboard = () => {
                                             <Input
                                                 id="email"
                                                 type="email"
-                                                defaultValue={currentUser.email}
                                                 {...register("email", {
                                                     required: true,
-                                                    pattern: /^\S+@\S+$/i
+                                                    pattern: /^\S+@\S+$/i,
                                                 })}
                                                 className="col-span-3"
                                             />
+                                            {errors.email && (
+                                                <span className="col-span-4 text-right text-sm text-red-500">
+                                                    Valid email is required
+                                                </span>
+                                            )}
                                         </div>
+
+                                        {/* Role */}
                                         <div className="grid grid-cols-4 items-center gap-4">
                                             <Label htmlFor="role" className="text-right">
                                                 Role
                                             </Label>
-                                            <Select
-                                                defaultValue={currentUser.role}
-                                                onValueChange={(value) => reset({ ...reset(), role: value })}
-                                                {...register("role", { required: true })}
-                                            >
-                                                <SelectTrigger className="col-span-3">
-                                                    <SelectValue placeholder="Select role" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Object.keys(roles).map((role) => (
-                                                        <SelectItem key={role} value={role}>
-                                                            {roles[role].label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                            <Controller
+                                                name="role"
+                                                control={control}
+                                                rules={{ required: true }}
+                                                render={({ field }) => (
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger className="col-span-3">
+                                                            <SelectValue placeholder="Select role" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Object.keys(roles).map((role) => (
+                                                                <SelectItem key={role} value={role}>
+                                                                    {roles[role].label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            />
+                                            {errors.role && (
+                                                <span className="col-span-4 text-right text-sm text-red-500">
+                                                    Role is required
+                                                </span>
+                                            )}
                                         </div>
+
+                                        {/* Status */}
                                         <div className="grid grid-cols-4 items-center gap-4">
                                             <Label htmlFor="status" className="text-right">
                                                 Status
                                             </Label>
-                                            <Select
-                                                defaultValue={currentUser.status}
-                                                onValueChange={(value) => reset({ ...reset(), status: value })}
-                                                {...register("status", { required: true })}
-                                            >
-                                                <SelectTrigger className="col-span-3">
-                                                    <SelectValue placeholder="Select status" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Object.keys(userStatuses).map((status) => (
-                                                        <SelectItem key={status} value={status}>
-                                                            {userStatuses[status].label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                            <Controller
+                                                name="status"
+                                                control={control}
+                                                rules={{ required: true }}
+                                                render={({ field }) => (
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger className="col-span-3">
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Object.keys(userStatuses).map((status) => (
+                                                                <SelectItem key={status} value={status}>
+                                                                    {userStatuses[status].label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            />
+                                            {errors.status && (
+                                                <span className="col-span-4 text-right text-sm text-red-500">
+                                                    Status is required
+                                                </span>
+                                            )}
                                         </div>
+                                        {/* Task Assigned */}
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                            <Label htmlFor="task" className="text-right">
+                                                Task Assigned
+                                            </Label>
+                                            <Controller
+                                                name="task"
+                                                control={control}
+                                                rules={{ required: true }}
+                                                render={({ field }) => (
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger className="col-span-3">
+                                                            <SelectValue placeholder="Select task" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {task?.map((t) => (
+                                                                <SelectItem key={t._id} value={t.code}>
+                                                                    {t.code}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            />
+                                            {errors.task && (
+                                                <span className="col-span-4 text-right text-sm text-red-500">
+                                                    Task is required
+                                                </span>
+                                            )}
+                                        </div>
+
+
                                     </div>
+
                                     <DialogFooter>
                                         <Button type="submit">Save Changes</Button>
                                     </DialogFooter>
