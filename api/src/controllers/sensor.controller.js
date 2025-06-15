@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
-import SensorReading from '../models/sensor.model.js';
-import Manhole from '../models/manhole.model.js';
-import { checkThresholds, determineStatus } from '../helpers/checkThreshold.js';
+import mongoose from "mongoose";
+import SensorReading from "../models/sensor.model.js";
+import Manhole from "../models/manhole.model.js";
+import { checkThresholds, determineStatus } from "../helpers/checkThreshold.js";
+import alertModel from "../models/alert.model.js";
 
 // 1. Create New Sensor Reading
 // const createReading = async (req, res) => {
@@ -93,11 +94,12 @@ import { checkThresholds, determineStatus } from '../helpers/checkThreshold.js';
 //     });
 //   }
 // };
+
 const createReading = async (data) => {
   try {
-    // Destructure with defaults
     const {
       manholeId,
+      sensorId, // 🟡 Required in your alert schema
       sewageLevel,
       flowRate = 455,
       methaneLevel = 0,
@@ -106,16 +108,15 @@ const createReading = async (data) => {
       batteryLevel = 100,
     } = data;
 
-    // Validate required fields
-    if (!manholeId || sewageLevel == null || flowRate == null) {
-      throw new Error('Manhole ID, sewageLevel, and flowRate are required');
+    if (!manholeId || !sensorId || sewageLevel == null || flowRate == null) {
+      throw new Error(
+        "manholeId, sensorId, sewageLevel, and flowRate are required"
+      );
     }
 
-    // Fetch manhole
     const manhole = await Manhole.findOne({ id: manholeId });
     if (!manhole) throw new Error(`Manhole ${manholeId} not found`);
 
-    // Default thresholds
     const thresholds = {
       maxDistance: 100,
       maxGas: 500,
@@ -124,18 +125,71 @@ const createReading = async (data) => {
       minBattery: 20,
     };
 
-    // Sensor values
-    const sensors = { sewageLevel, flowRate, methaneLevel, temperature, humidity, batteryLevel };
-
-    // Alert evaluation
+    const sensors = {
+      sewageLevel,
+      flowRate,
+      methaneLevel,
+      temperature,
+      humidity,
+      batteryLevel,
+    };
     const alertTypes = [];
-    if (sewageLevel > thresholds.maxDistance) alertTypes.push("high_sewage_level");
-    if (methaneLevel > thresholds.maxGas) alertTypes.push("high_methane");
-    if (flowRate < thresholds.minFlow) alertTypes.push("low_flow");
-    if (temperature > thresholds.maxTemp) alertTypes.push("high_temperature");
-    if (batteryLevel < thresholds.minBattery) alertTypes.push("low_battery");
 
-    // Determine status based on alerts
+    const alertConfigs = [
+      {
+        condition: sewageLevel > thresholds.maxDistance,
+        type: "high_sewage_level",
+        level: "critical",
+        description: "Sewage level exceeded safe threshold.",
+      },
+      {
+        condition: methaneLevel > thresholds.maxGas,
+        type: "high_methane",
+        level: "critical",
+        description: "Methane gas level is dangerously high.",
+      },
+      {
+        condition: flowRate < thresholds.minFlow,
+        type: "low_flow",
+        level: "warning",
+        description: "Sewage flow rate is unusually low.",
+      },
+      {
+        condition: temperature > thresholds.maxTemp,
+        type: "high_temperature",
+        level: "warning",
+        description: "Sensor temperature exceeds limit.",
+      },
+      {
+        condition: batteryLevel < thresholds.minBattery,
+        type: "low_battery",
+        level: "warning",
+        description: "Sensor battery is running low.",
+      },
+    ];
+
+    for (const config of alertConfigs) {
+      if (config.condition) {
+        alertTypes.push(config.type);
+
+        // 🔔 Create and save alert
+        const alert = new alertModel({
+          manholeId,
+          sensorId,
+          alertType: config.type,
+          alertLevel: config.level,
+          description: config.description,
+          status: "active",
+          assignedWorkerId: null,
+          actions: [],
+          resolutionNotes: "",
+        });
+
+        await alert.save();
+      }
+    }
+
+    // Determine manhole status
     let status = "functional";
     if (alertTypes.includes("high_sewage_level")) {
       status = "overflowing";
@@ -145,9 +199,9 @@ const createReading = async (data) => {
       status = "warning";
     }
 
-    // Create and save reading
     const newReading = new SensorReading({
       manholeId,
+      sensorId,
       sensors,
       thresholds,
       alertTypes: alertTypes.length ? alertTypes : ["none"],
@@ -156,7 +210,6 @@ const createReading = async (data) => {
 
     await newReading.save();
 
-    // Update manhole status and inspection date
     await Manhole.findOneAndUpdate(
       { id: manholeId },
       {
@@ -165,7 +218,6 @@ const createReading = async (data) => {
       }
     );
 
-    // Return success response
     return {
       success: true,
       data: {
@@ -187,7 +239,7 @@ const createReading = async (data) => {
 const getReadingsByManhole = async (req, res) => {
   try {
     const { manholeId } = req.params;
-    const { limit = 100, timeRange = '24', status } = req.query;
+    const { limit = 100, timeRange = "24", status } = req.query;
 
     // Build query
     const query = { manholeId };
@@ -212,10 +264,10 @@ const getReadingsByManhole = async (req, res) => {
       data: readings,
     });
   } catch (error) {
-    console.error('Get readings error:', error);
+    console.error("Get readings error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve readings',
+      message: "Failed to retrieve readings",
     });
   }
 };
@@ -232,14 +284,14 @@ const getCriticalReadings = async (req, res) => {
     if (isNaN(hoursNum) || hoursNum <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Hours must be a positive number',
+        message: "Hours must be a positive number",
       });
     }
 
     if (isNaN(limitNum) || limitNum <= 0 || limitNum > 1000) {
       return res.status(400).json({
         success: false,
-        message: 'Limit must be a positive number and not exceed 1000',
+        message: "Limit must be a positive number and not exceed 1000",
       });
     }
 
@@ -247,26 +299,26 @@ const getCriticalReadings = async (req, res) => {
 
     // Check if critical readings exist within the time frame
     const criticalExist = await SensorReading.exists({
-      status: 'critical',
+      status: "critical",
       timestamp: { $gte: timeThreshold },
     });
 
     if (!criticalExist) {
       return res.status(404).json({
         success: false,
-        message: 'No critical alerts found in the specified time frame',
+        message: "No critical alerts found in the specified time frame",
       });
     }
 
     const readings = await SensorReading.find({
-      status: 'critical',
+      status: "critical",
       timestamp: { $gte: timeThreshold },
     })
       .sort({ timestamp: -1 })
       .limit(limitNum)
       .populate({
-        path: 'manholeId',
-        select: 'code location zone',
+        path: "manholeId",
+        select: "code location zone",
         model: Manhole,
       })
       .lean();
@@ -281,11 +333,11 @@ const getCriticalReadings = async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error('Get critical readings error:', error);
+    console.error("Get critical readings error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve critical alerts',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      message: "Failed to retrieve critical alerts",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -293,14 +345,19 @@ const getCriticalReadings = async (req, res) => {
 // 4. Sensor Data Analytics (Improved)
 const getSensorAnalytics = async (req, res) => {
   try {
-    const { manholeId, metric, period = '24h', groupBy } = req.query;
+    const { manholeId, metric, period = "24h", groupBy } = req.query;
 
     // Validate required parameters
-    if (!metric || !['sewageLevel', 'methaneLevel', 'flowRate', 'temperature'].includes(metric)) {
+    if (
+      !metric ||
+      !["sewageLevel", "methaneLevel", "flowRate", "temperature"].includes(
+        metric
+      )
+    ) {
       return res.status(400).json({
         success: false,
         message:
-          'Valid metric parameter is required. Supported metrics: sewageLevel, methaneLevel, flowRate, temperature',
+          "Valid metric parameter is required. Supported metrics: sewageLevel, methaneLevel, flowRate, temperature",
       });
     }
 
@@ -319,12 +376,12 @@ const getSensorAnalytics = async (req, res) => {
     if (isNaN(numericPeriod) || numericPeriod <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'Period value must be a positive number',
+        message: "Period value must be a positive number",
       });
     }
 
     // Calculate time range with max limit (30 days)
-    const maxPeriod = periodUnit === 'h' ? 720 : 30; // Max 720 hours (30 days) or 30 days
+    const maxPeriod = periodUnit === "h" ? 720 : 30; // Max 720 hours (30 days) or 30 days
     if (numericPeriod > maxPeriod) {
       return res.status(400).json({
         success: false,
@@ -333,7 +390,9 @@ const getSensorAnalytics = async (req, res) => {
     }
 
     const range =
-      periodUnit === 'h' ? numericPeriod * 60 * 60 * 1000 : numericPeriod * 24 * 60 * 60 * 1000;
+      periodUnit === "h"
+        ? numericPeriod * 60 * 60 * 1000
+        : numericPeriod * 24 * 60 * 60 * 1000;
 
     const timeThreshold = new Date(Date.now() - range);
 
@@ -343,7 +402,7 @@ const getSensorAnalytics = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(manholeId)) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid manholeId format',
+          message: "Invalid manholeId format",
         });
       }
       manholeObjectId = new mongoose.Types.ObjectId(manholeId);
@@ -359,8 +418,8 @@ const getSensorAnalytics = async (req, res) => {
     // Determine optimal grouping interval based on period
     let interval = groupBy;
     if (!groupBy) {
-      interval = range <= 24 * 60 * 60 * 1000 ? 'hour' : 'day';
-    } else if (!['hour', 'day'].includes(groupBy)) {
+      interval = range <= 24 * 60 * 60 * 1000 ? "hour" : "day";
+    } else if (!["hour", "day"].includes(groupBy)) {
       return res.status(400).json({
         success: false,
         message: 'groupBy must be either "hour" or "day"',
@@ -373,35 +432,35 @@ const getSensorAnalytics = async (req, res) => {
       {
         $group: {
           _id: {
-            ...(interval === 'hour' && {
-              hour: { $hour: '$timestamp' },
-              day: { $dayOfMonth: '$timestamp' },
-              month: { $month: '$timestamp' },
-              year: { $year: '$timestamp' },
+            ...(interval === "hour" && {
+              hour: { $hour: "$timestamp" },
+              day: { $dayOfMonth: "$timestamp" },
+              month: { $month: "$timestamp" },
+              year: { $year: "$timestamp" },
             }),
-            ...(interval === 'day' && {
-              day: { $dayOfMonth: '$timestamp' },
-              month: { $month: '$timestamp' },
-              year: { $year: '$timestamp' },
+            ...(interval === "day" && {
+              day: { $dayOfMonth: "$timestamp" },
+              month: { $month: "$timestamp" },
+              year: { $year: "$timestamp" },
             }),
-            ...(manholeId && { manholeId: '$manholeId' }),
+            ...(manholeId && { manholeId: "$manholeId" }),
           },
           avgValue: { $avg: `$sensors.${metric}` },
           maxValue: { $max: `$sensors.${metric}` },
           minValue: { $min: `$sensors.${metric}` },
           count: { $sum: 1 },
-          firstTimestamp: { $min: '$timestamp' }, // For proper sorting
+          firstTimestamp: { $min: "$timestamp" }, // For proper sorting
         },
       },
       { $sort: { firstTimestamp: 1 } },
       {
         $project: {
           _id: 0,
-          timeGroup: '$_id',
+          timeGroup: "$_id",
           stats: {
-            avg: { $round: ['$avgValue', 2] },
-            max: { $round: ['$maxValue', 2] },
-            min: { $round: ['$minValue', 2] },
+            avg: { $round: ["$avgValue", 2] },
+            max: { $round: ["$maxValue", 2] },
+            min: { $round: ["$minValue", 2] },
             count: 1,
           },
         },
@@ -412,7 +471,7 @@ const getSensorAnalytics = async (req, res) => {
     if (results.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No data found for the specified parameters',
+        message: "No data found for the specified parameters",
       });
     }
 
@@ -430,11 +489,11 @@ const getSensorAnalytics = async (req, res) => {
       data: results,
     });
   } catch (error) {
-    console.error('Sensor analytics error:', error);
+    console.error("Sensor analytics error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to generate analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      message: "Failed to generate analytics",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -444,30 +503,37 @@ const getAllSensorReadings = async (req, res) => {
     const readings = await SensorReading.find().sort({ timestamp: -1 }).lean();
 
     const formattedManholes = readings.map((reading) => {
-      const { manholeId, name, location, timestamp, sensors, thresholds, lastCalibration } =
-        reading;
+      const {
+        manholeId,
+        name,
+        location,
+        timestamp,
+        sensors,
+        thresholds,
+        lastCalibration,
+      } = reading;
 
       // Determine alert types
       const alertTypes = [];
 
       if (sensors.sewageLevel > thresholds.maxDistance) {
-        alertTypes.push('sewage_high');
+        alertTypes.push("sewage_high");
       }
 
       if (sensors.methaneLevel > thresholds.maxGas) {
-        alertTypes.push('gas_leak');
+        alertTypes.push("gas_leak");
       }
 
       if (sensors.flowRate < thresholds.minFlow) {
-        alertTypes.push('blockage');
+        alertTypes.push("blockage");
       }
 
       if (sensors.batteryLevel < 70) {
-        alertTypes.push('low_battery');
+        alertTypes.push("low_battery");
       }
 
       // Determine status based on alerts
-      const status = alertTypes.length > 0 ? 'critical' : 'normal';
+      const status = alertTypes.length > 0 ? "critical" : "normal";
 
       return {
         manholeId,
@@ -488,10 +554,10 @@ const getAllSensorReadings = async (req, res) => {
       manholes: formattedManholes,
     });
   } catch (error) {
-    console.error('Get all sensor readings error:', error);
+    console.error("Get all sensor readings error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve all sensor readings',
+      message: "Failed to retrieve all sensor readings",
     });
   }
 };
@@ -499,7 +565,7 @@ const getAllSensorReadings = async (req, res) => {
 const getSensorsTrend = async (req, res) => {
   try {
     // Use static mock manholeIds for now since the mock data uses '1', '2', etc.
-    const manholeIds = ['1', '2', '3', '4', '5', '6'];
+    const manholeIds = ["1", "2", "3", "4", "5", "6"];
 
     const trends = await SensorReading.aggregate([
       {
@@ -510,30 +576,30 @@ const getSensorsTrend = async (req, res) => {
       {
         $group: {
           _id: {
-            manholeId: '$manholeId',
-            hour: { $hour: '$timestamp' },
+            manholeId: "$manholeId",
+            hour: { $hour: "$timestamp" },
           },
-          avgWaterLevel: { $avg: '$sensors.sewageLevel' },
-          avgGasLevel: { $avg: '$sensors.methaneLevel' },
-          avgFlowRate: { $avg: '$sensors.flowRate' },
-          avgTemperature: { $avg: '$sensors.temperature' },
+          avgWaterLevel: { $avg: "$sensors.sewageLevel" },
+          avgGasLevel: { $avg: "$sensors.methaneLevel" },
+          avgFlowRate: { $avg: "$sensors.flowRate" },
+          avgTemperature: { $avg: "$sensors.temperature" },
         },
       },
       {
         $project: {
           _id: 0,
-          manholeId: '$_id.manholeId',
+          manholeId: "$_id.manholeId",
           hour: {
             $concat: [
-              { $cond: [{ $lt: ['$_id.hour', 10] }, '0', ''] },
-              { $toString: '$_id.hour' },
-              ':00',
+              { $cond: [{ $lt: ["$_id.hour", 10] }, "0", ""] },
+              { $toString: "$_id.hour" },
+              ":00",
             ],
           },
-          waterLevel: { $round: ['$avgWaterLevel', 2] },
-          gasLevel: { $round: ['$avgGasLevel', 2] },
-          flowRate: { $round: ['$avgFlowRate', 2] },
-          temperature: { $round: ['$avgTemperature', 2] },
+          waterLevel: { $round: ["$avgWaterLevel", 2] },
+          gasLevel: { $round: ["$avgGasLevel", 2] },
+          flowRate: { $round: ["$avgFlowRate", 2] },
+          temperature: { $round: ["$avgTemperature", 2] },
         },
       },
       {
@@ -546,8 +612,8 @@ const getSensorsTrend = async (req, res) => {
 
     res.json({ success: true, sensorTrends: trends });
   } catch (error) {
-    console.error('Error fetching trends:', error);
-    res.status(500).json({ message: 'Error fetching trends data' });
+    console.error("Error fetching trends:", error);
+    res.status(500).json({ message: "Error fetching trends data" });
   }
 };
 
