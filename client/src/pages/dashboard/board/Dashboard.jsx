@@ -627,7 +627,7 @@ const Dashboard = () => {
                 />
                 <XAxis dataKey="hour" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
-                f
+
                 <Legend />
                 <Line
                   type="monotone"

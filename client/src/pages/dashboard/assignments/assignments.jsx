@@ -134,7 +134,6 @@ const AdminDashboard = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
     const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
-
     const { allUsers, getAllUsers, userOverview, fetchUserOverview, user, deleteUser, createUser, updateUser } = useUserStore();
     const { fetchTasksOverviewWithList, task } = useTaskStore();
     const { fetchAlerts, alerts } = useAlertStore();

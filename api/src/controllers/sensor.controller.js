@@ -565,7 +565,7 @@ const getAllSensorReadings = async (req, res) => {
 const getSensorsTrend = async (req, res) => {
   try {
     // Use static mock manholeIds for now since the mock data uses '1', '2', etc.
-    const manholeIds = ["1", "2", "3", "4", "5", "6"];
+    const manholeIds = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
     const trends = await SensorReading.aggregate([
       {
