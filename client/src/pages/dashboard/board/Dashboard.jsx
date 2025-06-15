@@ -29,6 +29,7 @@ const Dashboard = () => {
   const { manholes, fetchManholes, sensorTrends, fetchSensorTrends } = useSensorsStore();
   const { maintenanceLogs, fetchMaintenanceLogs } = useMaintenanceStore();
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
+  const [showCriticalManholes, setShowCriticalManholes] = useState(false);
 
 
 
@@ -477,7 +478,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
+        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit cursor-pointer " onClick={() => setShowCriticalManholes(!showCriticalManholes)}>
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -558,41 +559,50 @@ const Dashboard = () => {
       </div>
 
       {/* Map Visualization */}
-      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
+      <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit ">
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">
             Manhole Locations
           </CardTitle>
         </CardHeader>
+
+        {/* Critical Manholes */}
+        {
+          showCriticalManholes && (
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Critical Manholes
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.values(
+                  dashboardData.manholes.reduce((acc, curr) => {
+                    const id = curr.manholeId;
+
+                    // Only consider critical status
+                    if (curr.status === "critical") {
+                      if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
+                        acc[id] = curr; // keep the most recent critical
+                      }
+                    }
+
+                    return acc;
+                  }, {})
+                ).map(manhole => (
+                  <ManholeStatusCard key={manhole._id} manhole={manhole} />
+                ))}
+
+              </div>
+            </div>
+          )
+        }
+
+
         <CardContent>
           <SewageSystemMap manholes={dashboardData.manholes} />
         </CardContent>
       </Card>
-      {/* Critical Manholes */}
-      {/* <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Critical Manholes
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.values(
-            dashboardData.manholes.reduce((acc, curr) => {
-              const id = curr.manholeId;
 
-              // Only consider critical status
-              if (curr.status === "critical") {
-                if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
-                  acc[id] = curr; // keep the most recent critical
-                }
-              }
 
-              return acc;
-            }, {})
-          ).map(manhole => (
-            <ManholeStatusCard key={manhole._id} manhole={manhole} />
-          ))}
-
-        </div>
-      </div> */}
 
 
 

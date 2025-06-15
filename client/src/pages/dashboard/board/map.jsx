@@ -848,7 +848,52 @@ const SewageSystemMap = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen relative">
+      {/* Legend */}
+      <div className="  w-[220px] border border-white p-4 absolute left-0 top-0  shadow-lg z-50 rounded-md bg-background">
+        <h3 className="text-lg font-bold mb-2">Legend</h3>
+
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+          <span>Functional</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+          <span>Critical</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+          <span>Overflowing</span>
+        </div>
+        <div className="flex items-center my-2">
+          <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+          <span>Under Maintenance</span>
+        </div>
+
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-blue-500 mr-2"></div>
+            <span>Clear Pipe</span>
+          </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-red-500 mr-2"></div>
+            <span>Blocked Pipe</span>
+          </div>
+          <div className="flex items-center my-1">
+            <div className="w-4 h-1 bg-green-500 mr-2"></div>
+            <span>Bidirectional Pipe</span>
+          </div>
+        </div>
+
+        <div className="border-t my-2 pt-2">
+          <div className="flex items-center my-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
+              <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
+            </svg>
+            <span>Flow Direction</span>
+          </div>
+        </div>
+      </div>
       {/* Map container */}
       <div ref={mapContainer} className="flex-1 relative">
         {/* Drawing mode controls */}
@@ -1133,51 +1178,7 @@ const SewageSystemMap = () => {
         )
       }
 
-      {/* Legend */}
-      <div className="w-[220px] border border-white p-4 absolute left-0 top-[650px] shadow-lg z-50 rounded-md bg-background">
-        <h3 className="text-lg font-bold mb-2">Legend</h3>
 
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
-          <span>Functional</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
-          <span>Critical</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
-          <span>Overflowing</span>
-        </div>
-        <div className="flex items-center my-2">
-          <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
-          <span>Under Maintenance</span>
-        </div>
-
-        <div className="border-t my-2 pt-2">
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-blue-500 mr-2"></div>
-            <span>Clear Pipe</span>
-          </div>
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-red-500 mr-2"></div>
-            <span>Blocked Pipe</span>
-          </div>
-          <div className="flex items-center my-1">
-            <div className="w-4 h-1 bg-green-500 mr-2"></div>
-            <span>Bidirectional Pipe</span>
-          </div>
-        </div>
-
-        <div className="border-t my-2 pt-2">
-          <div className="flex items-center my-1">
-            <svg width="16" height="16" viewBox="0 0 24 24" className="mr-2">
-              <path d="M5 12l14 0m0 0l-7-7m7 7l-7 7" stroke="blue" strokeWidth="2" fill="none" />
-            </svg>
-            <span>Flow Direction</span>
-          </div>
-        </div>
-      </div>
     </div >
     // </div >
   );
