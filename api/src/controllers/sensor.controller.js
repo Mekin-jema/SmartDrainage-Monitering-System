@@ -27,7 +27,7 @@ const createReading = async (data) => {
     // Destructure and validate input
     const {
       manholeId,
-      sensorId, // 🟡 Required in your alert schema
+      // sensorId, // 🟡 Required in your alert schema
       sewageLevel,
       flowRate = 0,
       methaneLevel = 0,
