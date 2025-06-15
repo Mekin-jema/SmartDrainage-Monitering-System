@@ -104,8 +104,8 @@ const router = createBrowserRouter([
         <TeamSection />
         {/* <CommunitySection /> */}
         {/* <SponsorsSection /> */}
-        <FAQSection />
-        <ContactSection />
+        {/* <FAQSection /> */}
+        {/* <ContactSection /> */}
         <FooterSection />
       </div>
     ),

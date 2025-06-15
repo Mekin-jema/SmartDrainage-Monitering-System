@@ -30,8 +30,8 @@ const routeList = [
   // { href: "#pricing", label: "Pricing" },
   // { href: "#testimonials", label: "Testimonials" },
   { href: "#team", label: "About" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
+  // { href: "#faq", label: "FAQ" },
+  // { href: "#contact", label: "Contact" },
 ];
 
 const featureList = [

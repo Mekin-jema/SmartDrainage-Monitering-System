@@ -57,7 +57,7 @@ const columns = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    accessorKey: "lastCalibration",
+    accessorKey: "timestamp",
     cell: (info) => {
       const rawValue = info.getValue();
       const date = new Date(rawValue);

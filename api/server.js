@@ -82,18 +82,24 @@ mqttClient.on("connect", () => {
 mqttClient.on("message", async (topic, message) => {
   try {
     if (topic === (process.env.MQTT_TOPIC || "drainage/sensor-data")) {
-      const data = {
+      let data = {
         ...JSON.parse(message.toString()),
       };
-
+    console.log(data)
       // Update cache
       sensorDataCache.push(data);
       if (sensorDataCache.length > MAX_CACHE_SIZE) {
         sensorDataCache.shift();
       }
+        const sewageLevel=data.manhole_level
+
+        const updatedData={
+          ...data,
+          sewageLevel,
+        }
 
       // Broadcast to all clients
-      await createReading(data); // Save to DB
+      await createReading(updatedData); // Save to DB
       // const result = await getAllSensorReadings();
       const result = await getLatestReading();
       io.emit("sensorData", result);

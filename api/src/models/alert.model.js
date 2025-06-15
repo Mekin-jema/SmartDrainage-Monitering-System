@@ -1,13 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const alertSchema = new mongoose.Schema(
   {
     manholeId: {
       type: String,
-      ref: 'Manhole',
+      ref: "Manhole",
       required: true,
     },
-    sensorId: mongoose.Schema.Types.ObjectId,
+    location: {  // Simply added this field
+      type: {
+        type: String,
+        default: "Point"
+      },
+      coordinates: [Number]  // [longitude, latitude]
+    },
     alertType: String,
     alertLevel: String,
     description: String,
@@ -26,4 +32,4 @@ const alertSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Alert', alertSchema);
+export default mongoose.model("Alert", alertSchema);

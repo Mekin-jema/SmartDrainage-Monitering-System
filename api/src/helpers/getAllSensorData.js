@@ -5,11 +5,20 @@ const getAllSensorReadings = async () => {
     const readings = await SensorReading.find().sort({ timestamp: -1 }).lean();
 
     const formattedManholes = readings.map((reading) => {
-      const { manholeId, name, location, timestamp, sensors, thresholds, lastCalibration } = reading;
+      const {
+        manholeId,
+        name,
+        location,
+        timestamp,
+        sensors,
+        thresholds,
+        lastCalibration,
+        createdAt
+      } = reading;
 
       // Determine alert types
       const alertTypes = [];
-      
+
       if (sensors.sewageLevel > thresholds.maxDistance) {
         alertTypes.push('sewage_high');
       }
@@ -30,7 +39,8 @@ const getAllSensorReadings = async () => {
         manholeId,
         name,
         location,
-        timestamp,
+        timestamp: new Date(timestamp).toISOString(),
+        createdAt: new Date(createdAt).toISOString(),
         sensors,
         thresholds,
         lastCalibration,
@@ -40,6 +50,10 @@ const getAllSensorReadings = async () => {
       };
     });
 
+    // Sort by timestamp (in case formatting affected the order)
+    formattedManholes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+console.log("Formatted Manholes:", formattedManholes);
     return {
       success: true,
       data: formattedManholes,
@@ -55,6 +69,8 @@ const getAllSensorReadings = async () => {
     };
   }
 };
+
+
 
 // // Example usage:
 // const fetchAndProcessReadings = async () => {
