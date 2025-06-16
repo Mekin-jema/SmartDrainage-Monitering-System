@@ -109,9 +109,9 @@ const Dashboard = () => {
         console.log(`Sensor data missing for manhole ${manhole}`);
       } else {
         const percentage = (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100;
-        if (percentage > 90) {
+        if (percentage < 10) {
           stats.waterLevel.critical++;
-        } else if (percentage > 75) {
+        } else if (percentage < 25) {
           stats.waterLevel.warning++;
         } else {
           stats.waterLevel.normal++;
@@ -194,6 +194,7 @@ const Dashboard = () => {
     const getStatusColor = () => {
       switch (manhole.status) {
         case "critical": return COLORS.danger;
+        case "overflowing": return COLORS.danger;
         case "warning": return COLORS.warning;
         default: return COLORS.success;
       }

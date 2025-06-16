@@ -307,16 +307,16 @@ const getSystemStatus = async (req, res) => {
     const monitoredManholes = allManholes.filter((m) => m.status === 'functional').length;
     const criticalIssues = allManholes.filter(
       (m) =>
-        ['damaged', 'overflowing'].includes(m.status) ||
-        m.overflow_level === 'risk' ||
-        m.cover_status === 'open'
+        ['critical', 'overflowing'].includes(m.status) ||
+        m.status === 'critical' ||
+        m.status === 'overflowing'
     ).length;
 
     const maintenanceOngoing = allManholes.filter((m) => m.status === 'under_maintenance').length;
 
     // Calculate system health percentage
     const healthyManholes = allManholes.filter(
-      (m) => m.status === 'functional' && m.overflow_level === 'good' && m.cover_status === 'closed'
+      (m) => m.status === 'normal' 
     ).length;
 
     const systemHealth = Math.round((healthyManholes / totalManholes) * 100);

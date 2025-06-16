@@ -28,7 +28,6 @@ const manholeSchema = new mongoose.Schema({
   status: String,
   lastInspection: String, // ISO date string like "2023-06-01"
   cover_status: String,
-  overflow_level: String,
   connections: [String], // other manhole ids
 });
 
