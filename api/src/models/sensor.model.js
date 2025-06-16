@@ -16,6 +16,10 @@ const sensorReadingSchema = new mongoose.Schema(
       humidity: Number,
       batteryLevel: Number,
     },
+    timestamp:{
+      type:Date,
+      default:new Date(),
+    },
     thresholds: {
       maxDistance: Number,
       maxGas: Number,
@@ -24,7 +28,7 @@ const sensorReadingSchema = new mongoose.Schema(
     lastCalibration: Date,
     alertTypes: [String],
   },
-  { timestamps: true }
+ 
 );
 
 export default mongoose.model('SensorReading', sensorReadingSchema);

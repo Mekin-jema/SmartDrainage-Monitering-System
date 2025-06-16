@@ -14,7 +14,7 @@ import { getIO } from '../helpers/socket.service.js';
 const checkThresholds = (value, thresholdConfig) => {
   const { MAX, MIN, ALERT, LEVEL } = thresholdConfig;
   return {
-    isExceeded: (MAX !== undefined && value > MAX) || (MIN !== undefined && value < MIN),
+    isExceeded: (MAX !== undefined && value < MAX) || (MIN !== undefined && value < MIN),
     alertType: ALERT,
     alertLevel: LEVEL
   };

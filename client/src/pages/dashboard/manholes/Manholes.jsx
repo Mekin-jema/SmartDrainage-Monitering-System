@@ -91,40 +91,40 @@ const columns = [
       );
     },
   },
-  {
-    header: "Cover",
-    accessorKey: "cover_status",
-    cell: ({ row }) => (
-      <Badge
-        variant={row.original.cover_status === "closed" ? "secondary" : "outline"}
-        className={row.original.cover_status === "open" ? "border-rose-200 text-rose-800 dark:border-rose-800 dark:text-rose-200" : ""}
-      >
-        {row.original.cover_status === "closed" ? "Secured" : "Unsecured"}
-      </Badge>
-    ),
-  },
-  {
-    header: "Overflow",
-    accessorKey: "overflow_level",
-    cell: ({ row }) => {
-      const level = row.getValue("overflow_level");
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <div className={`flex items-center px-3 py-1 rounded-full ${overflowColors[row.original.overflow_level]}`}>
-                <Gauge className="h-3 w-3 mr-2" />
-                <span className="text-xs font-medium capitalize">{level}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Water level status</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
+  // {
+  //   header: "Cover",
+  //   accessorKey: "cover_status",
+  //   cell: ({ row }) => (
+  //     <Badge
+  //       variant={row.original.cover_status === "closed" ? "secondary" : "outline"}
+  //       className={row.original.cover_status === "open" ? "border-rose-200 text-rose-800 dark:border-rose-800 dark:text-rose-200" : ""}
+  //     >
+  //       {row.original.cover_status === "closed" ? "Secured" : "Unsecured"}
+  //     </Badge>
+  //   ),
+  // },
+  // {
+  //   header: "Overflow",
+  //   accessorKey: "overflow_level",
+  //   cell: ({ row }) => {
+  //     const level = row.getValue("overflow_level");
+  //     return (
+  //       <TooltipProvider>
+  //         <Tooltip>
+  //           <TooltipTrigger>
+  //             <div className={`flex items-center px-3 py-1 rounded-full ${overflowColors[row.original.overflow_level]}`}>
+  //               <Gauge className="h-3 w-3 mr-2" />
+  //               <span className="text-xs font-medium capitalize">{level}</span>
+  //             </div>
+  //           </TooltipTrigger>
+  //           <TooltipContent>
+  //             <p>Water level status</p>
+  //           </TooltipContent>
+  //         </Tooltip>
+  //       </TooltipProvider>
+  //     );
+  //   },
+  // },
   {
     header: "Elevation",
     accessorKey: "elevation",

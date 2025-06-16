@@ -255,6 +255,7 @@ const AlertsTable = () => {
   const { toast } = useToast();
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
 
+  // Fixed: Removed recentAlerts from dependency array to prevent infinite loop
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -276,7 +277,7 @@ const AlertsTable = () => {
     // Set up polling every 30 seconds
     const intervalId = setInterval(loadData, 30000);
     return () => clearInterval(intervalId);
-  }, [recentAlerts]);
+  }, [fetchRecentAlerts, toast]); // Only include stable dependencies
 
   const table = useReactTable({
     data: recentAlerts,

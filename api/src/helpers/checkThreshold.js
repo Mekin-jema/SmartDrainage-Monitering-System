@@ -1,7 +1,7 @@
 // config/thresholds.js
 export const THRESHOLDS = {
   SEWAGE: {
-    MAX: 8, // cm
+    MAX: 10, // cm
     ALERT: "high_sewage_level",
     LEVEL: "critical"
   },
