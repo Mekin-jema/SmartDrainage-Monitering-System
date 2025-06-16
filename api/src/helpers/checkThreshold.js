@@ -6,17 +6,17 @@ export const THRESHOLDS = {
     LEVEL: "critical"
   },
   METHANE: {
-    MAX: 500, // ppm
+    MAX: 5, // ppm
     ALERT: "high_methane",
-    LEVEL: "critical"
+    LEVEL: "me"
   },
   FLOW: {
-    MIN: 5, // m/s
+    MIN: 1, // m/s
     ALERT: "low_flow",
     LEVEL: "warning"
   },
   TEMP: {
-    MAX: 40, // °C
+    MAX: 4, // °C
     ALERT: "high_temperature",
     LEVEL: "warning"
   },

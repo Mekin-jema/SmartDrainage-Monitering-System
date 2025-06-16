@@ -12,8 +12,7 @@ const sensorReadingSchema = new mongoose.Schema(
       sewageLevel: Number,
       methaneLevel: Number,
       flowRate: Number,
-      temperature: Number,
-      humidity: Number,
+      // temperature: Number,
       batteryLevel: Number,
     },
     timestamp:{
@@ -27,6 +26,7 @@ const sensorReadingSchema = new mongoose.Schema(
     },
     lastCalibration: Date,
     alertTypes: [String],
+    status:String, // e.g., 'active', 'inactive', 'maintenance'
   },
  
 );

@@ -65,7 +65,7 @@ const createReading = async (data) => {
       { value: sewageLevel, config: THRESHOLDS.SEWAGE },
       { value: methaneLevel, config: THRESHOLDS.METHANE },
       { value: flowRate, config: THRESHOLDS.FLOW },
-      { value: temperature, config: THRESHOLDS.TEMP },
+      // { value: temperature, config: THRESHOLDS.TEMP },
       { value: batteryLevel, config: THRESHOLDS.BATTERY }
     ];
 
@@ -101,7 +101,7 @@ const createReading = async (data) => {
         sewageLevel,
         flowRate,
         methaneLevel,
-        temperature,
+        // temperature,
         humidity,
         batteryLevel
       },
@@ -436,37 +436,19 @@ const getAllSensorReadings = async (req, res) => {
         sensors,
         thresholds,
         lastCalibration,
-        createdAt
+        status ,alertTypes,
+
       } = reading;
 
-      // Determine alert types
-      const alertTypes = [];
 
-      if (sensors.sewageLevel > thresholds.maxDistance) {
-        alertTypes.push("sewage_high");
-      }
 
-      if (sensors.methaneLevel > thresholds.maxGas) {
-        alertTypes.push("gas_leak");
-      }
-
-      if (sensors.flowRate < thresholds.minFlow) {
-        alertTypes.push("blockage");
-      }
-
-      if (sensors.batteryLevel < 70) {
-        alertTypes.push("low_battery");
-      }
-
-      // Determine status based on alerts
-      const status = alertTypes.length > 0 ? "critical" : "normal";
+console.log("Reading:", timestamp);
 
       return {
         manholeId,
         name,
         location,
-        timestamp: timestamp ? new Date(timestamp).toISOString() : null,
-        createdAt: createdAt ? new Date(createdAt).toISOString() : null,
+        timestamp: timestamp ,
         sensors,
         thresholds,
         lastCalibration,

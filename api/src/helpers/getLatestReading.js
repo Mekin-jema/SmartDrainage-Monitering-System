@@ -1,34 +1,18 @@
 import Sensor from '../models/sensor.model.js';
 
-const getLatestReading = async (limit = 30) => {
+const getLatestReading = async () => {
   try {
     const latestReadings = await Sensor.find()
       .sort({ createdAt: -1 })
-      .limit(limit)
       .lean();
 
 
     const processedReadings = latestReadings.map(reading => {
-      const { manholeId, sensors, thresholds, timestamp } = reading;
+      const { alertTypes,status } = reading;
 
-      // Determine alert types
-      const alertTypes = [];
-      
-      if (sensors.sewageLevel > thresholds.maxDistance) {
-        alertTypes.push('sewage_high');
-      }
-      if (sensors.methaneLevel > thresholds.maxGas) {
-        alertTypes.push('gas_leak');
-      }
-      if (sensors.flowRate < thresholds.minFlow) {
-        alertTypes.push('blockage');
-      }
-      if (sensors.batteryLevel < 70) {
-        alertTypes.push('low_battery');
-      }
 
-      // Determine status
-      const status = alertTypes.length > 0 ? 'critical' : 'normal';
+
+     
 
       return {
         ...reading,
