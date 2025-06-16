@@ -99,11 +99,14 @@ const Dashboard = () => {
       temperature: { normal: 0, warning: 0, critical: 0 } // Added temperature stats
     };
 
+    console.log("Calculating sensor stats for manholes:", dashboardData.manholes);
+
     dashboardData.manholes.forEach(manhole => {
+    
       // Water level analysis
-      if (!manhole.sensors.sewageLevel) {
+      if (manhole.sensors.sewageLevel===undefined || manhole.sensors.sewageLevel === null) {
         // Sensor missing or not reporting
-        console.log(`Sensor data missing for manhole ${manhole.manholeId}`);
+        console.log(`Sensor data missing for manhole ${manhole}`);
       } else {
         const percentage = (manhole.sensors.sewageLevel / manhole.thresholds.maxDistance) * 100;
         if (percentage > 90) {
@@ -578,8 +581,9 @@ const Dashboard = () => {
                   dashboardData.manholes.reduce((acc, curr) => {
                     const id = curr.manholeId;
 
+                    console.log(`Processing critical manhole: ${id}`);
                     // Only consider critical status
-                    if (curr.status === "critical") {
+                    if (curr.status === "overflowing" || curr.status === "critical") {
                       if (!acc[id] || new Date(curr.createdAt) > new Date(acc[id].createdAt)) {
                         acc[id] = curr; // keep the most recent critical
                       }
