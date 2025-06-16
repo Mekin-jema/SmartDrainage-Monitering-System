@@ -24,19 +24,12 @@ const createReading = async (data) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
-      const io = getIO();
-    
-
+  const io = getIO();
 
   try {
-    // Access io instance from the app
- 
-    
-    // Emit to all clientssoc
     // Destructure and validate input
     const {
       manholeId,
-      // sensorId, // 🟡 Required in your alert schema
       sewageLevel,
       flowRate = 0,
       methaneLevel = 0,
@@ -65,7 +58,6 @@ const createReading = async (data) => {
       { value: sewageLevel, config: THRESHOLDS.SEWAGE },
       { value: methaneLevel, config: THRESHOLDS.METHANE },
       { value: flowRate, config: THRESHOLDS.FLOW },
-      // { value: temperature, config: THRESHOLDS.TEMP },
       { value: batteryLevel, config: THRESHOLDS.BATTERY }
     ];
 
@@ -101,7 +93,7 @@ const createReading = async (data) => {
         sewageLevel,
         flowRate,
         methaneLevel,
-        // temperature,
+        temperature,
         humidity,
         batteryLevel
       },
@@ -119,15 +111,23 @@ const createReading = async (data) => {
     
     if (alerts.length > 0) {
       await Alert.insertMany(alerts, { session });
-      const alertData=await Alert.find({})
-      io.emit('alertData',alertData )
-      // console.log("Alerts created:", alertData);
-
-
+      const latestAlerts = await Alert.find()
+        .sort({ createdAt: -1 }) // Most recent based on creation time
+  
+      const formattedAlerts = latestAlerts.map((alert, index) => ({
+        id: index + 1,
+        type: alert.alertType
+          ?.replace(/_/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase()),
+        location: alert.manholeId ? `Manhole #${alert.manholeId}` : "Unknown",
+        manholeId: alert.manholeId || "unknown",
+        timestamp: alert.createdAt,
+        status: alert.status,
+        severity: alert.alertLevel,
+      }));
+      
+      io.emit('alertData', formattedAlerts);
     }
-
-
-
 
     // Update manhole status
     await Manhole.updateOne(
@@ -442,7 +442,6 @@ const getAllSensorReadings = async (req, res) => {
 
 
 
-console.log("Reading:", timestamp);
 
       return {
         manholeId,

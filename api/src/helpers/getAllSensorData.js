@@ -53,7 +53,6 @@ const getAllSensorReadings = async () => {
     // Sort by timestamp (in case formatting affected the order)
     formattedManholes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-console.log("Formatted Manholes:", formattedManholes);
     return {
       success: true,
       data: formattedManholes,

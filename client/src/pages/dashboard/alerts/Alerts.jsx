@@ -89,32 +89,32 @@ const SeverityBadge = ({ level }) => {
   );
 };
 
-const StatusBadge = ({ status }) => {
-  const config = {
-    open: {
-      class: "bg-orange-100 text-orange-800 hover:bg-orange-200",
-      icon: <Clock className="w-3 h-3 mr-1" />,
-      label: "OPEN",
-    },
-    "in-progress": {
-      class: "bg-blue-100 text-blue-800 hover:bg-blue-200",
-      icon: <RefreshCw className="w-3 h-3 mr-1" />,
-      label: "IN PROGRESS",
-    },
-    resolved: {
-      class: "bg-green-100 text-green-800 hover:bg-green-200",
-      icon: <CheckCircle className="w-3 h-3 mr-1" />,
-      label: "RESOLVED",
-    },
-  };
+// const StatusBadge = ({ status }) => {
+//   const config = {
+//     open: {
+//       class: "bg-orange-100 text-orange-800 hover:bg-orange-200",
+//       icon: <Clock className="w-3 h-3 mr-1" />,
+//       label: "OPEN",
+//     },
+//     "in-progress": {
+//       class: "bg-blue-100 text-blue-800 hover:bg-blue-200",
+//       icon: <RefreshCw className="w-3 h-3 mr-1" />,
+//       label: "IN PROGRESS",
+//     },
+//     resolved: {
+//       class: "bg-green-100 text-green-800 hover:bg-green-200",
+//       icon: <CheckCircle className="w-3 h-3 mr-1" />,
+//       label: "RESOLVED",
+//     },
+//   };
 
-  return (
-    <Badge className={`flex items-center ${config[status]?.class || ""}`}>
-      {config[status]?.icon}
-      {config[status]?.label}
-    </Badge>
-  );
-};
+//   return (
+//     <Badge className={`flex items-center ${config[status]?.class || ""}`}>
+//       {config[status]?.icon}
+//       {config[status]?.label}
+//     </Badge>
+//   );
+// };
 
 const columns = [
   {
@@ -145,10 +145,10 @@ const columns = [
     accessorKey: "manholeId",
     cell: ({ getValue }) => `MH-${getValue()}`,
   },
-  {
-    header: "Location",
-    accessorKey: "location",
-  },
+  // {
+  //   header: "Location",
+  //   accessorKey: "location",
+  // },
   {
     header: "Timestamp",
     accessorKey: "timestamp",
@@ -163,14 +163,7 @@ const columns = [
       </Tooltip>
     ),
   },
-  {
-    header: "Status",
-    accessorKey: "status",
-    cell: ({ getValue }) => <StatusBadge status={getValue()} />,
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+
   {
     id: "actions",
     cell: ({ row }) => {
@@ -254,13 +247,15 @@ const AlertsTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { recentAlerts, fetchRecentAlerts } = useAlertStore();
+  const [alertData, setAlertData] = useState([]);
+  console.log("Recent Alerts:", recentAlerts);
 
   // Fixed: Removed recentAlerts from dependency array to prevent infinite loop
   useEffect(() => {
-    const loadData = async () => {
+
       try {
         setIsLoading(true);
-        await fetchRecentAlerts();
+         fetchRecentAlerts();
       } catch (error) {
         toast({
           title: "Error",
@@ -270,17 +265,22 @@ const AlertsTable = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+    },
 
-    loadData();
 
-    // Set up polling every 30 seconds
-    const intervalId = setInterval(loadData, 30000);
-    return () => clearInterval(intervalId);
-  }, [fetchRecentAlerts, toast]); // Only include stable dependencies
+  
+   []); // Only include stable dependencies
+
+  
+    useEffect(() => {
+   setAlertData(recentAlerts);
+  }, [recentAlerts]);
+  
+
+
 
   const table = useReactTable({
-    data: recentAlerts,
+    data: alertData ,
     columns,
     state: {
       sorting,
@@ -363,25 +363,7 @@ const AlertsTable = () => {
               <SelectItem value="low">Low</SelectItem>
             </SelectContent>
           </Select>
-          <Select
-            value={(table.getColumn("status")?.getFilterValue())}
-            onValueChange={(value) => {
-              table.getColumn("status")?.setFilterValue(value === "all" ? undefined : [value]);
-            }}
-          >
-            <SelectTrigger className="w-[140px]">
-              <div className="flex items-center">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Status" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
-            </SelectContent>
-          </Select>
+
         </div>
       </div>
 

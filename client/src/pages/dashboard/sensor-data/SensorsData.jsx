@@ -134,6 +134,7 @@ export default function SensorTable() {
   const [error, setError] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const { manholes, fetchManholes } = useSensorsStore();
+  
 
   console.log("Sensor Readings:", sensorReadings);
 

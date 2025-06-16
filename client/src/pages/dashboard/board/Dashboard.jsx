@@ -485,7 +485,7 @@ const Dashboard = () => {
           <CardContent className="flex justify-between items-center p-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Critical Issues
+                Manholes having issues
               </p>
               <p
                 className="text-3xl font-bold"
@@ -672,134 +672,8 @@ const Dashboard = () => {
       </Card>
 
       {/* Alerts and Maintenance */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Alerts */}
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Recent Alerts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {dashboardData.recentAlerts.map((alert) => (
-                <div
-                  key={alert.id}
-                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <div
-                    className={`p-2 rounded-full ${alert.severity === "critical"
-                      ? "bg-red-100 dark:bg-red-900/30"
-                      : "bg-amber-100 dark:bg-amber-900/30"
-                      }`}
-                  >
-                    {alert.severity === "critical" ? (
-                      <AlertCircle className="text-red-600 dark:text-red-400" />
-                    ) : (
-                      <AlertCircle className="text-amber-600 dark:text-amber-400" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-gray-900 dark:text-white">
-                        {alert.type}
-                      </h3>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${alert.status === "pending"
-                          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-                          : alert.status === "assigned"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                            : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          }`}
-                      >
-                        {alert.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {alert.location}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      {new Date(alert.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-              >
-                View All Alerts
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Maintenance Logs */}
-        <Card className="hover:shadow-lg transition-shadow bg-slate-200 dark:bg-inherit">
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">
-              Maintenance Activities
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {dashboardData.maintenanceLogs.slice(0, 4).map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <div
-                    className={`p-2 rounded-full ${log.status === "completed"
-                      ? "bg-green-100 dark:bg-green-900/30"
-                      : log.status === "in-progress"
-                        ? "bg-blue-100 dark:bg-blue-900/30"
-                        : "bg-gray-100 dark:bg-gray-800"
-                      }`}
-                  >
-                    {log.status === "completed" ? (
-                      <CheckCircle className="text-green-600 dark:text-green-400" />
-                    ) : log.status === "in-progress" ? (
-                      <Activity className="text-blue-600 dark:text-blue-400" />
-                    ) : (
-                      <HardHat className="text-gray-600 dark:text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-gray-900 dark:text-white">
-                        {log.type}
-                      </h3>
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${log.status === "completed"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : log.status === "in-progress"
-                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                          }`}
-                      >
-                        {log.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Manhole {log.manhole} • {log.technician}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      Scheduled: {log.date}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
-              >
-                View Maintenance Schedule
-              </Button>
-            </div>
-
-          </CardContent>
-        </Card>
-      </div>
+    
 
     </div>
   );

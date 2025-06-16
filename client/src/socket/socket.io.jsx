@@ -47,6 +47,7 @@ const Socket = () => {
     socket.on('manholeData', (results) => {
       try {
         console.log('Received Manholes data from wokwi:', results.data);
+
         updateManhole(results.data); // Push to Zustand store
       } catch (err) {
         console.error('Error updating dashboard data:', err);
@@ -56,8 +57,8 @@ const Socket = () => {
 
         socket.on('alertData', (results) => {
       try {
-        console.log('Received Manholes data from wokwi:', results.data);
-        updateManhole(results.data); // Push to Zustand store
+        console.log('Received alerts data from wokwi:', results);
+        updateAlerts(results); // Push to Zustand store
       } catch (err) {
         console.error('Error updating dashboard data:', err);
       }
