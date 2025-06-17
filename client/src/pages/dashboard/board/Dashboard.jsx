@@ -64,6 +64,7 @@ const Dashboard = () => {
     }));
   }, [manholes]);
 
+
   // Rest of your component code remains the same...
   // (All your helper functions, COLORS object, component rendering, etc.)
 
@@ -457,6 +458,8 @@ const Dashboard = () => {
   };
 
 
+  
+
   return (
     <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -620,54 +623,82 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={dashboardData.sensorTrends}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e5e7eb"
-                  strokeOpacity={0.3}
-                />
-                <XAxis dataKey="hour" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="waterLevel"
-                  stroke={COLORS.primary}
-                  strokeWidth={2}
-                  name="Water Level (m)"
-                  dot={{ r: 4, fill: COLORS.primary }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="gasLevel"
-                  stroke={COLORS.danger}
-                  strokeWidth={2}
-                  name="Gas Level (ppm)"
-                  dot={{ r: 4, fill: COLORS.danger }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="flowRate"
-                  stroke={COLORS.success}
-                  strokeWidth={2}
-                  name="Flow Rate (m/s)"
-                  dot={{ r: 4, fill: COLORS.success }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="temperature"
-                  stroke={COLORS.warning}
-                  strokeWidth={2}
-                  name="Tempreture (0°C)"
-                  dot={{ r: 4, fill: COLORS.success }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="h-[300px]">
+  <ResponsiveContainer width="100%" height="100%">
+    <LineChart
+      data={dashboardData.sensorTrends}
+      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+    >
+      <CartesianGrid
+        strokeDasharray="3 3"
+        stroke="#e5e7eb"
+        strokeOpacity={0.3}
+      />
+      <XAxis dataKey="hour" stroke="#6b7280" />
+      <YAxis stroke="#6b7280" />
+      
+      {/* Add this Tooltip component */}
+      <Tooltip 
+        contentStyle={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #e5e7eb',
+          borderRadius: '0.5rem',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}
+        itemStyle={{ color: '#1f2937' }}
+        formatter={(value, name, props) => {
+          // Custom formatter for units
+          const units = {
+            waterLevel: 'm',
+            gasLevel: 'ppm',
+            flowRate: 'm/s',
+            temperature: '°C'
+          };
+          return [`${value}`, name];
+        }}
+        labelFormatter={(label) => `Time: ${label}`}
+      />
+      
+      <Legend />
+      <Line
+        type="monotone"
+        dataKey="waterLevel"
+        stroke={COLORS.primary}
+        strokeWidth={2}
+        name="Water Level"
+        dot={{ r: 4, fill: COLORS.primary }}
+        activeDot={{ r: 6 }}
+      />
+      <Line
+        type="monotone"
+        dataKey="gasLevel"
+        stroke={COLORS.danger}
+        strokeWidth={2}
+        name="Gas Level"
+        dot={{ r: 4, fill: COLORS.danger }}
+        activeDot={{ r: 6 }}
+      />
+      <Line
+        type="monotone"
+        dataKey="flowRate"
+        stroke={COLORS.success}
+        strokeWidth={2}
+        name="Flow Rate"
+        dot={{ r: 4, fill: COLORS.success }}
+        activeDot={{ r: 6 }}
+      />
+      <Line
+        type="monotone"
+        dataKey="temperature"
+        stroke={COLORS.warning}
+        strokeWidth={2}
+        name="Temperature"
+        dot={{ r: 4, fill: COLORS.warning }}
+        activeDot={{ r: 6 }}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+</div>
           </div>
         </CardContent>
       </Card>

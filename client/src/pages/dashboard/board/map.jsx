@@ -851,7 +851,7 @@ const SewageSystemMap = () => {
   return (
     <div className="flex h-screen relative">
       {/* Legend */}
-      <div className="  w-[220px] border border-white p-4 absolute right-0 top-4   shadow-lg  rounded-md bg-background">
+      <div className="  w-[220px] border border-white p-4  absolute left-0 top-4  z-30  shadow-lg  rounded-md bg-background">
         <h3 className="text-lg font-bold mb-2">Legend</h3>
 
         <div className="flex items-center my-2">
