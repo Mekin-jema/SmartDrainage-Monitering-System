@@ -851,7 +851,7 @@ const SewageSystemMap = () => {
   return (
     <div className="flex h-screen relative">
       {/* Legend */}
-      <div className="  w-[220px] border border-white p-4 absolute right-0 top-0  shadow-lg z-50 rounded-md bg-background">
+      <div className="  w-[220px] border border-white p-4 absolute right-0 top-4   shadow-lg  rounded-md bg-background">
         <h3 className="text-lg font-bold mb-2">Legend</h3>
 
         <div className="flex items-center my-2">
@@ -943,7 +943,7 @@ const SewageSystemMap = () => {
       {/* Selected manhole details */}
       {
         selectedManhole && (
-          <div className="border-t p-4">
+          <div className="border-t p-4 z-40">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold">{selectedManhole.code}</h3>
               <Button variant="ghost" size="sm" onClick={() => setSelectedManhole(null)}>
