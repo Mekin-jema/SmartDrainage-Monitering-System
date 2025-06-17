@@ -98,14 +98,14 @@ const router = createBrowserRouter([
         <HeroSection />
         <FeaturesSection />
         <BenefitsSection />
-        {/* <ServicesSection /> */}
+       {/* <ServicesSection /> */} 
         {/* <PricingSection /> */}
         {/* <TestimonialSection /> */}
         <TeamSection />
-        {/* <CommunitySection /> */}
+       <CommunitySection />
         {/* <SponsorsSection /> */}
-        {/* <FAQSection /> */}
-        {/* <ContactSection /> */}
+        <FAQSection /> 
+      <ContactSection /> 
         <FooterSection />
       </div>
     ),

@@ -52,7 +52,7 @@ const ManholeIcon = ({ status }) => {
   console.log('Rendering ManholeIcon with status:', status);
   const getIconProps = () => {
     switch (status) {
-      case 'functional':
+      case 'normal':
         return { fill: '#10B981', stroke: '#059669' }; // Green
       case 'critical':
         return { fill: '#EF4444', stroke: '#DC2626' };
@@ -64,7 +64,7 @@ const ManholeIcon = ({ status }) => {
       case 'under_maintenance':
         return { fill: '#F59E0B', stroke: '#D97706' }; // Orange
       default:
-        return { fill: '#6B7280', stroke: '#4B5563' }; // Gray
+              return { fill: '#10B981', stroke: '#059669' }; // Greeny
     }
   };
 
@@ -102,6 +102,7 @@ const SewageSystemMap = () => {
   const [connectingManhole, setConnectingManhole] = useState(null);
   const [flowDirectionMode, setFlowDirectionMode] = useState(false);
   const [editingPipe, setEditingPipe] = useState(null);
+  console.log("manholes", manholes);
 
   const {
     manholesData, // List of manholes
@@ -428,7 +429,7 @@ const SewageSystemMap = () => {
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 8, 20, 12],
         'circle-color': [
           'case',
-          ['==', ['get', 'status'], 'functional'], ' #22c55e',      // Green
+          ['==', ['get', 'status'], 'normal'], ' #22c55e',      // Green
           ['==', ['get', 'status'], 'warning'], '#F59E0B',         // Amber
           ['==', ['get', 'status'], 'critical'], '#ef4444 ',        // Red
           ['==', ['get', 'status'], 'overflowing'], '#a855f7 ',     // Purple
@@ -850,7 +851,7 @@ const SewageSystemMap = () => {
   return (
     <div className="flex h-screen relative">
       {/* Legend */}
-      <div className="  w-[220px] border border-white p-4 absolute left-0 top-0  shadow-lg z-50 rounded-md bg-background">
+      <div className="  w-[220px] border border-white p-4 absolute right-0 top-0  shadow-lg z-50 rounded-md bg-background">
         <h3 className="text-lg font-bold mb-2">Legend</h3>
 
         <div className="flex items-center my-2">

@@ -138,10 +138,10 @@ const data = [
       coordinates: [38.76143, 9.043133],
     },
     zone: "A",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-05-15",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: ["2"],
   },
   {
@@ -153,10 +153,10 @@ const data = [
       coordinates: [38.76177, 9.04153],
     },
     zone: "A",
-    status: "critical",
+    status: "normal",
     lastInspection: "2023-04-20",
-    cover_status: "open",
-    overflow_level: "risk",
+    cover_status: "closed",
+
     connections: ["3"],
   },
   {
@@ -168,10 +168,10 @@ const data = [
       coordinates: [38.762154, 9.040072],
     },
     zone: "A",
-    status: "overflowing",
+    status: "normal",
     lastInspection: "2023-06-01",
     cover_status: "closed",
-    overflow_level: "overflow",
+
     connections: ["4"],
   },
   {
@@ -183,10 +183,10 @@ const data = [
       coordinates: [38.762508, 9.038484],
     },
     zone: "A",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-05-25",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: ["5", "6", "8"],
   },
   {
@@ -198,10 +198,10 @@ const data = [
       coordinates: [38.761106, 9.037434],
     },
     zone: "B",
-    status: "warning",
+    status: "normal",
     lastInspection: "2023-06-05",
-    cover_status: "open",
-    overflow_level: "moderate",
+    cover_status: "closed",
+
     connections: ["7"],
   },
   {
@@ -213,10 +213,10 @@ const data = [
       coordinates: [38.762951, 9.036137],
     },
     zone: "A",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-06-07",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: ["10"],
   },
   {
@@ -228,10 +228,10 @@ const data = [
       coordinates: [38.759375, 9.036599],
     },
     zone: "B",
-    status: "critical",
+    status: "normal",
     lastInspection: "2023-05-10",
-    cover_status: "open",
-    overflow_level: "risk",
+    cover_status: "closed",
+
     connections: [""],
   },
   {
@@ -243,10 +243,10 @@ const data = [
       coordinates: [38.764006, 9.03789],
     },
     zone: "C",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-06-03",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: [""],
   },
   {
@@ -258,10 +258,10 @@ const data = [
       coordinates: [38.762809, 9.037224],
     },
     zone: "D",
-    status: "overflowing",
+    status: "normal",
     lastInspection: "2023-06-01",
-    cover_status: "open",
-    overflow_level: "overflow",
+    cover_status: "closed",
+
     connections: ["9"],
   },
   {
@@ -273,10 +273,10 @@ const data = [
       coordinates: [38.763048, 9.035362],
     },
     zone: "A",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-06-10",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: ["12"],
   },
   {
@@ -288,10 +288,10 @@ const data = [
       coordinates: [38.763153, 9.034616],
     },
     zone: "B",
-    status: "critical",
+    status: "normal",
     lastInspection: "2023-05-15",
-    cover_status: "open",
-    overflow_level: "risk",
+    cover_status: "closed",
+
     connections: ["13"],
   },
   {
@@ -303,10 +303,10 @@ const data = [
       coordinates: [38.762563, 9.033234],
     },
     zone: "C",
-    status: "warning",
+    status: "normal",
     lastInspection: "2023-06-02",
-    cover_status: "open",
-    overflow_level: "moderate",
+    cover_status: "closed",
+
     connections: ["14"],
   },
   {
@@ -318,10 +318,10 @@ const data = [
       coordinates: [38.764492, 9.03237],
     },
     zone: "C",
-    status: "functional",
+    status: "normal",
     lastInspection: "2023-06-03",
     cover_status: "closed",
-    overflow_level: "good",
+
     connections: [""],
   },
   {
@@ -333,10 +333,10 @@ const data = [
       coordinates: [38.762987, 9.035571],
     },
     zone: "D",
-    status: "critical",
+    status: "normal",
     lastInspection: "2023-05-10",
-    cover_status: "open",
-    overflow_level: "risk",
+    cover_status: "closed",
+
     connections: ["11"],
   },
 ];
